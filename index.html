@@ -193,6 +193,27 @@ body.me0 .spcol:nth-child(2) .spbtn, body.me1 .spcol:nth-child(1) .spbtn { point
 body.online .ctrl { display: none; }
 #netLag { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); padding: 3px 10px; font-size: 12px; font-weight: 700; color: #fff; background: rgba(200, 60, 60, 0.85); border-radius: 10px; pointer-events: none; z-index: 5; }
 #netLag[hidden] { display: none; }
+#specTag { position: absolute; left: 8px; top: 8px; padding: 3px 9px; font-size: 12px; font-weight: 700; color: #fff; background: rgba(20, 20, 30, 0.7); border-radius: 10px; pointer-events: none; z-index: 5; }
+#specTag[hidden] { display: none; }
+#netModal .sheet { max-height: calc(100vh - 32px); overflow-y: auto; }
+.fld { display: flex; align-items: center; gap: 8px; }
+.fld > span { min-width: 4.2em; font-weight: 700; font-size: 13px; }
+.txt { flex: 1; min-width: 0; box-sizing: border-box; min-height: 40px; padding: 0 8px; background: var(--field); border: 3px solid var(--line); border-radius: 4px; font: inherit; font-weight: 700; color: inherit; }
+.row2 { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-weight: 700; font-size: 13px; }
+.row2 .tog { min-height: 36px; min-width: 56px; padding: 0 10px; background: var(--card); border: 3px solid var(--line); border-radius: 4px; font-weight: 700; }
+.row2 .tog[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.rmList { display: flex; flex-direction: column; gap: 8px; max-height: 46vh; overflow-y: auto; }
+.rm { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px; border: 3px solid var(--line); border-radius: 4px; background: var(--card); }
+.rmi { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.rmn { font-size: 14px; overflow-wrap: anywhere; }
+.rmi small { color: var(--muted); font-size: 11px; font-weight: 700; overflow-wrap: anywhere; }
+.rma { display: flex; gap: 6px; flex: none; }
+.rma button { min-height: 36px; min-width: 46px; padding: 0 8px; background: var(--card); border: 3px solid var(--line); border-radius: 4px; font-weight: 700; font-size: 13px; }
+.rma button:first-child { background: var(--ink); color: var(--bg); }
+.rma button:disabled { opacity: 0.4; }
+#specOv { display: flex; flex-direction: column; gap: 10px; }
+#specOv[hidden] { display: none; }
+body.spec #over .acts { display: none; }
 .verTag { position: absolute; right: 8px; bottom: 6px; font-size: 11px; font-weight: 700; color: var(--muted); opacity: 0.7; letter-spacing: 0.04em; pointer-events: none; }
 @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
 @keyframes bob { 0%, 100% { translate: 0 0; } 50% { translate: 0 -8px; } }
@@ -440,6 +461,7 @@ body.clsSel #hudBars { display: none; }
   <div class="arena" id="arena">
     <canvas id="cv"></canvas>
     <div id="netLag" hidden>연결 지연…</div>
+    <div id="specTag" hidden></div>
     <div class="overlay" id="over" hidden>
       <h2 id="overTitle"></h2>
       <p id="overSub"></p>
@@ -458,7 +480,7 @@ body.clsSel #hudBars { display: none; }
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v514</span>
+      <span class="verTag">v515</span>
     </div>
   </div>
 
@@ -475,13 +497,24 @@ body.clsSel #hudBars { display: none; }
   <section id="clsPick" hidden>
     <p class="clsHd" id="clsHd"></p>
     <p class="netTxt" id="clsMsg"></p>
-    <span class="lbl">상대 덱</span>
+    <span class="lbl" id="clsOppLbl">상대 덱</span>
     <div class="deckRow" id="clsOpp"></div>
     <span class="lbl">내 덱 — 이번 판에 낼 캐릭터</span>
     <div class="deckRow" id="clsMine"></div>
     <p class="clsInfo" id="clsInfo"></p>
     <button class="btn primary" id="clsLock" disabled>이 캐릭터로 확정</button>
     <button class="btn" id="clsLeave">방에서 나가기</button>
+  </section>
+
+  <section id="specOv" hidden>
+    <p class="clsHd" id="spHd"></p>
+    <p class="netTxt" id="spRoom"></p>
+    <p class="netTxt" id="spMsg"></p>
+    <div id="spDecks" hidden>
+      <span class="lbl" id="spL0"></span><div class="deckRow" id="spD0"></div>
+      <span class="lbl" id="spL1"></span><div class="deckRow" id="spD1"></div>
+    </div>
+    <button class="btn" id="spLeave">관전 나가기</button>
   </section>
 
   <section id="battle" hidden>
@@ -502,13 +535,20 @@ body.clsSel #hudBars { display: none; }
   <div class="modal" id="netModal" hidden style="z-index:22">
     <div class="sheet" role="dialog" aria-label="온라인 대전">
       <h2>온라인 대전</h2>
-      <div class="netBox" id="netMenu"><p class="netTxt">친구와 방 코드로 1대1 대결해요</p>
+      <div class="netBox" id="netMenu"><p class="netTxt">친구와 1대1 대결해요</p>
+        <label class="fld"><span>닉네임</span><input class="txt" id="nickIn" maxlength="10" autocomplete="off" spellcheck="false" aria-label="닉네임"></label>
+        <label class="fld"><span>방 이름</span><input class="txt" id="rmName" maxlength="16" autocomplete="off" spellcheck="false" placeholder="비우면 자동" aria-label="방 이름"></label>
+        <label class="fld"><span>비밀번호</span><input class="txt" id="rmPw" maxlength="8" autocomplete="off" spellcheck="false" placeholder="선택 · 비우면 누구나" aria-label="방 비밀번호"></label>
+        <div class="row2"><span>관전 허용</span><button type="button" class="tog" id="rmSpec" aria-pressed="true">켬</button></div>
         <button class="btn primary" id="netCreate">방 만들기 · 1판 승부</button>
         <button class="btn" id="netCreateC">방 만들기 · 클래식 (beta)</button>
+        <button class="btn" id="netListGo">방 목록 보기</button>
         <button class="btn" id="netJoinGo">코드로 참가</button></div>
+      <div class="netBox" id="netList" hidden><div class="rmList" id="rmList"></div><button class="btn" id="rmRefresh">새로고침</button></div>
+      <div class="netBox" id="netPw" hidden><p class="netTxt">비밀번호를 입력해요</p><input class="txt" id="pwIn" maxlength="8" autocomplete="off" spellcheck="false" aria-label="비밀번호"><button class="btn primary" id="pwOk">확인</button></div>
       <div class="netBox" id="netJoin" hidden><input class="netIn" id="netCodeIn" maxlength="4" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="코드" aria-label="방 코드">
         <button class="btn primary" id="netJoinBtn">참가</button></div>
-      <div class="netBox" id="netWait" hidden><p class="netTxt">친구에게 이 코드를 알려줘요</p><p class="netCode" id="netCode"></p><p class="netTxt">상대를 기다리는 중…</p></div>
+      <div class="netBox" id="netWait" hidden><p class="netTxt" id="netWaitName"></p><p class="netTxt">친구에게 이 코드를 알려줘요</p><p class="netCode" id="netCode"></p><p class="netTxt">상대를 기다리는 중…</p></div>
       <p class="netTxt" id="netMsg"></p>
       <button class="btn" id="netClose">닫기</button>
     </div>
@@ -524,6 +564,8 @@ body.clsSel #hudBars { display: none; }
         <button type="button" class="tog" id="tickBtn" aria-pressed="false">끔</button></div>
       <div class="row"><span class="nm">소리</span>
         <button type="button" class="tog" id="snd" aria-pressed="true">켬</button></div>
+      <div class="row"><span class="nm">닉네임<small id="nickMsg">온라인에서 상대·관전자에게 보여요</small></span>
+        <span class="cpn"><input id="nickSet" type="text" maxlength="10" autocomplete="off" spellcheck="false" placeholder="닉네임" aria-label="닉네임"><button type="button" class="tog" id="nickBtn">저장</button></span></div>
       <div class="row"><span class="nm">쿠폰<small id="cpnMsg">코드를 넣으면 새 무기가 열려요</small></span>
         <span class="cpn"><input id="cpnIn" type="text" maxlength="24" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="코드" aria-label="쿠폰 코드"><button type="button" class="tog" id="cpnBtn">적용</button></span></div>
       <div class="row"><span class="nm">도움말<small>상태이상 · 버프 설명</small></span>
@@ -614,7 +656,7 @@ var DM = (function () {
     try { return fn(a); }
     finally { for (k = 0; k < MK.length; k++) Math[MK[k]] = sv[MK[k]]; Math.random = rnd; }
   }
-  var net = { on: false, st: 'off', ws: null, me: 0, code: '', D: 6, step: 0, loc: {}, opp: {}, pend: [], hs: {}, ohs: {}, rtt: 60, rtts: [], ready: false, peerReady: false, peerHere: false, round: 0, stall: 0, maxStall: 0, backup: null, mySel: null, rematch: false, peerRematch: false, desync: false, log: [], view: 'menu', pingT: 0, sentType: null, mode: 'single', deck: null, di: 0, cl: null };
+  var net = { on: false, st: 'off', ws: null, me: 0, code: '', D: 6, step: 0, loc: {}, opp: {}, pend: [], hs: {}, ohs: {}, rtt: 60, rtts: [], ready: false, peerReady: false, peerHere: false, round: 0, stall: 0, maxStall: 0, backup: null, mySel: null, rematch: false, peerRematch: false, desync: false, log: [], view: 'menu', pingT: 0, sentType: null, mode: 'single', deck: null, di: 0, cl: null, names: ['', ''], sc: 0, spec: false, sin: null, rooms: [], listT: 0, pj: null, roomName: '', spCl: null, spSt: '', spNp: 0 };
   var matchSeed = 0, nextSeed = null;   /* 매 판마다 시드를 정함 (온라인에서는 서버/방장이 정해서 양쪽이 같은 값을 쓴다) */
   var MK = ['sin', 'cos', 'atan', 'atan2', 'asin', 'exp', 'log', 'pow', 'hypot'];
 
@@ -997,7 +1039,7 @@ var DM = (function () {
 
   /* ---------- DOM ---------- */
   var cv = $('#cv'), ctx = cv.getContext('2d');
-  var setupEl = $('#setup'), battleEl = $('#battle'), over = $('#over'), clsEl = $('#clsPick');
+  var setupEl = $('#setup'), battleEl = $('#battle'), over = $('#over'), clsEl = $('#clsPick'), specEl = $('#specOv');
   var pauseBtn = $('#pauseBtn');
   var scale = 1;
 
@@ -11695,7 +11737,7 @@ var DM = (function () {
       sparks(w.x, w.y, C.gold, 40, 600); sparks(w.x, w.y, '#ffffff', 16, 400);
       shake = 0.4; if (!VIC[w.type]) playFanfare();
     }
-    if (net.on && winner >= 0) { title = winner === net.me ? '승리!' : '패배…'; sub = '상대: ' + W[fighters[1 - net.me].type].name + ' · ' + sub; }
+    if (net.on && winner >= 0) { if (net.spec) title = (net.names[winner] || 'P' + (winner + 1)) + ' 승리!'; else { title = winner === net.me ? '승리!' : '패배…'; sub = '상대: ' + (net.names[1 - net.me] ? net.names[1 - net.me] + ' · ' : '') + W[fighters[1 - net.me].type].name + ' · ' + sub; } }
     t.textContent = title; $('#overSub').textContent = sub;
     over.hidden = false;
   }
@@ -14438,7 +14480,7 @@ var DM = (function () {
     if (screenName === 'title') return;
     fighters.forEach(function (f, i) {
       var h = hr(i);
-      setText(h.nm, 'P' + (i + 1) + ' · ' + W[f.type].name);
+      setText(h.nm, ((net.on && net.names[i]) ? net.names[i] : 'P' + (i + 1)) + ' · ' + W[f.type].name);
       setText(h.num, String(f.hp));
       var wv = (Math.max(0, f.hp) / (f.maxHp || 100) * 100) + '%'; if (h.fill._t !== wv) { h.fill.style.width = wv; h.fill._t = wv; }
       var st = statOf(f), mt = meterOf(f);
@@ -14486,6 +14528,7 @@ var DM = (function () {
     var dt = Math.min(0.05, (ts - last) / 1000 || 0); last = ts;
     if ((frameNo++ % 60) === 0) { readColors(); if (iconSig !== C.blade + C.edge + C.gold + C.wood) refreshIcons(); }
     if (net.on && net.st === 'play') netPump(dt);
+    else if (net.on && net.st === 'splay') netSpecPump(dt);
     else if (fixedStep) { var ns = 0; stepAcc += dt; while (stepAcc >= STEP - 1e-9 && ns < 4) { update(STEP); stepAcc -= STEP; ns++; } if (ns === 4) stepAcc = 0; }
     else update(dt);
     draw(); hud();
@@ -14614,13 +14657,13 @@ var DM = (function () {
   var screenName = 'title', modalPaused = false;
   function showScreen(name) {
     screenName = name;
-    var title = name === 'title', select = name === 'select', battle = name === 'battle', cls = name === 'cls';
-    $('#titleOv').hidden = !title; $('#topBar').hidden = title; $('#hudBars').hidden = title || cls;
+    var title = name === 'title', select = name === 'select', battle = name === 'battle', cls = name === 'cls', spec = name === 'spec';
+    $('#titleOv').hidden = !title; $('#topBar').hidden = title; $('#hudBars').hidden = title || cls || spec;
     if (title) bgmStart(); else bgmStop();
     hintSync();
-    setupEl.hidden = !select; battleEl.hidden = !battle; clsEl.hidden = !cls; $('#arena').hidden = cls; over.hidden = true;
+    setupEl.hidden = !select; battleEl.hidden = !battle; clsEl.hidden = !cls; specEl.hidden = !spec; $('#arena').hidden = cls || spec; over.hidden = true;
     if (title) { startDemo(); }
-    else if (cls) { demo = false; phase = 'setup'; paused = false; clearFx(); }
+    else if (cls || spec) { demo = false; phase = 'setup'; paused = false; clearFx(); }
     else if (select) { demo = false; phase = 'setup'; paused = false; clearFx(); matchT = 0; sdTier = 0; setArena(arenaSel); resetFighters(); }
   }
   function start() {
@@ -14635,7 +14678,7 @@ var DM = (function () {
   function showScreenQuiet(name) {
     bgmStop(); hintSync();
     screenName = name; $('#titleOv').hidden = true; $('#topBar').hidden = false; $('#hudBars').hidden = false;
-    setupEl.hidden = name !== 'select'; battleEl.hidden = name !== 'battle'; clsEl.hidden = true; $('#arena').hidden = false; over.hidden = true;
+    setupEl.hidden = name !== 'select'; battleEl.hidden = name !== 'battle'; clsEl.hidden = true; specEl.hidden = true; $('#arena').hidden = false; over.hidden = true;
   }
   function hintSync() { var h = $('#bgmHint'); if (h) h.hidden = !(screenName === 'title' && soundOn && !bgm.on); }
   document.addEventListener('pointerdown', function (e) {
@@ -14650,6 +14693,17 @@ var DM = (function () {
     else if (b.dataset.spell) uiTick(1.25);
     else uiTick(1);
   }, true);
+  /* 닉네임 (이 기기에 저장) */
+  function nickClean(x) { x = String(x == null ? '' : x).replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '').replace(/\s+/g, ' ').trim(); return Array.from(x).slice(0, 10).join('').trim(); }
+  var nick = ''; try { nick = nickClean(localStorage.getItem('spinclash.nick')); } catch (e) {}
+  if (!nick) { nick = '손님' + (1000 + Math.floor(Math.random() * 9000)); try { localStorage.setItem('spinclash.nick', nick); } catch (e) {} }
+  function nickSave(v) { v = nickClean(v); if (!v) return false; nick = v; try { localStorage.setItem('spinclash.nick', nick); } catch (e) {} $('#nickIn').value = nick; $('#nickSet').value = nick; return true; }
+  function nickRead() { if (!nickSave($('#nickIn').value)) $('#nickIn').value = nick; return nick; }
+  $('#nickIn').value = nick; $('#nickSet').value = nick;
+  function nickApply() { var m = $('#nickMsg'); if (nickSave($('#nickSet').value)) m.textContent = '저장했어요: ' + nick; else { $('#nickSet').value = nick; m.textContent = '닉네임을 입력해 주세요'; } }
+  $('#nickBtn').addEventListener('click', nickApply);
+  $('#nickSet').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); nickApply(); } });
+  $('#nickIn').addEventListener('change', nickRead);
   function cpnRefresh(msg) {
     var m = $('#cpnMsg'); if (!m) return;
     m.textContent = msg || (cpnApplied.length ? '열린 등급: ' + cpnApplied.map(function (c) { return COUPONS[c].n; }).join(' · ') : '코드를 넣으면 새 무기가 열려요');
@@ -14712,10 +14766,11 @@ var DM = (function () {
   function netUrl() { return (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws'; }
   function netSend(o) { if (net.ws && net.ws.readyState === 1) net.ws.send(JSON.stringify(o)); }
   function netShow(which, msg, bad) {
-    $('#netMenu').hidden = which !== 'menu'; $('#netJoin').hidden = which !== 'join'; $('#netWait').hidden = which !== 'wait';
+    $('#netMenu').hidden = which !== 'menu'; $('#netJoin').hidden = which !== 'join'; $('#netWait').hidden = which !== 'wait'; $('#netList').hidden = which !== 'list'; $('#netPw').hidden = which !== 'pw';
     var m = $('#netMsg'); m.textContent = msg || ''; m.classList.toggle('bad', !!bad);
     $('#netClose').textContent = which === 'menu' ? '닫기' : (which === 'wait' ? '방 닫기' : '뒤로');
     netModal.hidden = false; net.view = which;
+    if (which === 'list') { if (!net.listT) net.listT = setInterval(function () { if (net.view === 'list' && !net.on) netListReq(); }, 3000); } else netListStop();
   }
   function netTimers(on) {
     if (net.pingT) { clearInterval(net.pingT); net.pingT = 0; }
@@ -14737,6 +14792,7 @@ var DM = (function () {
     if (net.ws) { var w = net.ws; net.ws = null; try { w.close(); } catch (e) {} }
     if (net.backup) { sel = net.backup.sel; arenaSel = net.backup.arena; fxOn = net.backup.fx; sdOn = net.backup.sd; net.backup = null; }
     net.on = false; net.st = 'off'; net.code = ''; fixedStep = false; stepAcc = 0; net.ready = false; net.peerHere = false; net.mode = 'single'; net.deck = null; net.di = 0; net.cl = null; document.body.classList.remove('clsSel');
+    net.names = ['', '']; net.sc = 0; net.spec = false; net.sin = null; net.roomName = ''; net.pj = null; net.spCl = null; net.spSt = ''; net.spNp = 0; netListStop(); specEl.hidden = true; document.body.classList.remove('spec'); specTagSync();
     $('#deckTabs').hidden = true; clsEl.hidden = true; $('#arena').hidden = false; $('#again').hidden = false; $('#again').disabled = false;
     document.body.classList.remove('online', 'me0', 'me1');
     cardEls.forEach(function (el, i) { el.classList.remove('off', 'lock'); el.querySelector('h3').textContent = 'P' + (i + 1); });
@@ -14753,18 +14809,26 @@ var DM = (function () {
   function netOnMsg(m) {
     switch (m.t) {
       case 'pong': { var r = performance.now() - m.c; net.rtts.push(r); if (net.rtts.length > 5) net.rtts.shift(); var s = 0; net.rtts.forEach(function (x) { s += x; }); net.rtt = Math.round(s / net.rtts.length); break; }
-      case 'created': net.code = m.code; net.me = 0; net.peerHere = false; net.mode = m.mode === 'classic' ? 'classic' : 'single'; $('#netCode').textContent = m.code; netShow('wait'); break;
-      case 'joined': net.code = m.code; net.me = 1; net.peerHere = true; net.sentType = null; net.mode = m.mode === 'classic' ? 'classic' : 'single'; netEnterSelect(); break;
+      case 'created': net.code = m.code; net.me = 0; net.peerHere = false; net.mode = m.mode === 'classic' ? 'classic' : 'single'; net.roomName = roomClean(m.name); $('#netCode').textContent = m.code; $('#netWaitName').textContent = net.roomName; netShow('wait'); break;
+      case 'joined': net.code = m.code; net.me = 1; net.peerHere = true; net.sentType = null; net.mode = m.mode === 'classic' ? 'classic' : 'single'; net.roomName = roomClean(m.name); net.pj = null; netListStop(); netEnterSelect(); break;
+      case 'sjoined': net.pj = null; netListStop(); netSpecEnter(m); break;
+      case 'sst': netSpecStatus(m); break;
+      case 'sclosed': if (net.spec) { netReset(); showScreen('title'); netShow('menu', '방이 닫혔어요', true); } break;
+      case 'names': net.names = [nickClean(m.n && m.n[0]), nickClean(m.n && m.n[1])]; net.sc = Math.max(0, m.sc | 0); specTagSync(); if (net.spec && net.st === 'spec') netSpecPanel(); else if (net.on && !net.spec && net.st === 'select') netSelUI(); else if (net.cl && net.st === 'cpick') clsRender(); break;
+      case 'rooms': net.rooms = Array.isArray(m.l) ? m.l.slice(0, 40) : []; if (net.view === 'list' && !net.on) { netListRender(); var nm = $('#netMsg'); if (!nm.classList.contains('bad')) nm.textContent = ''; } break;
       case 'peer': net.peerHere = true; net.sentType = null; if (!net.on) netEnterSelect(); else netSelUI(); break;
-      case 'err': netShow(net.view === 'join' ? 'join' : 'menu', m.m || '오류', true); if (net.ws) { var w = net.ws; net.ws = null; netTimers(false); try { w.close(); } catch (e) {} } break;
+      case 'err':
+        if (m.c === 'pw' || m.c === 'wrongpw') { netPwAsk(m.m, m.c === 'wrongpw'); break; }
+        if (net.pj && net.pj.from === 'list') { netShow('list', m.m || '오류', true); netListReq(); break; }
+        netShow(net.view === 'join' || net.view === 'pw' ? 'join' : 'menu', m.m || '오류', true); if (net.ws) { var w = net.ws; net.ws = null; netTimers(false); try { w.close(); } catch (e) {} } break;
       case 'peerReady': net.peerReady = !!m.v; netSelUI(); break;
       case 'peerPv': netPeerType(m.type); break;
       case 'cstart': netClsStart(m); break;
       case 'peerPicked': if (net.cl) { net.cl.peerPicked = true; clsRender(); } break;
       case 'cnext': netClsNext(); break;
       case 'cres': netCres(m); break;
-      case 'start': netBegin(m); break;
-      case 'in': if (net.st === 'play' && typeof m.f === 'number' && m.f === (m.f | 0) && m.f >= net.step && m.f < net.step + 240 && Array.isArray(m.a)) net.opp[m.f] = m.a.filter(function (j) { return j === 0 || j === 1; }).slice(0, 2); break;
+      case 'start': if (net.spec) netSpecBegin(m); else netBegin(m); break;
+      case 'in': if (net.spec) { netSpecIn(m); break; } if (net.st === 'play' && typeof m.f === 'number' && m.f === (m.f | 0) && m.f >= net.step && m.f < net.step + 240 && Array.isArray(m.a)) net.opp[m.f] = m.a.filter(function (j) { return j === 0 || j === 1; }).slice(0, 2); break;
       case 'h': if (net.st === 'play' || net.st === 'after') { net.ohs[m.s] = m.h; if (net.hs[m.s] !== undefined) netCmp(m.s); } break;
       case 'peerRematch': net.peerRematch = !!m.v; netOverUI(); break;
       case 'peerBack': netToSelect(); break;
@@ -14787,12 +14851,13 @@ var DM = (function () {
   }
   function netSelUI() {
     if (!net.on) return;
-    cardEls.forEach(function (el, i) { el.classList.toggle('off', i !== net.me); el.classList.toggle('lock', i === net.me && net.ready); el.querySelector('h3').textContent = i === net.me ? '내 캐릭터' : 'P' + (i + 1); });
+    cardEls.forEach(function (el, i) { el.classList.toggle('off', i !== net.me); el.classList.toggle('lock', i === net.me && net.ready); el.querySelector('h3').textContent = i === net.me ? '내 캐릭터' : (net.names[i] || 'P' + (i + 1)); });
+    var on = net.names[1 - net.me] || '상대';
     var host = net.me === 0; $('#arLbl').hidden = !host; $('#arenas').hidden = !host;
     var b = $('#startBtn'); b.textContent = net.mode === 'classic' ? (net.ready ? '덱 확정 취소' : '덱 확정') : (net.ready ? '준비 취소' : '준비 완료'); b.disabled = !net.peerHere;
     $('#netLeave').hidden = false;
     var s = $('#netSel'); s.hidden = false;
-    s.textContent = !net.peerHere ? '상대가 나갔어요. 방 코드 ' + net.code + ' 로 다시 초대할 수 있어요' : (net.mode === 'classic' ? (net.peerReady ? '상대가 덱을 확정했어요' : '클래식(beta) · 덱 3개를 짜요 · 상대가 짜는 중… (방 코드 ' + net.code + ')') : (net.peerReady ? '상대가 준비했어요' : '상대가 고르는 중… (방 코드 ' + net.code + ')'));
+    s.textContent = !net.peerHere ? '상대가 나갔어요. 방 코드 ' + net.code + ' 로 다시 초대할 수 있어요' : (net.mode === 'classic' ? (net.peerReady ? on + ' 님이 덱을 확정했어요' : '클래식(beta) · 덱 3개를 짜요 · ' + on + ' 님이 짜는 중… (방 코드 ' + net.code + ')') : (net.peerReady ? on + ' 님이 준비했어요' : on + ' 님이 고르는 중… (방 코드 ' + net.code + ')'));
     document.body.classList.toggle('me0', net.me === 0); document.body.classList.toggle('me1', net.me === 1);
     netTypeSend(); clsTabsSync();
   }
@@ -14818,6 +14883,7 @@ var DM = (function () {
     net.mySel = clone(sel[net.me]);
     var s0 = netSane(m.sel && m.sel[0]), s1 = netSane(m.sel && m.sel[1]);
     if (s1.col === s0.col) s1.col = s0.col === 'red' ? 'blue' : 'red';
+    if (Array.isArray(m.nm)) net.names = [nickClean(m.nm[0]), nickClean(m.nm[1])];
     sel = [s0, s1]; arenaSel = (m.arena | 0) >= 0 && (m.arena | 0) < ARENAS.length ? (m.arena | 0) : 0;
     fxOn = true; sdOn = m.sd !== false;
     net.D = Math.max(3, Math.min(30, m.D | 0 || 6)); net.step = 0; net.loc = {}; net.opp = {}; net.pend = []; net.hs = {}; net.ohs = {}; net.stall = 0; net.maxStall = 0; net.round = m.round | 0;
@@ -14944,6 +15010,7 @@ var DM = (function () {
     var me = net.me, op = 1 - me;
     $('#clsHd').textContent = '클래식 (beta) · ' + (c.rd + 1) + '번째 판 · 나 ' + c.wins[me] + ' : ' + c.wins[op] + ' 상대';
     $('#clsMsg').textContent = c.locked ? (c.peerPicked ? '둘 다 골랐어요!' : '상대가 고르는 중…') : (c.peerPicked ? '상대는 이미 골랐어요. 나도 골라요' : '상대 덱을 보고 이번에 낼 캐릭터를 몰래 골라요');
+    $('#clsOppLbl').textContent = (net.names[op] || '상대') + '의 덱';
     var foc = c.focus || {};
     $('#clsOpp').innerHTML = c.decks[op].map(function (d, k) { return clsCardHtml(d, c.used[op][k], c.res[op][k], false, k, false, foc.who === 'op' && foc.k === k); }).join('');
     $('#clsMine').innerHTML = c.decks[me].map(function (d, k) { return clsCardHtml(d, c.used[me][k], c.res[me][k], true, k, c.my === k, foc.who === 'me' && foc.k === k); }).join('');
@@ -14983,14 +15050,160 @@ var DM = (function () {
   $('#clsLeave').addEventListener('click', function () { netLeave(); });
   /* 이벤트 연결 */
   if (window.SPIN_ONLINE) { document.body.classList.add('hasOnline'); $('#onlineBtn').hidden = false; $('#verTxt').textContent = '한 기기 2인 대전 · 친구와 온라인 대전'; }
+  function roomClean(x) { return Array.from(String(x == null ? '' : x).replace(/[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁦-⁩﻿]/g, '').replace(/\s+/g, ' ').trim()).slice(0, 16).join(''); }
+  function specTagSync() {
+    var t = $('#specTag'); if (!t) return; var on = net.on && (net.spec || net.sc > 0); t.hidden = !on;
+    if (on) t.textContent = (net.spec ? '관전 중 · ' : '') + '👁 ' + (net.sc | 0);
+  }
+  /* ── 방 목록 ── */
+  function netListReq() { netSend({ t: 'list' }); }
+  function netListStop() { if (net.listT) { clearInterval(net.listT); net.listT = 0; } }
+  function netIdleClose() { if (!net.on && net.ws) { var w = net.ws; net.ws = null; netTimers(false); try { w.close(); } catch (e) {} } }
+  function netListOpen() {
+    net.pj = null;
+    if (net.ws && net.ws.readyState === 1) { netShow('list'); netListReq(); }
+    else { netShow('list', '방 목록을 불러오는 중…'); netConnect(function () { netListReq(); }); }
+  }
+  function netListRender() {
+    var box = $('#rmList'); box.textContent = ''; var l = net.rooms || [];
+    if (!l.length) { var p = document.createElement('p'); p.className = 'netTxt'; p.textContent = '열려 있는 방이 없어요. 직접 만들어 봐요!'; box.appendChild(p); return; }
+    l.forEach(function (r) {
+      if (!r || typeof r.c !== 'string' || !/^[A-Z0-9]{4}$/.test(r.c)) return;
+      var np = r.np | 0, st = r.st === 'lobby' ? (np < 2 ? '대기 중' : '준비 중') : (r.st === 'cpick' ? '캐릭터 고르는 중' : (r.st === 'play' ? '전투 중' : '결과 보는 중'));
+      var row = document.createElement('div'); row.className = 'rm';
+      var inf = document.createElement('div'); inf.className = 'rmi';
+      var nm = document.createElement('b'); nm.className = 'rmn'; nm.textContent = (r.lk ? '🔒 ' : '') + roomClean(r.nm);
+      var sm = document.createElement('small'); sm.textContent = nickClean(r.h) + ' · ' + (r.md === 'classic' ? '클래식' : '1판 승부') + ' · ' + st + ' · ' + np + '/2' + ((r.sc | 0) > 0 ? ' · 👁 ' + (r.sc | 0) : '');
+      inf.appendChild(nm); inf.appendChild(sm);
+      var act = document.createElement('div'); act.className = 'rma';
+      var jb = document.createElement('button'); jb.type = 'button'; jb.textContent = '참가'; jb.dataset.c = r.c; jb.dataset.act = 'join'; jb.disabled = np >= 2;
+      var sb = document.createElement('button'); sb.type = 'button'; sb.textContent = r.sp ? '관전' : '관전 불가'; sb.dataset.c = r.c; sb.dataset.act = 'spec'; sb.disabled = !r.sp || (r.sc | 0) >= 8;
+      act.appendChild(jb); act.appendChild(sb); row.appendChild(inf); row.appendChild(act); box.appendChild(row);
+    });
+  }
+  function netPwAsk(msg, bad) { netShow('pw', msg || '', !!bad); $('#pwIn').value = ''; setTimeout(function () { $('#pwIn').focus(); }, 50); }
+  function netDoJoin(pw) {
+    var j = net.pj; if (!j) return;
+    netSend({ t: j.act === 'spec' ? 'spec' : 'join', code: j.code, nick: nickRead(), pw: pw || '' });
+  }
+  $('#rmList').addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('button[data-c]'); if (!b || b.disabled) return;
+    net.pj = { code: b.dataset.c, act: b.dataset.act, from: 'list' };
+    netShow('list', b.dataset.act === 'spec' ? '관전하러 가는 중…' : '참가하는 중…'); netDoJoin('');
+  });
+  $('#rmRefresh').addEventListener('click', function () { if (net.ws && net.ws.readyState === 1) netListReq(); else netListOpen(); });
+  $('#pwOk').addEventListener('click', function () { var pw = $('#pwIn').value; if (!pw) return; netShow('pw', '확인하는 중…'); netDoJoin(pw); });
+  $('#pwIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); $('#pwOk').click(); } });
+  $('#netListGo').addEventListener('click', function () { nickRead(); netListOpen(); });
+  /* ── 관전 ── */
+  function netSpecEnter(m) {
+    net.on = true; net.spec = true; net.me = -1; net.peerHere = true; net.code = m.code; net.mode = m.mode === 'classic' ? 'classic' : 'single'; net.roomName = roomClean(m.name);
+    net.names = [nickClean(m.n && m.n[0]), nickClean(m.n && m.n[1])]; net.st = 'spec'; net.sin = [{}, {}]; net.spCl = null; net.spSt = 'lobby'; net.spNp = 2;
+    net.backup = { sel: clone(sel), arena: arenaSel, fx: fxOn, sd: sdOn };
+    netModal.hidden = true; document.body.classList.add('online', 'spec'); document.body.classList.remove('me0', 'me1');
+    showScreen('spec'); netSpecPanel(); specTagSync();
+  }
+  function netSpecPanel() {
+    var a = net.names[0] || 'P1', b = net.names[1] || 'P2', c = net.spCl, st = net.spSt, np = net.spNp | 0;
+    $('#spHd').textContent = c ? '클래식 · ' + a + ' ' + c.wins[0] + ' : ' + c.wins[1] + ' ' + b : a + ' vs ' + b;
+    $('#spRoom').textContent = net.roomName + ' · ' + (net.mode === 'classic' ? '클래식 (beta)' : '1판 승부');
+    var msg = '';
+    if (np < 2) msg = '플레이어가 상대를 기다리는 중…';
+    else if (st === 'lobby') msg = net.mode === 'classic' ? '두 사람이 덱을 짜는 중…' : '두 사람이 무기를 고르는 중…';
+    else if (st === 'cpick') msg = '둘 다 이번에 낼 캐릭터를 몰래 고르는 중… (전투가 시작되면 공개돼요)';
+    else if (st === 'after') msg = c && c.end ? '경기가 끝났어요' : '다음 판을 준비하는 중…';
+    $('#spMsg').textContent = msg;
+    var dk = $('#spDecks'); dk.hidden = !c;
+    if (c) {
+      [0, 1].forEach(function (i) {
+        $('#spL' + i).textContent = (net.names[i] || 'P' + (i + 1)) + '의 덱';
+        $('#spD' + i).innerHTML = c.decks[i].map(function (d, k) { return clsCardHtml(d, c.used[i][k], c.res[i][k], false, k, false, false); }).join('');
+      });
+    }
+  }
+  function netSpecStatus(m) {
+    if (!net.on || !net.spec) return;
+    if (Array.isArray(m.n)) net.names = [nickClean(m.n[0]), nickClean(m.n[1])];
+    if (m.name) net.roomName = roomClean(m.name);
+    var c = null;
+    if (m.cl && Array.isArray(m.cl.decks) && m.cl.decks.length === 2) {
+      var dks = m.cl.decks.map(function (dk) { return (Array.isArray(dk) ? dk : []).slice(0, 3).map(netSane); });
+      if (dks[0].length === 3 && dks[1].length === 3) {
+        var ok = function (a) { return Array.isArray(a) && a.length === 2 && a.every(function (r) { return Array.isArray(r) && r.length === 3; }); };
+        c = { decks: dks, used: ok(m.cl.used) ? m.cl.used : [[false, false, false], [false, false, false]], res: ok(m.cl.res) ? m.cl.res : [[null, null, null], [null, null, null]], wins: [(m.cl.wins && m.cl.wins[0]) | 0, (m.cl.wins && m.cl.wins[1]) | 0], rd: m.cl.rd | 0, end: !!m.cl.end };
+      }
+    }
+    net.spCl = c; net.spSt = m.st; net.spNp = m.np | 0;
+    if (m.st === 'play') return;
+    if (m.st === 'after' && (net.st === 'splay' || net.st === 'safter')) return;   /* 결과 화면은 다음 판이 정해질 때까지 유지 */
+    if (net.st !== 'spec') { net.st = 'spec'; fixedStep = false; stepAcc = 0; net.sin = [{}, {}]; showScreen('spec'); }
+    netSpecPanel();
+  }
+  function netSpecBegin(m) {
+    if (!net.on || !net.spec) return;
+    var s0 = netSane(m.sel && m.sel[0]), s1 = netSane(m.sel && m.sel[1]);
+    if (s1.col === s0.col) s1.col = s0.col === 'red' ? 'blue' : 'red';
+    if (Array.isArray(m.nm)) net.names = [nickClean(m.nm[0]), nickClean(m.nm[1])];
+    sel = [s0, s1]; arenaSel = (m.arena | 0) >= 0 && (m.arena | 0) < ARENAS.length ? (m.arena | 0) : 0;
+    fxOn = true; sdOn = m.sd !== false;
+    net.D = Math.max(3, Math.min(30, m.D | 0 || 6)); net.step = 0; net.round = m.round | 0;
+    var sin = [{}, {}], li = Array.isArray(m.li) ? m.li : [-1, -1], f, p;
+    if (Array.isArray(m.log)) m.log.forEach(function (e) { if (Array.isArray(e) && (e[0] === 0 || e[0] === 1) && Number.isInteger(e[1]) && e[1] >= 0 && Array.isArray(e[2])) sin[e[0]][e[1]] = e[2].filter(function (j) { return j === 0 || j === 1; }).slice(0, 2); });
+    for (p = 0; p < 2; p++) {
+      for (f = 0; f < net.D; f++) if (sin[p][f] === undefined) sin[p][f] = [];
+      var top = Math.min(Math.max(-1, li[p] | 0), 1000000);
+      for (f = 0; f <= top; f++) if (sin[p][f] === undefined) sin[p][f] = [];
+    }
+    net.sin = sin; net.st = 'splay'; net.spSt = 'play';
+    nextSeed = m.seed >>> 0; start(); fixedStep = true; stepAcc = 0; $('#netLag').hidden = true; specTagSync();
+  }
+  function netSpecIn(m) {
+    if (net.st !== 'splay' || !net.sin) return;
+    var p = m.p, f = m.f; if ((p !== 0 && p !== 1) || !Number.isInteger(f) || f < net.step || f > net.step + 100000 || !Array.isArray(m.a)) return;
+    net.sin[p][f] = m.a.filter(function (j) { return j === 0 || j === 1; }).slice(0, 2);
+  }
+  /* 관전 진행: 두 사람의 입력이 다 모인 프레임만 계산한다. 크게 뒤처졌으면(전투 도중 입장 등) 빨리 감기로 따라잡는다 */
+  function netSpecPump(dt) {
+    var sin = net.sin, D = net.D, back = 0, n = 0, i, k;
+    while (back < 90 && sin[0][net.step + back] !== undefined && sin[1][net.step + back] !== undefined) back++;
+    var fast = back - D > 20;
+    if (fast) stepAcc = 0; else stepAcc += dt;
+    var maxN = fast ? 30 : 6;
+    while (n < maxN) {
+      var s = net.step;
+      if (sin[0][s] === undefined || sin[1][s] === undefined) { if (stepAcc > 0.25) stepAcc = 0.25; break; }
+      if (!fast && stepAcc < STEP - 1e-9) break;
+      for (i = 0; i < 2; i++) { var arr = sin[i][s]; for (k = 0; k < arr.length; k++) (function (pi, j) { inSim(function () { castSpell(pi, j); }); })(i, arr[k]); }
+      update(STEP); if (!fast) stepAcc -= STEP; n++; net.step = s + 1; delete sin[0][s]; delete sin[1][s];
+      if (phase === 'over') { net.st = 'safter'; fixedStep = false; stepAcc = 0; break; }
+    }
+  }
+  $('#spLeave').addEventListener('click', netLeave);
+  /* ── 방 만들기 / 참가 ── */
+  var rmSpecOn = true;
+  $('#rmSpec').addEventListener('click', function () { rmSpecOn = !rmSpecOn; this.setAttribute('aria-pressed', String(rmSpecOn)); this.textContent = rmSpecOn ? '켬' : '끔'; });
   $('#onlineBtn').addEventListener('click', function () { audio(); netShow('menu'); });
-  $('#netCreate').addEventListener('click', function () { netShow('menu', '방을 만드는 중…'); netConnect(function () { netSend({ t: 'create', mode: 'single' }); }); });
-  $('#netCreateC').addEventListener('click', function () { netShow('menu', '방을 만드는 중…'); netConnect(function () { netSend({ t: 'create', mode: 'classic' }); }); });
-  $('#netJoinGo').addEventListener('click', function () { netShow('join'); setTimeout(function () { $('#netCodeIn').focus(); }, 50); });
-  function netJoinGo() { var c = $('#netCodeIn').value.trim().toUpperCase(); if (c.length < 4) { netShow('join', '코드 4자리를 입력해줘요', true); return; } netShow('join', '참가하는 중…'); netConnect(function () { netSend({ t: 'join', code: c }); }); }
+  function netCreateRoom(mode) {
+    var nk = nickRead(); netShow('menu', '방을 만드는 중…');
+    netConnect(function () { netSend({ t: 'create', mode: mode, nick: nk, name: $('#rmName').value, pw: $('#rmPw').value, spec: rmSpecOn }); });
+  }
+  $('#netCreate').addEventListener('click', function () { netCreateRoom('single'); });
+  $('#netCreateC').addEventListener('click', function () { netCreateRoom('classic'); });
+  $('#netJoinGo').addEventListener('click', function () { nickRead(); netShow('join'); setTimeout(function () { $('#netCodeIn').focus(); }, 50); });
+  function netJoinGo() {
+    var c = $('#netCodeIn').value.trim().toUpperCase(); if (c.length < 4) { netShow('join', '코드 4자리를 입력해줘요', true); return; }
+    netShow('join', '참가하는 중…'); net.pj = { code: c, act: 'join', from: 'join' };
+    netConnect(function () { netDoJoin(''); });
+  }
   $('#netJoinBtn').addEventListener('click', netJoinGo);
   $('#netCodeIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') netJoinGo(); });
-  $('#netClose').addEventListener('click', function () { if (net.view === 'wait' || net.view === 'join') { if (net.view === 'wait') { netLeave(); } else { netShow('menu'); } } else netModal.hidden = true; });
+  $('#netClose').addEventListener('click', function () {
+    if (net.view === 'wait') netLeave();
+    else if (net.view === 'pw') { if (net.pj && net.pj.from === 'list') { net.pj = null; netShow('list'); netListReq(); } else { net.pj = null; netIdleClose(); netShow('join'); } }
+    else if (net.view === 'list') { netIdleClose(); netShow('menu'); }
+    else if (net.view === 'join') netShow('menu');
+    else netModal.hidden = true;
+  });
   $('#netLeave').addEventListener('click', netLeave);
 
   sync();
