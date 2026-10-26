@@ -480,7 +480,7 @@ body.clsSel #hudBars { display: none; }
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v515</span>
+      <span class="verTag">v516</span>
     </div>
   </div>
 
@@ -905,10 +905,10 @@ var DM = (function () {
   var RAR = { halberd: 0, selene: 6, sisyphus: 6, boomerang: 1, archmage: 5, morrigan: 6, chronos: 6, snake: 6, chef: 5, lightning: 5, rusty: 1, cannon: 2, laser: 2, shuriken: 2, greatbow: 2, hammer: 1, whip: 1, handfan: 2, giant: 1, beast: 3, gumiho: 5, sulnyeo: 5, trumpet: 1, ash: 6, sword: 0, dummy: 0, dagger: 0, bow: 0, spear: 0, fire: 2, ice: 2, azure: 2, dark: 3, great: 0, robin: 3, angler: 3, vampire: 4, scythe: 4, dancer: 3, hyup: 3, ronin: 3, master: 4, katana: 5, torch: 5, holy: 5, tactician: 4, freak: 4, fighter: 1, dbaxe: 1, rapier: 2, pickaxe: 1, tycoon: 4, extg: 2, michael: 6, mace: 0, elf: 1, sniper: 1, witch: 5, guard: 3, silver: 2, black: 6, plague: 3, songwriter: 1, revolver: 4, thunder: 2, axe: 0, magician: 4, bounty: 4, paewang: 6 };
   var RAR_INFO = [{ n: '일반', c: '#8b94a1' }, { n: '희귀', c: '#2fb857' }, { n: '초희귀', c: '#3d8bff' }, { n: '영웅', c: '#a05cf0' }, { n: '신화', c: '#e8383d' }, { n: '전설', c: '#ffc21a' }, { n: '태고', c: '#3a2a5e' }];
   /* 쿠폰: 기본은 일반~신화(등급 0~4). 쿠폰 코드를 넣으면 해당 등급이 열린다. (브라우저에 저장, 코드는 클라이언트에 있어서 정식 쿠폰은 나중에 서버 검증 필요) */
-  var COUPONS = { beta: { rar: [5], n: '전설' }, '30': { rar: [6], n: '태고' } };
+  var COUPONS = { spin: { rar: [4], n: '신화' }, beta: { rar: [5], n: '전설' }, '30': { rar: [6], n: '태고' } };
   var cpnApplied = [];
   try { cpnApplied = JSON.parse(localStorage.getItem('spinclash.cpn') || '[]').filter(function (c) { return Object.prototype.hasOwnProperty.call(COUPONS, c); }); } catch (e) { cpnApplied = []; }
-  function rarOpen(r) { return r < 5 || cpnApplied.some(function (c) { return COUPONS[c].rar.indexOf(r) >= 0; }); }
+  function rarOpen(r) { return r < 4 || cpnApplied.some(function (c) { return COUPONS[c].rar.indexOf(r) >= 0; }); }
   function isLocked(type) { return !rarOpen(RAR[type]); }
   var WCOL = { halberd: '#b8c4d6', witch: '#b04ae0', sniper: '#7d8a9c', selene: '#bcd7ff', sisyphus: '#b5651d', boomerang: '#e0a05a', archmage: '#5a6cff', morrigan: '#7b3fe4', chronos: '#ffd34a', snake: '#cfe39a', chef: '#e8edf5', lightning: '#ffe45c', rusty: '#b5651d', cannon: '#4a505a', laser: '#ff2e4d', shuriken: '#8fa6c4', greatbow: '#d4a24a', hammer: '#8d97a6', whip: '#9b6a3a', handfan: '#e8dcc0', giant: '#b98a5e', beast: '#9a6a3c', gumiho: '#ff8a3d', sulnyeo: '#8fdcff', trumpet: '#f0c030', ash: '#9a98a8', dummy: '#c9a46a', paewang: '#b99aff', bounty: '#c4161c', magician: '#b04ad8', axe: '#d9a066', thunder: '#ffe45c', revolver: '#c9a14a', songwriter: '#ffb347', plague: '#8ac926', freak: '#a8222e', fighter: '#e3592f', rapier: '#8fb8ff', pickaxe: '#8a929e', tycoon: '#ffd34a', extg: '#e23a32', michael: '#ffe27a', dbaxe: '#d98a4a', black: '#2b2b33', silver: '#dbe5f0', guard: '#9fb4c8', elf: '#8fe39a', mace: '#c98a4a', sword: '#dfe7f2', spear: '#ffd166', dagger: '#ff6b6b', bow: '#7bd88f', fire: '#ff8a1f', ice: '#7fd3ff', katana: '#ffffff', master: '#38d9c0', dancer: '#ff7eb6', hyup: '#e0a458', ronin: '#8fb8d8', great: '#ff5a2a', dark: '#b36bff', scythe: '#7a7cff', robin: '#b8e04a', azure: '#6ec6ff', vampire: '#c4162a', angler: '#4fb3d9', torch: '#ffb43a', holy: '#f5c542', tactician: '#8a93a6' };
   var SD_START = 60, SD_STEP = 10;   // 서든데스 시작 시간(초), 단계 간격
