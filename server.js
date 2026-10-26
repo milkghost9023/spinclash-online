@@ -109,6 +109,12 @@ wss.on('connection', (ws) => {
         if (a && b && a.ready && b.ready) startRound(room);
         return;
       }
+      case 'pv': {   // 상대 미리보기용 무기 종류만 중계 (재능·스펠은 시작 전까지 비공개)
+        if (!room || (room.state !== 'lobby' && room.state !== 'after')) return;
+        if (typeof m.type !== 'string' || m.type.length > 24) return;
+        const o = other(room, ws._idx); if (o) rawSend(o, { t: 'peerPv', type: m.type });
+        return;
+      }
       case 'in': case 'h': {   // 입력/해시 중계
         if (!room || room.state !== 'play') return;
         const o = other(room, ws._idx); if (o) { m.p = ws._idx; relay(o, m); }

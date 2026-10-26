@@ -429,7 +429,7 @@ body.online .ctrl { display: none; }
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v510</span>
+      <span class="verTag">v511</span>
     </div>
   </div>
 
@@ -569,7 +569,7 @@ var DM = (function () {
     try { return fn(a); }
     finally { for (k = 0; k < MK.length; k++) Math[MK[k]] = sv[MK[k]]; Math.random = rnd; }
   }
-  var net = { on: false, st: 'off', ws: null, me: 0, code: '', D: 6, step: 0, loc: {}, opp: {}, pend: [], hs: {}, ohs: {}, rtt: 60, rtts: [], ready: false, peerReady: false, peerHere: false, round: 0, stall: 0, maxStall: 0, backup: null, mySel: null, rematch: false, peerRematch: false, desync: false, log: [], view: 'menu', pingT: 0 };
+  var net = { on: false, st: 'off', ws: null, me: 0, code: '', D: 6, step: 0, loc: {}, opp: {}, pend: [], hs: {}, ohs: {}, rtt: 60, rtts: [], ready: false, peerReady: false, peerHere: false, round: 0, stall: 0, maxStall: 0, backup: null, mySel: null, rematch: false, peerRematch: false, desync: false, log: [], view: 'menu', pingT: 0, sentType: null };
   var matchSeed = 0, nextSeed = null;   /* 매 판마다 시드를 정함 (온라인에서는 서버/방장이 정해서 양쪽이 같은 값을 쓴다) */
   var MK = ['sin', 'cos', 'atan', 'atan2', 'asin', 'exp', 'log', 'pow', 'hypot'];
 
@@ -14496,6 +14496,7 @@ var DM = (function () {
     if (ix >= 0) a.splice(ix, 1); else { a.push(k); if (a.length > 2) a.shift(); }
   }
   function sync() {
+    if (typeof netTypeSend === 'function') netTypeSend();
     sel.forEach(function (x) { if (x.trait > W[x.type].traits.length) x.trait = 0; });
     applyColors();
     cardEls.forEach(function (el, i) {
@@ -14685,16 +14686,17 @@ var DM = (function () {
     switch (m.t) {
       case 'pong': { var r = performance.now() - m.c; net.rtts.push(r); if (net.rtts.length > 5) net.rtts.shift(); var s = 0; net.rtts.forEach(function (x) { s += x; }); net.rtt = Math.round(s / net.rtts.length); break; }
       case 'created': net.code = m.code; net.me = 0; net.peerHere = false; $('#netCode').textContent = m.code; netShow('wait'); break;
-      case 'joined': net.code = m.code; net.me = 1; net.peerHere = true; netEnterSelect(); break;
-      case 'peer': net.peerHere = true; if (!net.on) netEnterSelect(); else netSelUI(); break;
+      case 'joined': net.code = m.code; net.me = 1; net.peerHere = true; net.sentType = null; netEnterSelect(); break;
+      case 'peer': net.peerHere = true; net.sentType = null; if (!net.on) netEnterSelect(); else netSelUI(); break;
       case 'err': netShow(net.view === 'join' ? 'join' : 'menu', m.m || '오류', true); if (net.ws) { var w = net.ws; net.ws = null; netTimers(false); try { w.close(); } catch (e) {} } break;
       case 'peerReady': net.peerReady = !!m.v; netSelUI(); break;
+      case 'peerPv': netPeerType(m.type); break;
       case 'start': netBegin(m); break;
       case 'in': if (net.st === 'play' && typeof m.f === 'number' && m.f === (m.f | 0) && m.f >= net.step && m.f < net.step + 240 && Array.isArray(m.a)) net.opp[m.f] = m.a.filter(function (j) { return j === 0 || j === 1; }).slice(0, 2); break;
       case 'h': if (net.st === 'play' || net.st === 'after') { net.ohs[m.s] = m.h; if (net.hs[m.s] !== undefined) netCmp(m.s); } break;
       case 'peerRematch': net.peerRematch = !!m.v; netOverUI(); break;
       case 'peerBack': netToSelect(); break;
-      case 'host': { var mine = clone(sel[net.me]); net.me = 0; sel[0] = mine; netSelUI(); break; }
+      case 'host': { var mine = clone(sel[net.me]); net.me = 0; sel[0] = mine; net.sentType = null; netSelUI(); break; }
       case 'left': netPeerLeft(); break;
     }
   }
@@ -14719,6 +14721,17 @@ var DM = (function () {
     var s = $('#netSel'); s.hidden = false;
     s.textContent = !net.peerHere ? '상대가 나갔어요. 방 코드 ' + net.code + ' 로 다시 초대할 수 있어요' : (net.peerReady ? '상대가 준비했어요' : '상대가 고르는 중… (방 코드 ' + net.code + ')');
     document.body.classList.toggle('me0', net.me === 0); document.body.classList.toggle('me1', net.me === 1);
+    netTypeSend();
+  }
+  /* 상대 화면 미리보기용: 내가 고른 무기 종류만 보낸다 (재능·스펠·방향은 시작할 때까지 비공개) */
+  function netTypeSend() {
+    if (!net.on || net.st !== 'select' || !net.peerHere) return;
+    var t = sel[net.me].type; if (t === net.sentType) return;
+    net.sentType = t; netSend({ t: 'pv', type: t });
+  }
+  function netPeerType(t) {
+    if (!net.on || net.st !== 'select' || typeof t !== 'string' || !W[t]) return;
+    var o = 1 - net.me; sel[o] = netSane({ type: t, col: net.me ? 'green' : 'red' }); sync();
   }
   function netReadyToggle() {
     if (net.st !== 'select' || !net.peerHere) return;
@@ -14788,12 +14801,12 @@ var DM = (function () {
     if (!net.on) return;
     net.st = 'select'; net.ready = false; net.peerReady = false; fixedStep = false; stepAcc = 0;
     if (net.backup) { fxOn = net.backup.fx; sdOn = net.backup.sd; }
-    var mine = net.mySel ? clone(net.mySel) : clone(sel[net.me]); sel = [clone(mine), clone(mine)]; sel[1 - net.me].col = net.me ? 'green' : 'red'; sel[net.me] = mine;
+    var mine = net.mySel ? clone(net.mySel) : clone(sel[net.me]); var oppT = sel[1 - net.me].type; sel[1 - net.me] = netSane({ type: oppT, col: net.me ? 'green' : 'red' }); sel[net.me] = mine; net.sentType = null;
     over.hidden = true; $('#again').textContent = '다시 대결'; $('#resel').textContent = '무기 다시 고르기';
     showScreen('select'); netSelUI(); sync();
   }
   function netPeerLeft() {
-    net.peerHere = false; net.peerReady = false; net.ready = false;
+    net.peerHere = false; net.peerReady = false; net.ready = false; net.sentType = null;
     if (net.st === 'play' || net.st === 'after' || net.st === 'desync') netToSelect(); else netSelUI();
   }
   /* 이벤트 연결 */
