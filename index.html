@@ -1,66 +1,49 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>스핀 클래시</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<script>try{if(localStorage.getItem("spinclash.theme")==="dark")document.documentElement.setAttribute("data-theme","dark")}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;500;700&display=swap">
 <style>
 /* 레이아웃: 위에 체력 바, 가운데 정사각형 경기장, 아래에 설정/전투 패널. 참고 이미지처럼 굵은 검정 테두리와 큼직한 숫자. */
-:root {
-  --bg: #fcf4e4;
-  --out: #e5dac2;
-  --card: #fffaf0;
-  --ink: #1a1411;
-  --muted: #6b6157;
-  --field: #ffffff;
-  --line: #1a1411;
-  --edge: #1a1411;
-  --grid: rgba(26, 20, 17, 0.07);
-  --p1: #22c04a;
-  --p2: #ee4a4a;
-  --on-p: #14100d;
-  --blade: #d6dee8;
-  --gold: #e8b33a;
-  --wood: #7a4a2a;
-  --shadow: rgba(26, 20, 17, 0.18);
-  --display: 'Black Han Sans', 'Noto Sans KR', sans-serif;
-  --body: 'Noto Sans KR', system-ui, -apple-system, sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #141110;
-    --out: #0b0908;
-    --card: #1e1a17;
-    --ink: #f6eee2;
-    --muted: #a89e91;
-    --field: #221d1a;
-    --line: #f6eee2;
-    --grid: rgba(246, 238, 226, 0.07);
-    --p1: #36d65c;
-    --p2: #ff6060;
-    --blade: #e6ecf4;
-    --gold: #f0c050;
-    --wood: #a56a3e;
-    --shadow: rgba(0, 0, 0, 0.55);
-    color-scheme: dark;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #141110;
-  --out: #0b0908;
-  --card: #1e1a17;
-  --ink: #f6eee2;
-  --muted: #a89e91;
-  --field: #221d1a;
-  --line: #f6eee2;
-  --grid: rgba(246, 238, 226, 0.07);
+:root {   /* 기본 테마: 남색 + 하늘색 */
+  --bg: #16203a;
+  --out: #0d1428;
+  --card: #324578;
+  --ink: #e4ebf8;
+  --muted: #8fa3cc;
+  --field: #2c3d6c;
+  --line: #0a1020;
+  --edge: #0a1020;
+  --grid: rgba(255, 255, 255, 0.08);
   --p1: #36d65c;
   --p2: #ff6060;
+  --on-p: #0a1020;
   --blade: #e6ecf4;
-  --gold: #f0c050;
+  --gold: #f6c915;
   --wood: #a56a3e;
-  --shadow: rgba(0, 0, 0, 0.55);
+  --shadow: rgba(0, 0, 0, 0.45);
+  --accent: #33c8f0;
+  --accent2: #7eeaff;
+  --on-accent: #0a1020;
+  --display: 'Black Han Sans', 'Noto Sans KR', sans-serif;
+  --body: 'Noto Sans KR', system-ui, -apple-system, sans-serif;
   color-scheme: dark;
+}
+:root[data-theme="dark"] {   /* 다크모드: 검정 + 형광 노랑 */
+  --bg: #121316;
+  --out: #0a0b0d;
+  --card: #2e3036;
+  --ink: #f2f2f0;
+  --muted: #a0a09a;
+  --field: #292b30;
+  --line: #050506;
+  --edge: #050506;
+  --grid: rgba(255, 255, 255, 0.07);
+  --accent: #d6f500;
+  --accent2: #f4ff6a;
+  --on-accent: #050506;
 }
 
 * { box-sizing: border-box; }
@@ -90,7 +73,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; cursor: poin
 }
 .btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--shadow); }
 .btn.small { min-height: 36px; padding: 0 12px; font-size: 13px; }
-.btn.primary { background: var(--ink); color: var(--bg); font-family: var(--display); font-weight: 400; font-size: 22px; min-height: 56px; letter-spacing: 0.02em; }
+.btn.primary { background: var(--accent); color: var(--on-accent); font-family: var(--display); font-weight: 400; font-size: 22px; min-height: 56px; letter-spacing: 0.02em; }
 .btn[aria-pressed="false"] { opacity: 0.6; }
 
 /* 체력 바 */
@@ -143,7 +126,7 @@ canvas { display: block; width: 100%; height: 100%; }
 .speedrow .lbl { min-width: 4.8em; }
 .speedrow .sp { display: flex; gap: 6px; }
 .speedrow button { min-height: 40px; min-width: 64px; padding: 0 12px; background: var(--card); border: 3px solid var(--line); border-radius: 4px; font-weight: 700; }
-.speedrow button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.speedrow button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
 
 /* 전투 중 상태 */
 .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -216,7 +199,7 @@ body.online .ctrl { display: none; }
 .txt { flex: 1; min-width: 0; box-sizing: border-box; min-height: 40px; padding: 0 8px; background: var(--field); border: 3px solid var(--line); border-radius: 4px; font: inherit; font-weight: 700; color: inherit; }
 .row2 { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-weight: 700; font-size: 13px; }
 .row2 .tog { min-height: 36px; min-width: 56px; padding: 0 10px; background: var(--card); border: 3px solid var(--line); border-radius: 4px; font-weight: 700; }
-.row2 .tog[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.row2 .tog[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
 .rmList { display: flex; flex-direction: column; gap: 8px; max-height: 46vh; overflow-y: auto; }
 .rm { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px; border: 3px solid var(--line); border-radius: 4px; background: var(--card); }
 .rmi { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: 2px; }
@@ -224,7 +207,7 @@ body.online .ctrl { display: none; }
 .rmi small { color: var(--muted); font-size: 11px; font-weight: 700; overflow-wrap: anywhere; }
 .rma { display: flex; gap: 6px; flex: none; }
 .rma button { min-height: 36px; min-width: 46px; padding: 0 8px; background: var(--card); border: 3px solid var(--line); border-radius: 4px; font-weight: 700; font-size: 13px; }
-.rma button:first-child { background: var(--ink); color: var(--bg); }
+.rma button:first-child { background: var(--accent); color: var(--on-accent); }
 .rma button:disabled { opacity: 0.4; }
 #specOv { display: flex; flex-direction: column; gap: 10px; }
 #specOv[hidden] { display: none; }
@@ -259,7 +242,7 @@ body.spec #over .acts { display: none; }
 body.clsSel #hudBars { display: none; }
 .deckTabs.lock { pointer-events: none; opacity: 0.6; }
 .deckTabs button { display: flex; flex-direction: column; align-items: center; gap: 2px; min-height: 66px; padding: 6px 2px; background: var(--card); border: 3px solid var(--line); border-radius: 4px; font-weight: 700; font-size: 12px; }
-.deckTabs button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.deckTabs button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
 .deckTabs img { width: 32px; height: 32px; display: block; pointer-events: none; }
 .chips button.us { opacity: 0.35; }
 .chips button.us::after { content: '덱'; position: absolute; right: 3px; top: 9px; font-size: 10px; font-weight: 700; }
@@ -275,7 +258,7 @@ body.clsSel #hudBars { display: none; }
 .dk .dkm { font-style: normal; font-weight: 700; color: var(--p2); min-height: 1.2em; font-size: 12px; }
 .dk.used { opacity: 0.45; }
 .dk.foc { outline: 3px dashed var(--ink); outline-offset: 1px; }
-.dk[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.dk[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
 .dk[aria-pressed="true"] .dkt, .dk[aria-pressed="true"] .dks, .dk[aria-pressed="true"] .dkr { color: inherit; }
 .clsInfo { margin: 0; padding: 10px; background: var(--card); border: 3px solid var(--line); font-size: 13px; line-height: 1.45; min-height: 5.4em; white-space: pre-line; overflow-wrap: anywhere; }
 .chips button.lk { opacity: 0.4; }
@@ -377,17 +360,17 @@ body.clsSel #hudBars { display: none; }
 .sheet .row small { display: block; color: var(--muted); font-weight: 400; font-size: 12px; }
 .sheet .sp { display: flex; gap: 6px; }
 .sheet .sp button, .sheet .tog { min-height: 40px; min-width: 56px; padding: 0 10px; background: var(--card); border: 3px solid var(--line); border-radius: 4px; font-weight: 700; }
-.sheet .sp button[aria-pressed="true"], .sheet .tog[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.sheet .sp button[aria-pressed="true"], .sheet .tog[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
 .arenas { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
 .mipick { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
 .mipick button { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 4px 2px; background: var(--card); border: 2px solid var(--line); border-radius: 4px; font-size: 11px; font-weight: 700; }
-.mipick button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.mipick button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
 .mipick button canvas { background: rgba(255,255,255,0.9); border-radius: 3px; }
 .arenas button { display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 0 4px; background: var(--card); border: 2px solid var(--line); border-radius: 4px; font-size: 11px; font-weight: 700; }
 .arenas button svg { width: 38px; height: 38px; }
 .arenas button svg .sh { fill: var(--field); stroke: var(--line); stroke-width: 36; stroke-linejoin: round; }
 .arenas button svg .pl { fill: var(--muted); stroke: var(--line); stroke-width: 24; }
-.arenas button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.arenas button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
 .arenas button[aria-pressed="true"] svg .sh { fill: var(--gold); stroke: var(--bg); }
 @media (max-width: 340px) { .arenas { grid-template-columns: repeat(3, 1fr); } }
 
@@ -410,7 +393,7 @@ body.clsSel #hudBars { display: none; }
 .cvrow { flex-wrap: wrap; }
 .cvs { display: flex; gap: 6px; flex-wrap: wrap; }
 .cvs button { width: 40px; height: 40px; border-radius: 12px; border: 3px solid var(--line); background: var(--card); color: var(--ink); font: inherit; font-weight: 700; cursor: pointer; }
-.cvs button[aria-pressed="true"] { background: var(--ink); color: var(--card); }
+.cvs button[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
 .cbadges { display: flex; flex-wrap: wrap; gap: 8px; }
 .cbadges button { width: 34px; height: 34px; border-radius: 50%; border: 3px solid var(--line); background: var(--sc); padding: 0; cursor: pointer; }
 .cbadges button[aria-pressed="true"] { outline: 3px solid var(--ink); outline-offset: 2px; }
@@ -512,7 +495,7 @@ body.clsSel #hudBars { display: none; }
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v523</span>
+      <span class="verTag">v524</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -607,6 +590,8 @@ body.clsSel #hudBars { display: none; }
         <button type="button" class="tog" id="tickBtn" aria-pressed="false">끔</button></div>
       <div class="row"><span class="nm">소리</span>
         <button type="button" class="tog" id="snd" aria-pressed="true">켬</button></div>
+      <div class="row"><span class="nm">다크모드<small>검정 바탕 + 형광 노랑 버튼</small></span>
+        <button type="button" class="tog" id="themeBtn" aria-pressed="false">끔</button></div>
       <div class="row" id="accRow2" hidden><span class="nm">계정<small id="accInfo2"></small></span><button type="button" class="tog" id="accBtn2">열기</button></div>
       <div class="row"><span class="nm">닉네임<small id="nickMsg">온라인에서 상대·관전자에게 보여요</small><small class="cmdTag" id="cmdTag2" hidden>✦ 제작자 권한 · 닉네임 "유령" 사용 가능</small></span>
         <span class="cpn"><input id="nickSet" type="text" maxlength="10" autocomplete="off" spellcheck="false" placeholder="닉네임" aria-label="닉네임"><button type="button" class="tog" id="nickBtn">저장</button></span></div>
@@ -1109,6 +1094,13 @@ var DM = (function () {
     C = { out: g('--out'), field: g('--field'), edge: g('--edge'), grid: g('--grid'), p: [g('--p1'), g('--p2')], blade: g('--blade'), gold: g('--gold'), wood: g('--wood'), ink: g('--ink'), display: g('--display') };
   }
   var iconSig = '';
+  var themeDark = (function () { try { return localStorage.getItem('spinclash.theme') === 'dark'; } catch (e) { return false; } })();
+  function applyTheme() {
+    var root = document.documentElement;
+    if (themeDark) root.setAttribute('data-theme', 'dark'); else root.removeAttribute('data-theme');
+    try { var m = document.querySelector('meta[name="theme-color"]'); if (!m) { m = document.createElement('meta'); m.name = 'theme-color'; document.head.appendChild(m); } m.content = themeDark ? '#121316' : '#16203a'; } catch (e) {}
+    readColors();
+  }
   readColors();
   try { window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readColors); } catch (e) {}
 
@@ -14682,7 +14674,7 @@ var DM = (function () {
       dd.appendChild(document.createTextNode(w.desc));
       el.querySelector('.desc.t').textContent = sel[i].trait ? w.traits[sel[i].trait - 1].desc : '재능 없이 기본 무기로 싸웁니다.';
     });
-    [['#sdBtn', sdOn], ['#fxBtn', fxOn], ['#tickBtn', tickOn], ['#snd', soundOn]].forEach(function (x) { var b = $(x[0]); b.setAttribute('aria-pressed', String(x[1])); b.textContent = x[1] ? '켬' : '끔'; });
+    [['#sdBtn', sdOn], ['#fxBtn', fxOn], ['#tickBtn', tickOn], ['#snd', soundOn], ['#themeBtn', themeDark]].forEach(function (x) { var b = $(x[0]); b.setAttribute('aria-pressed', String(x[1])); b.textContent = x[1] ? '켬' : '끔'; });
     try {
       localStorage.setItem('spinclash.sel3', JSON.stringify(sel));
       localStorage.setItem('spinclash.arena', String(arenaSel)); localStorage.setItem('spinclash.fx', fxOn ? '1' : '0'); localStorage.setItem('spinclash.sd', sdOn ? '1' : '0'); localStorage.setItem('spinclash.tick', tickOn ? '1' : '0'); localStorage.setItem('spinclash.snd', soundOn ? '1' : '0');
@@ -14702,6 +14694,7 @@ var DM = (function () {
   $('#sdBtn').addEventListener('click', function () { if (net.on && net.st !== 'select') return; sdOn = !sdOn; sync(); });
   $('#fxBtn').addEventListener('click', function () { if (net.on) return; fxOn = !fxOn; sync(); });
   $('#tickBtn').addEventListener('click', function () { tickOn = !tickOn; sync(); });
+  $('#themeBtn').addEventListener('click', function () { themeDark = !themeDark; try { localStorage.setItem('spinclash.theme', themeDark ? 'dark' : 'light'); } catch (e) {} applyTheme(); sync(); });
   $('#snd').addEventListener('click', function () { soundOn = !soundOn; sync(); if (soundOn) { audio(); if (screenName === 'title') bgmStart(); } else bgmStop(); hintSync(); });
 
   /* ---------- 화면 전환 ---------- */
