@@ -26,7 +26,7 @@ const server = http.createServer((req, res) => {
   if (u === '/' || u === '/index.html') {
     let body; try { body = readGame(); } catch (e) { res.writeHead(500); res.end('game file missing'); return; }
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(body);
-  } else if (u === '/health') { res.writeHead(200, { 'Content-Type': 'text/plain' }); res.end('ok rooms=' + rooms.size); }
+  } else if (u === '/health') { res.writeHead(200, { 'Content-Type': 'text/plain' }); res.end('ok rooms=' + rooms.size + ' online=' + onlineCount()); }
   else { res.writeHead(404); res.end('not found'); }
 });
 
@@ -69,6 +69,13 @@ function specStatus(room, only) {
   const o = { t: 'sst', st: room.state, np: room.players.filter(Boolean).length, n: namesOf(room), name: room.name, mode: room.mode,
     cl: cl ? { decks: cl.decks, used: cl.used, res: cl.res, wins: cl.wins, rd: cl.rd, end: cl.end } : null };
   if (only) rawSend(only, o); else room.specs.forEach((w) => rawSend(w, o));
+}
+/* 접속 중인 사람 수: 페이지를 열어 둔 연결(hi 를 보낸 연결)만 센다. 변할 때마다 0.6초 모아서 한 번에 알린다 */
+let countT = null, lastCount = -1;
+function onlineCount() { let n = 0; wss.clients.forEach((w) => { if (w._pres) n++; }); return n; }
+function schedCount() {
+  if (countT) return;
+  countT = setTimeout(() => { countT = null; const n = onlineCount(); if (n === lastCount) return; lastCount = n; const o = JSON.stringify({ t: 'online', n }); wss.clients.forEach((w) => { if (w._pres && w.readyState === 1) w.send(o); }); }, 600);
 }
 function pwOk(ws, r, m) {
   if (!r.pw) return true;
@@ -139,6 +146,7 @@ wss.on('connection', (ws) => {
     if (ws._idx === -2 && m.t !== 'ping' && m.t !== 'leave' && m.t !== 'list') return;
     switch (m.t) {
       case 'ping': return relay(ws, { t: 'pong', c: m.c });
+      case 'hi': { if (!ws._pres) { ws._pres = true; rawSend(ws, { t: 'online', n: onlineCount() }); schedCount(); } return; }
       case 'create': {
         if (room) return;
         const code = newCode(); if (!code) return rawSend(ws, { t: 'err', m: '방을 만들 수 없어요' });
@@ -159,6 +167,7 @@ wss.on('connection', (ws) => {
         r.players[1] = { ws, nick: nickOf(m.nick), sel: null, ready: false, rtt: 60 }; ws._room = r; ws._idx = 1;
         rawSend(ws, { t: 'joined', code, idx: 1, mode: r.mode, name: r.name }); rawSend(r.players[0].ws, { t: 'peer', n: 2 });
         sendNames(r); specStatus(r);
+        if (r.players[0] && r.players[0].ready) rawSend(ws, { t: 'peerReady', v: true });   // 방장이 미리 준비해 뒀다면 바로 알려 준다
         return;
       }
       case 'spec': {   // 관전: 두 사람의 입력을 똑같이 받아서 같은 계산을 한다 (조작·채팅 불가)
@@ -269,6 +278,7 @@ wss.on('connection', (ws) => {
     }
   }
   ws.on('close', () => {
+    if (ws._pres) schedCount();
     const room = ws._room; if (!room) return;
     if (ws._idx === -2) { room.specs = room.specs.filter((w) => w !== ws); sendNames(room); return; }
     const o = other(room, ws._idx);
