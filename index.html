@@ -195,6 +195,12 @@ body.online .ctrl { display: none; }
 #netLag[hidden] { display: none; }
 #specTag { position: absolute; left: 8px; top: 8px; padding: 3px 9px; font-size: 12px; font-weight: 700; color: #fff; background: rgba(20, 20, 30, 0.7); border-radius: 10px; pointer-events: none; z-index: 5; }
 #specTag[hidden] { display: none; }
+#rcBar { position: fixed; left: 0; right: 0; top: 0; z-index: 45; padding: 7px 12px; text-align: center; font-weight: 700; font-size: 13px; color: #fff; background: #3a6fd8; pointer-events: none; }
+#rcBar.bad { background: #d03a3a; } #rcBar.warn { background: #d98a1d; } #rcBar.info { background: #3a6fd8; }
+#rcBar[hidden] { display: none; }
+#verBar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 46; padding: 12px; text-align: center; font: inherit; font-weight: 700; font-size: 14px; color: #fff; background: #d03a3a; border: 0; border-top: 3px solid #7a1a1a; }
+#verBar[hidden] { display: none; }
+#clsTimer.bad { color: var(--p2); }
 #toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 40; max-width: calc(100vw - 32px); padding: 10px 16px; font-weight: 700; font-size: 14px; color: #fff; background: rgba(30, 140, 70, 0.95); border: 3px solid #0d4a25; border-radius: 22px; box-shadow: 0 4px 0 rgba(0,0,0,0.25); pointer-events: none; animation: toastIn 0.28s cubic-bezier(0.2, 1.6, 0.4, 1) both; text-align: center; overflow-wrap: anywhere; }
 #toast[hidden] { display: none; }
 @keyframes toastIn { from { transform: translate(-50%, 16px) scale(0.8); opacity: 0; } to { transform: translate(-50%, 0) scale(1); opacity: 1; } }
@@ -457,6 +463,8 @@ body.clsSel #hudBars { display: none; }
 
 <div class="app" id="app">
   <div id="toast" hidden role="status" aria-live="polite"></div>
+  <div id="rcBar" hidden role="status"></div>
+  <button id="verBar" hidden type="button">새 버전이 나왔어요 · 눌러서 새로고침</button>
   <header class="top" id="topBar" hidden>
     <button class="btn small" id="homeBtn">← 처음</button>
     <h1 class="mini">스핀 클래시</h1>
@@ -490,7 +498,7 @@ body.clsSel #hudBars { display: none; }
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v518</span>
+      <span class="verTag">v519</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -509,6 +517,7 @@ body.clsSel #hudBars { display: none; }
   <section id="clsPick" hidden>
     <p class="clsHd" id="clsHd"></p>
     <p class="netTxt" id="clsMsg"></p>
+    <p class="netTxt" id="clsTimer"></p>
     <span class="lbl" id="clsOppLbl">상대 덱</span>
     <div class="deckRow" id="clsOpp"></div>
     <span class="lbl">내 덱 — 이번 판에 낼 캐릭터</span>
@@ -552,7 +561,8 @@ body.clsSel #hudBars { display: none; }
         <label class="fld"><span>방 이름</span><input class="txt" id="rmName" maxlength="16" autocomplete="off" spellcheck="false" placeholder="비우면 자동" aria-label="방 이름"></label>
         <label class="fld"><span>비밀번호</span><input class="txt" id="rmPw" maxlength="8" autocomplete="off" spellcheck="false" placeholder="선택 · 비우면 누구나" aria-label="방 비밀번호"></label>
         <div class="row2"><span>관전 허용</span><button type="button" class="tog" id="rmSpec" aria-pressed="true">켬</button></div>
-        <button class="btn primary" id="netCreate">방 만들기 · 1판 승부</button>
+        <button class="btn primary" id="netCreate">방 만들기 · 진검승부</button>
+        <button class="btn" id="netCreateN">방 만들기 · 노 스펠전</button>
         <button class="btn" id="netCreateC">방 만들기 · 클래식 (beta)</button>
         <button class="btn" id="netListGo">방 참가하기</button></div>
       <div class="netBox" id="netList" hidden><div class="rmList" id="rmList"></div><button class="btn" id="rmRefresh">새로고침</button></div>
@@ -665,7 +675,7 @@ var DM = (function () {
     try { return fn(a); }
     finally { for (k = 0; k < MK.length; k++) Math[MK[k]] = sv[MK[k]]; Math.random = rnd; }
   }
-  var net = { on: false, st: 'off', ws: null, me: 0, code: '', D: 6, step: 0, loc: {}, opp: {}, pend: [], hs: {}, ohs: {}, rtt: 60, rtts: [], ready: false, peerReady: false, peerHere: false, round: 0, stall: 0, maxStall: 0, backup: null, mySel: null, rematch: false, peerRematch: false, desync: false, log: [], view: 'menu', pingT: 0, sentType: null, mode: 'single', deck: null, di: 0, cl: null, names: ['', ''], sc: 0, spec: false, sin: null, rooms: [], listT: 0, pj: null, roomName: '', spCl: null, spSt: '', spNp: 0, hadPeer: false, joinNote: false, toastT: 0 };
+  var net = { on: false, st: 'off', ws: null, me: 0, code: '', D: 6, step: 0, loc: {}, opp: {}, pend: [], hs: {}, ohs: {}, rtt: 60, rtts: [], ready: false, peerReady: false, peerHere: false, round: 0, stall: 0, maxStall: 0, backup: null, mySel: null, rematch: false, peerRematch: false, desync: false, log: [], view: 'menu', pingT: 0, sentType: null, mode: 'single', deck: null, di: 0, cl: null, names: ['', ''], sc: 0, spec: false, sin: null, rooms: [], listT: 0, pj: null, roomName: '', spCl: null, spSt: '', spNp: 0, hadPeer: false, joinNote: false, toastT: 0, tok: '', rc: null, haveMe: -1, replay: false, rs: null, lastPong: 0, pgAt: 0, pgMs: 0 };
   var matchSeed = 0, nextSeed = null;   /* 매 판마다 시드를 정함 (온라인에서는 서버/방장이 정해서 양쪽이 같은 값을 쓴다) */
   var MK = ['sin', 'cos', 'atan', 'atan2', 'asin', 'exp', 'log', 'pow', 'hypot'];
 
@@ -14537,6 +14547,7 @@ var DM = (function () {
     var pcap = Math.min(pLim, 600); if (particles.length > pcap) particles.splice(0, particles.length - pcap);
     var dt = Math.min(0.05, (ts - last) / 1000 || 0); last = ts;
     if ((frameNo++ % 60) === 0) { readColors(); if (iconSig !== C.blade + C.edge + C.gold + C.wood) refreshIcons(); }
+    if (net.on && (frameNo & 15) === 0) rcRefresh();
     if (net.on && net.st === 'play') netPump(dt);
     else if (net.on && net.st === 'splay') netSpecPump(dt);
     else if (fixedStep) { var ns = 0; stepAcc += dt; while (stepAcc >= STEP - 1e-9 && ns < 4) { update(STEP); stepAcc -= STEP; ns++; } if (ns === 4) stepAcc = 0; }
@@ -14622,8 +14633,10 @@ var DM = (function () {
       el.querySelectorAll('[data-trait]').forEach(function (b) { b.setAttribute('aria-pressed', String(+b.dataset.trait === sel[i].trait)); });
       var okStack = stackable(sel[i].type);
       fixSpells(sel[i]);
+      var nsp = net.on && net.mode === 'nospell'; if (nsp) sel[i].spells = [];
       var cur = sel[i].spells;
       el.querySelectorAll('[data-spell]').forEach(function (b) { var k = b.dataset.spell; b.setAttribute('aria-pressed', String(k === 'none' ? cur.length === 0 : cur.indexOf(k) >= 0)); b.disabled = (k === 'stack' && !okStack) || (i === net.me && clsActive() && k !== 'none' && clsSpellUsed(k) && cur.indexOf(k) < 0); });
+      var sbEl = el.querySelector('.sbadges'); sbEl.style.display = nsp ? 'none' : ''; sbEl.previousElementSibling.style.display = nsp ? 'none' : ''; el.querySelector('.desc.s').style.display = nsp ? 'none' : '';
       el.querySelector('.desc.s').textContent = cur.length ? cur.map(function (k) { return '• ' + SPELL[k].n + ': ' + (k === 'stack' ? STACK_DESC[sel[i].type] + ' 2회' : SPELL[k].d); }).join('\n') : '스펠 없음 (최대 2개)';
       if (!okStack) el.querySelector('[data-spell="stack"]').title = '이 무기는 쌓이는 버프가 없다';
       var noTr = !w.traits.length; el.querySelector('.tbadges').style.display = noTr ? 'none' : ''; el.querySelector('.desc.t').style.display = noTr ? 'none' : ''; el.querySelector('.tbadges').previousElementSibling.style.display = noTr ? 'none' : '';
@@ -14772,6 +14785,10 @@ var DM = (function () {
    * 입력은 눌린 시점이 아니라 D프레임 뒤(양쪽 모두)에 적용해서 같은 프레임에 같은 입력이 들어가게 한다.
    * 상대의 그 프레임 입력이 도착하지 않았으면 기다린다(멈춤). 60프레임마다 상태 해시를 비교해 어긋남을 감지한다. */
   var netModal = $('#netModal');
+  var VER = ((document.querySelector('.verTag') || {}).textContent || '').trim();
+  var RC_MAX = 38000;   /* 재접속을 시도하는 시간 (서버가 자리를 비워 두는 40초보다 조금 짧게) */
+  function modeOf(x) { return x === 'classic' ? 'classic' : (x === 'nospell' ? 'nospell' : 'single'); }
+  function modeName(x) { return x === 'classic' ? '클래식 (beta)' : (x === 'nospell' ? '노 스펠전' : '진검승부'); }
   function clone(o) { return JSON.parse(JSON.stringify(o)); }
   function netUrl() { return (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws'; }
   function netSend(o) { if (net.ws && net.ws.readyState === 1) net.ws.send(JSON.stringify(o)); }
@@ -14786,18 +14803,59 @@ var DM = (function () {
     if (net.pingT) { clearInterval(net.pingT); net.pingT = 0; }
     if (on) { net.pingT = setInterval(netPing, 2000); setTimeout(netPing, 150); setTimeout(netPing, 450); }
   }
-  function netPing() { netSend({ t: 'ping', c: performance.now() }); }
+  function netPing() {
+    /* 응답이 10초 넘게 없으면 끊긴 걸로 보고 바로 재접속 (브라우저가 끊김을 늦게 알려주는 경우 대비) */
+    if (net.on && !net.spec && net.tok && !net.rc && net.ws && net.lastPong && Date.now() - net.lastPong > 10000) { var dead = net.ws; net.ws = null; try { dead.close(); } catch (e) {} netConnLost(); return; }
+    netSend({ t: 'ping', c: performance.now() });
+  }
   function netConnect(onopen) {
     if (net.ws) { var old = net.ws; net.ws = null; try { old.close(); } catch (e) {} }
     var ws;
     try { ws = new WebSocket(netUrl()); } catch (e) { netShow('menu', '서버에 연결할 수 없어요', true); return; }
-    net.ws = ws; net.rtts = [];
-    ws.onopen = function () { if (net.ws !== ws) return; netTimers(true); onopen(); };
+    net.ws = ws; net.rtts = []; net.lastPong = Date.now();
+    ws.onopen = function () { if (net.ws !== ws) return; netTimers(true); net.lastPong = Date.now(); onopen(); };
     ws.onmessage = function (ev) { if (net.ws !== ws) return; var m; try { m = JSON.parse(ev.data); } catch (e) { return; } netOnMsg(m); };
-    ws.onclose = function () { if (net.ws !== ws) return; net.ws = null; netLost(); };
+    ws.onclose = function () { if (net.ws !== ws) return; net.ws = null; netConnLost(); };
     ws.onerror = function () {};
   }
+  /* ── 재접속: 끊기면 같은 방 번호 + 비밀 토큰으로 자리를 되찾는다 ── */
+  function rcShow(text, kind) { var b = $('#rcBar'); b.textContent = text; b.className = kind || ''; b.hidden = false; }
+  function rcHide() { $('#rcBar').hidden = true; }
+  function clsTimerSync() {
+    var el = $('#clsTimer'); if (!el) return; var c = net.cl;
+    if (!net.on || net.st !== 'cpick' || !c || !c.dl || c.dl <= 0) { el.textContent = ''; return; }
+    var left = Math.max(0, Math.ceil((c.dl - performance.now()) / 1000)); el.classList.toggle('bad', left <= 10);
+    el.textContent = c.locked ? '' : (left > 0 ? '남은 시간 ' + left + '초 · 시간이 지나면 자동으로 골라져요' : '자동으로 고르는 중…');
+  }
+  function rcRefresh() {
+    clsTimerSync();
+    if (!net.on) { rcHide(); return; }
+    if (net.rc) { rcShow('연결이 끊겼어요 · 다시 연결하는 중… (' + Math.max(0, Math.ceil((RC_MAX - (Date.now() - net.rc.t0)) / 1000)) + '초)', 'bad'); return; }
+    if (net.replay) { rcShow('복구하는 중…', 'info'); return; }
+    if (net.pgAt) { rcShow('상대 연결이 끊겼어요 · 기다리는 중… (' + Math.max(0, Math.ceil((net.pgMs - (Date.now() - net.pgAt)) / 1000)) + '초)', 'warn'); return; }
+    rcHide();
+  }
+  function verBarShow(v) { var b = $('#verBar'); b.textContent = '새 버전' + (v ? '(' + v + ')' : '') + '이 나왔어요 · 눌러서 새로고침'; b.hidden = false; }
+  $('#verBar').addEventListener('click', function () { location.reload(); });
+  function netConnLost() { if (net.on && net.tok && !net.spec) netRcStart(); else netLost(); }
+  function netRcStart() { if (net.rc || !net.on) return; net.rc = { t0: Date.now(), tm: 0 }; net.stall = 0; rcRefresh(); netRcTry(); }
+  function netRcTry() {
+    var rc = net.rc; if (!rc) return; rc.tm = 0;
+    if (Date.now() - rc.t0 > RC_MAX) { netRcFail('연결을 복구하지 못했어요'); return; }
+    var ws; try { ws = new WebSocket(netUrl()); } catch (e) { rc.tm = setTimeout(netRcTry, 1500); return; }
+    net.ws = ws;
+    ws.onopen = function () { if (net.ws !== ws) return; netTimers(true); net.lastPong = Date.now(); netSend({ t: 'resume', code: net.code, tok: net.tok, ver: VER }); };
+    ws.onmessage = function (ev) { if (net.ws !== ws) return; var m; try { m = JSON.parse(ev.data); } catch (e) { return; } netOnMsg(m); };
+    ws.onclose = function () { if (net.ws !== ws) return; net.ws = null; if (net.rc) { if (!net.rc.tm) net.rc.tm = setTimeout(netRcTry, 1500); } else netConnLost(); };
+    ws.onerror = function () {};
+  }
+  function netRcFail(msg) { var was = net.on; netReset(); if (was) showScreen('title'); netShow('menu', msg, true); }
+  function netRcNow() { if (net.rc) { if (net.rc.tm) { clearTimeout(net.rc.tm); net.rc.tm = 0; } if (!net.ws) netRcTry(); } else if (net.on) net.lastPong = Date.now(); }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) netRcNow(); });
+  window.addEventListener('online', netRcNow);
   function netReset() {
+    if (net.rc) { if (net.rc.tm) clearTimeout(net.rc.tm); net.rc = null; }
+    net.tok = ''; net.pgAt = 0; net.replay = false; net.rs = null; net.haveMe = -1; rcHide();
     netTimers(false);
     if (net.ws) { var w = net.ws; net.ws = null; try { w.close(); } catch (e) {} }
     if (net.backup) { sel = net.backup.sel; arenaSel = net.backup.arena; fxOn = net.backup.fx; sdOn = net.backup.sd; net.backup = null; }
@@ -14818,16 +14876,22 @@ var DM = (function () {
   }
   function netOnMsg(m) {
     switch (m.t) {
-      case 'pong': { var r = performance.now() - m.c; net.rtts.push(r); if (net.rtts.length > 5) net.rtts.shift(); var s = 0; net.rtts.forEach(function (x) { s += x; }); net.rtt = Math.round(s / net.rtts.length); break; }
-      case 'created': net.code = m.code; net.me = 0; net.peerHere = false; net.mode = m.mode === 'classic' ? 'classic' : 'single'; net.roomName = roomClean(m.name); net.hadPeer = false; net.sentType = null; netListStop(); netEnterSelect(); break;
-      case 'joined': net.code = m.code; net.me = 1; net.peerHere = true; net.sentType = null; net.mode = m.mode === 'classic' ? 'classic' : 'single'; net.roomName = roomClean(m.name); net.hadPeer = true; net.pj = null; netListStop(); netEnterSelect(); break;
+      case 'pong': { net.lastPong = Date.now(); if (!m.c) break; var r = performance.now() - m.c; net.rtts.push(r); if (net.rtts.length > 5) net.rtts.shift(); var s = 0; net.rtts.forEach(function (x) { s += x; }); net.rtt = Math.round(s / net.rtts.length); break; }
+      case 'created': net.code = m.code; net.me = 0; net.peerHere = false; net.mode = modeOf(m.mode); net.tok = String(m.tok || ''); net.roomName = roomClean(m.name); net.hadPeer = false; net.sentType = null; netListStop(); netEnterSelect(); break;
+      case 'joined': net.code = m.code; net.me = 1; net.peerHere = true; net.sentType = null; net.mode = modeOf(m.mode); net.tok = String(m.tok || ''); net.roomName = roomClean(m.name); net.hadPeer = true; net.pj = null; netListStop(); netEnterSelect(); break;
       case 'sjoined': net.pj = null; netListStop(); netSpecEnter(m); break;
       case 'sst': netSpecStatus(m); break;
       case 'sclosed': if (net.spec) { netReset(); showScreen('title'); netShow('menu', '방이 닫혔어요', true); } break;
       case 'names': net.names = [nickClean(m.n && m.n[0]), nickClean(m.n && m.n[1])]; net.sc = Math.max(0, m.sc | 0); specTagSync(); if (net.joinNote && net.names[1] && !net.spec) { net.joinNote = false; netNotify(net.names[1] + ' 님이 들어왔어요!', true); } if (net.spec && net.st === 'spec') netSpecPanel(); else if (net.on && !net.spec && net.st === 'select') netSelUI(); else if (net.cl && net.st === 'cpick') clsRender(); break;
       case 'rooms': net.rooms = Array.isArray(m.l) ? m.l.slice(0, 40) : []; if (net.view === 'list' && !net.on) { netListRender(); var nm = $('#netMsg'); if (!nm.classList.contains('bad')) nm.textContent = ''; } break;
       case 'peer': net.peerHere = true; net.hadPeer = true; net.joinNote = true; net.sentType = null; if (!net.on) netEnterSelect(); else netSelUI(); break;
+      case 'resumed': netResumed(m); break;
+      case 'peerGone': net.pgAt = Date.now(); net.pgMs = (m.g | 0) || 40000; rcRefresh(); break;
+      case 'peerReturn': if (net.pgAt) { net.pgAt = 0; rcRefresh(); netNotify((net.names[1 - net.me] || '상대') + ' 님이 돌아왔어요', false); } break;
+      case 'ver': verBarShow(m.v); break;
       case 'err':
+        if (m.c === 'ver') verBarShow(m.v);
+        if (net.rc) { netRcFail(m.c === 'noresume' ? '방이 사라졌어요 (서버가 다시 시작됐을 수 있어요)' : (m.m || '재접속에 실패했어요')); break; }
         if (m.c === 'pw' || m.c === 'wrongpw') { netPwAsk(m.m, m.c === 'wrongpw'); break; }
         if (net.pj && net.pj.from === 'list') { netShow('list', m.m || '오류', true); netListReq(); break; }
         netShow('menu', m.m || '오류', true); if (net.ws) { var w = net.ws; net.ws = null; netTimers(false); try { w.close(); } catch (e) {} } break;
@@ -14835,16 +14899,20 @@ var DM = (function () {
       case 'peerPv': netPeerType(m.type); break;
       case 'cstart': netClsStart(m); break;
       case 'peerPicked': if (net.cl) { net.cl.peerPicked = true; clsRender(); } break;
-      case 'cnext': netClsNext(); break;
+      case 'cnext': netClsNext(m); break;
       case 'cres': netCres(m); break;
       case 'start': if (net.spec) netSpecBegin(m); else netBegin(m); break;
-      case 'in': if (net.spec) { netSpecIn(m); break; } if (net.st === 'play' && typeof m.f === 'number' && m.f === (m.f | 0) && m.f >= net.step && m.f < net.step + 240 && Array.isArray(m.a)) net.opp[m.f] = m.a.filter(function (j) { return j === 0 || j === 1; }).slice(0, 2); break;
+      case 'in': if (net.spec) { netSpecIn(m); break; } if (net.st === 'play' && typeof m.f === 'number' && m.f === (m.f | 0) && m.f >= net.step && (m.f < net.step + 240 || net.replay) && Array.isArray(m.a)) net.opp[m.f] = m.a.filter(function (j) { return j === 0 || j === 1; }).slice(0, 2); break;
       case 'h': if (net.st === 'play' || net.st === 'after') { net.ohs[m.s] = m.h; if (net.hs[m.s] !== undefined) netCmp(m.s); } break;
       case 'peerRematch': net.peerRematch = !!m.v; netOverUI(); if (m.v && net.st === 'after' && !net.spec) netNotify((net.names[1 - net.me] || '상대') + ' 님이 ' + (net.mode === 'classic' ? '다음 판을' : '재대결을') + ' 원해요!', true); break;
       case 'peerBack': netToSelect(); break;
-      case 'host': { if (net.mode === 'classic' && net.deck) { net.me = 0; sel[0] = net.deck[net.di]; sel[1] = netSane({ type: 'dummy', col: 'red' }); net.sentType = null; netSelUI(); sync(); break; } var mine = clone(sel[net.me]); net.me = 0; sel[0] = mine; net.sentType = null; netSelUI(); break; }
+      case 'host': netBecomeHost(); break;
       case 'left': netPeerLeft(); break;
     }
+  }
+  function netBecomeHost() {
+    if (net.mode === 'classic' && net.deck) { net.me = 0; sel[0] = net.deck[net.di]; sel[1] = netSane({ type: 'dummy', col: 'red' }); net.sentType = null; netSelUI(); sync(); return; }
+    var mine = clone(sel[net.me]); net.me = 0; sel[0] = mine; net.sentType = null; netSelUI();
   }
   function netSane(x) {
     x = x || {}; var t = W[x.type] ? x.type : 'sword';
@@ -14855,6 +14923,7 @@ var DM = (function () {
   function netEnterSelect() {
     if (!net.on) net.backup = { sel: clone(sel), arena: arenaSel, fx: fxOn, sd: sdOn };
     net.on = true; net.st = 'select'; net.ready = false; net.peerReady = false;
+    if (net.mode === 'nospell') sel[net.me].spells = [];
     if (net.mode === 'classic') { if (!net.deck) net.deck = clsDefaultDeck(); net.di = 0; sel[net.me] = net.deck[0]; sel[1 - net.me] = netSane({ type: 'dummy', col: net.me ? 'green' : 'red' }); }
     netModal.hidden = true; document.body.classList.add('online'); document.body.classList.toggle('me0', net.me === 0); document.body.classList.toggle('me1', net.me === 1);
     showScreen('select'); netSelUI();
@@ -14895,7 +14964,7 @@ var DM = (function () {
     spResetArm(false); net.deck.forEach(function (d) { d.spells = []; fixSpells(d); }); sync(); clsTabsSync();
   });
   function netReadyToggle() {
-    if (net.st !== 'select') return;
+    if (net.st !== 'select' || net.rc) return;
     net.ready = !net.ready;
     if (net.mode === 'classic') { if (net.ready) netSend({ t: 'deck', deck: net.deck.map(clone), arena: arenaSel, sd: sdOn, rtt: net.rtt }); }
     else if (net.ready) netSend({ t: 'sel', sel: sel[net.me], arena: arenaSel, sd: sdOn, rtt: net.rtt });
@@ -14910,7 +14979,8 @@ var DM = (function () {
     sel = [s0, s1]; arenaSel = (m.arena | 0) >= 0 && (m.arena | 0) < ARENAS.length ? (m.arena | 0) : 0;
     fxOn = true; sdOn = m.sd !== false;
     net.D = Math.max(3, Math.min(30, m.D | 0 || 6)); net.step = 0; net.loc = {}; net.opp = {}; net.pend = []; net.hs = {}; net.ohs = {}; net.stall = 0; net.maxStall = 0; net.round = m.round | 0;
-    net.rematch = false; net.peerRematch = false; net.desync = false; net.log = [];
+    net.rematch = false; net.peerRematch = false; net.desync = false; net.log = []; net.haveMe = -1; net.replay = false; net.rs = null;
+    if (net.mode === 'nospell') { s0.spells = []; s1.spells = []; }
     for (var f = 0; f < net.D; f++) { net.loc[f] = []; net.opp[f] = []; }
     if (net.mode === 'classic' && net.cl && Array.isArray(m.pk)) { net.cl.cur = [m.pk[0] | 0, m.pk[1] | 0]; net.cl.used[0][net.cl.cur[0]] = true; net.cl.used[1][net.cl.cur[1]] = true; net.cl.got = false; net.cl.baseSub = null; }
     net.st = 'play'; $('#again').textContent = '재대결'; $('#resel').textContent = '캐릭터 다시 고르기';
@@ -14923,7 +14993,7 @@ var DM = (function () {
       for (var k = 0; k < arr.length; k++) { (function (pi, j) { inSim(function () { castSpell(pi, j); }); })(i, arr[k]); }
     }
   }
-  function netSendFrame(f) { var a = net.pend.splice(0); net.loc[f] = a; netSend({ t: 'in', f: f, a: a }); }
+  function netSendFrame(f) { var a = net.pend.splice(0, 2); net.loc[f] = a; netSend({ t: 'in', f: f, a: a }); }
   function netHashNow() {
     var h = 2166136261, str = phase + '|' + fighters.map(function (q) { return [q.x, q.y, q.vx, q.vy, q.hp].join(','); }).join('|'), i;
     for (i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
@@ -14938,22 +15008,35 @@ var DM = (function () {
     try { console.error('spinclash desync at step', s); } catch (e) {}
   }
   function netPump(dt) {
-    stepAcc += dt; var n = 0;
-    while (stepAcc >= STEP - 1e-9 && n < 6) {
+    /* 복구(다시 계산) 중이면 입력이 모여 있는 만큼 빨리 감아서 따라잡는다 */
+    if (net.rc) { stepAcc = 0; return; }   /* 재접속 중에는 낡은 시뮬레이션이 입력을 보내면 안 된다 (서버에 구멍이 생김) */
+    var D = net.D, back = 0, n = 0;
+    while (back < 90 && net.opp[net.step + back] !== undefined) back++;
+    var fast = net.replay && back - D > 20;
+    if (net.replay && !fast) { net.replay = false; rcRefresh(); }
+    if (fast) stepAcc = 0; else stepAcc += dt;
+    var maxN = fast ? 30 : 6;
+    while (n < maxN && (fast || stepAcc >= STEP - 1e-9)) {
       var s = net.step;
       if (net.opp[s] === undefined) { net.stall++; if (net.stall > net.maxStall) net.maxStall = net.stall; if (stepAcc > 0.25) stepAcc = 0.25; break; }
       net.stall = 0;
-      netApply(s); update(STEP); stepAcc -= STEP; n++; net.step = s + 1;
+      netApply(s); update(STEP); if (!fast) stepAcc -= STEP; n++; net.step = s + 1;
       delete net.opp[s]; delete net.loc[s];
-      netSendFrame(s + net.D);
-      if (net.step % 60 === 0) { var h = netHashNow(); net.hs[net.step] = h; netSend({ t: 'h', s: net.step, h: h }); if (net.ohs[net.step] !== undefined) netCmp(net.step); }
+      if (s + net.D > net.haveMe) netSendFrame(s + net.D);   /* 서버가 이미 가진 프레임은 다시 보내지 않는다 */
+      if (!net.replay && net.step % 60 === 0) { var h = netHashNow(); net.hs[net.step] = h; netSend({ t: 'h', s: net.step, h: h }); if (net.ohs[net.step] !== undefined) netCmp(net.step); }
       if (phase === 'over') { netOver(); break; }
     }
-    $('#netLag').hidden = !(net.stall > 20);
+    $('#netLag').hidden = !(net.stall > 20) || !!net.rc || net.pgAt > 0;
   }
   function netOver() {
     net.st = 'after'; fixedStep = false; stepAcc = 0; $('#netLag').hidden = true;
-    netSend({ t: 'over', w: winner }); netOverUI();
+    netSend({ t: 'over', w: winner });
+    if (net.rs) {   /* 재접속으로 다시 계산한 판: 서버가 알려 준 재대결·결과 상태를 이어 붙인다 */
+      var rs = net.rs; net.rs = null;
+      net.rematch = !!(rs.rematch && rs.rematch[net.me]); net.peerRematch = !!(rs.rematch && rs.rematch[1 - net.me]);
+      if (net.mode === 'classic' && net.cl && rs.cres) netCres(rs.cres);
+    }
+    netOverUI();
   }
   function netOverUI() {
     if (net.st !== 'after') return;
@@ -14973,8 +15056,8 @@ var DM = (function () {
       $('#overSub').textContent = '지금까지 ' + mine + ' : ' + theirs + ' · ' + c.baseSub;
     }
   }
-  function netRematch() { if (net.st !== 'after') return; if (net.mode === 'classic' && (!net.cl || !net.cl.got || net.cl.end)) return; net.rematch = !net.rematch; netSend({ t: 'rematch', v: net.rematch }); netOverUI(); }
-  function netBack() { netSend({ t: 'back' }); netToSelect(); }
+  function netRematch() { if (net.st !== 'after' || net.rc) return; if (net.mode === 'classic' && (!net.cl || !net.cl.got || net.cl.end)) return; net.rematch = !net.rematch; netSend({ t: 'rematch', v: net.rematch }); netOverUI(); }
+  function netBack() { if (net.rc) return; netSend({ t: 'back' }); netToSelect(); }
   function netToSelect() {
     if (!net.on) return;
     if (net.mode === 'classic') {
@@ -14992,6 +15075,7 @@ var DM = (function () {
     showScreen('select'); netSelUI(); sync();
   }
   function netPeerLeft() {
+    net.pgAt = 0; rcRefresh();
     net.peerHere = false; net.peerReady = false; net.ready = false; net.sentType = null;
     if (net.st === 'play' || net.st === 'after' || net.st === 'desync' || net.st === 'cpick') netToSelect(); else netSelUI();
   }
@@ -15050,10 +15134,56 @@ var DM = (function () {
     var d = (Array.isArray(m.decks) ? m.decks : []).map(function (dk) { return (Array.isArray(dk) ? dk : []).slice(0, 3).map(netSane); });
     if (d.length !== 2 || d[0].length !== 3 || d[1].length !== 3) return;
     arenaSel = (m.arena | 0) >= 0 && (m.arena | 0) < ARENAS.length ? (m.arena | 0) : 0; fxOn = true; sdOn = m.sd !== false;
-    net.cl = { decks: d, used: [[false, false, false], [false, false, false]], res: [[null, null, null], [null, null, null]], wins: [0, 0], rd: 0, end: false, mw: -2, my: -1, locked: false, peerPicked: false, cur: null, got: false, bad: false, focus: null, baseSub: null };
+    net.cl = { decks: d, used: [[false, false, false], [false, false, false]], res: [[null, null, null], [null, null, null]], wins: [0, 0], rd: 0, end: false, mw: -2, my: -1, locked: false, peerPicked: false, cur: null, got: false, bad: false, focus: null, baseSub: null, dl: performance.now() + (m.pt | 0) };
     net.st = 'cpick'; net.rematch = false; net.peerRematch = false; clsShow();
   }
-  function netClsNext() { if (!net.on || !net.cl) return; net.st = 'cpick'; net.rematch = false; net.peerRematch = false; over.hidden = true; clsShow(); }
+  /* ── 재접속 복구: 서버가 보낸 방 상태로 화면을 다시 맞춘다 ── */
+  function netFillLog(log, li) {
+    var D = net.D, me = net.me, lim = [li && li[0] | 0, li && li[1] | 0];
+    for (var p = 0; p < 2; p++) { var tgt = p === me ? net.loc : net.opp; for (var f = D; f <= lim[p]; f++) tgt[f] = []; }
+    (Array.isArray(log) ? log : []).forEach(function (e) {
+      if (!Array.isArray(e) || e[0] !== (e[0] | 0) || e[1] !== (e[1] | 0)) return;
+      var p = e[0], f = e[1]; if ((p !== 0 && p !== 1) || f < 0 || f > lim[p]) return;
+      var a = (Array.isArray(e[2]) ? e[2] : []).filter(function (j) { return j === 0 || j === 1; }).slice(0, 2);
+      (p === me ? net.loc : net.opp)[f] = a;
+    });
+    net.haveMe = lim[me];
+  }
+  function netResumed(m) {
+    if (net.rc) { if (net.rc.tm) clearTimeout(net.rc.tm); net.rc = null; }
+    if (!net.on || net.spec) return;
+    net.pgAt = 0; net.stall = 0; net.lastPong = Date.now();
+    net.me = m.idx === 1 ? 1 : 0; net.mode = modeOf(m.mode); net.peerHere = !!m.np; if (m.np) net.hadPeer = true;
+    if (Array.isArray(m.n)) net.names = [nickClean(m.n[0]), nickClean(m.n[1])];
+    net.sc = Math.max(0, m.sc | 0); specTagSync();
+    var rdy = Array.isArray(m.ready) ? m.ready : [false, false];
+    var run = (m.st === 'play' || m.st === 'after') && m.start;
+    if (net.mode === 'classic' && m.cl && typeof m.cl === 'object') {
+      var d = (Array.isArray(m.cl.decks) ? m.cl.decks : []).map(function (dk) { return (Array.isArray(dk) ? dk : []).slice(0, 3).map(netSane); });
+      if (d.length === 2 && d[0].length === 3 && d[1].length === 3) {
+        var old = net.cl, keep = old && old.rd === (m.cl.rd | 0) ? old.my : -1;
+        net.cl = { decks: d, used: m.cl.used, res: m.cl.res, wins: [m.cl.wins[0] | 0, m.cl.wins[1] | 0], rd: m.cl.rd | 0, end: !!m.cl.end, mw: -2, my: -1, locked: false, peerPicked: !!m.cl.opicked, cur: Array.isArray(m.cl.cur) ? m.cl.cur : null, got: false, bad: false, focus: null, baseSub: null, dl: m.cl.dl > 0 ? performance.now() + m.cl.dl : 0 };
+        if (m.cl.mypick !== null && m.cl.mypick !== undefined) { net.cl.my = m.cl.mypick | 0; net.cl.locked = true; } else if (keep >= 0) net.cl.my = keep;
+      }
+    } else if (net.mode !== 'classic') net.cl = null;
+    if (run) {
+      over.hidden = true; net.st = 'play';
+      netBegin(m.start);
+      netFillLog(m.log, m.li);
+      net.replay = true; net.rs = { rematch: m.rematch, cres: m.cres || null };
+      rcRefresh(); return;
+    }
+    if (m.st === 'cpick' && net.cl) {
+      net.st = 'cpick'; over.hidden = true; var c = net.cl, my = c.my, lk = c.locked, pp = c.peerPicked, dl = c.dl;
+      clsShow(); c.my = my; c.locked = lk; c.peerPicked = pp; c.dl = dl; clsRender(); rcRefresh(); return;
+    }
+    /* 로비: 상대가 나갔거나 방장이 바뀌었을 수 있으니 선택 화면으로 돌려 맞춘다 */
+    net.ready = !!rdy[net.me]; net.peerReady = !!rdy[1 - net.me];
+    if (net.st !== 'select') netToSelect();
+    net.ready = !!rdy[net.me]; net.peerReady = !!rdy[1 - net.me];
+    netSelUI(); sync(); rcRefresh();
+  }
+  function netClsNext(m) { if (!net.on || !net.cl) return; net.cl.dl = performance.now() + ((m && m.pt) | 0); net.st = 'cpick'; net.rematch = false; net.peerRematch = false; over.hidden = true; clsShow(); }
   function netCres(m) {
     var c = net.cl; if (!c) return;
     if (m.bad) { c.bad = true; $('#overTitle').textContent = '동기화 오류'; $('#overTitle').style.color = 'var(--p2)'; $('#overSub').textContent = '두 기기의 결과가 달라요. 방에서 나가서 다시 시도해 주세요.'; netOverUI(); return; }
@@ -15069,7 +15199,7 @@ var DM = (function () {
     if (who === 'me' && !c.locked && !c.used[net.me][k]) c.my = k;
     clsRender();
   });
-  $('#clsLock').addEventListener('click', function () { var c = net.cl; if (!c || net.st !== 'cpick' || c.locked || c.my < 0 || c.used[net.me][c.my]) return; c.locked = true; netSend({ t: 'pick', i: c.my }); clsRender(); });
+  $('#clsLock').addEventListener('click', function () { var c = net.cl; if (!c || net.rc || net.st !== 'cpick' || c.locked || c.my < 0 || c.used[net.me][c.my]) return; c.locked = true; netSend({ t: 'pick', i: c.my }); clsRender(); });
   $('#clsLeave').addEventListener('click', function () { netLeave(); });
   /* 이벤트 연결 */
   if (window.SPIN_ONLINE) { document.body.classList.add('hasOnline'); $('#onlineBtn').hidden = false; $('#verTxt').textContent = '한 기기 2인 대전 · 친구와 온라인 대전'; }
@@ -15096,7 +15226,7 @@ var DM = (function () {
       var row = document.createElement('div'); row.className = 'rm';
       var inf = document.createElement('div'); inf.className = 'rmi';
       var nm = document.createElement('b'); nm.className = 'rmn'; nm.textContent = (r.lk ? '🔒 ' : '') + roomClean(r.nm);
-      var sm = document.createElement('small'); sm.textContent = nickClean(r.h) + ' · ' + (r.md === 'classic' ? '클래식' : '1판 승부') + ' · ' + st + ' · ' + np + '/2' + ((r.sc | 0) > 0 ? ' · 👁 ' + (r.sc | 0) : '');
+      var sm = document.createElement('small'); sm.textContent = nickClean(r.h) + ' · ' + (r.md === 'classic' ? '클래식' : (r.md === 'nospell' ? '노 스펠전' : '진검승부')) + ' · ' + st + ' · ' + np + '/2' + ((r.sc | 0) > 0 ? ' · 👁 ' + (r.sc | 0) : '');
       inf.appendChild(nm); inf.appendChild(sm);
       var act = document.createElement('div'); act.className = 'rma';
       var jb = document.createElement('button'); jb.type = 'button'; jb.textContent = '참가'; jb.dataset.c = r.c; jb.dataset.act = 'join'; jb.disabled = np >= 2;
@@ -15107,7 +15237,7 @@ var DM = (function () {
   function netPwAsk(msg, bad) { netShow('pw', msg || '', !!bad); $('#pwIn').value = ''; setTimeout(function () { $('#pwIn').focus(); }, 50); }
   function netDoJoin(pw) {
     var j = net.pj; if (!j) return;
-    netSend({ t: j.act === 'spec' ? 'spec' : 'join', code: j.code, nick: nickRead(), pw: pw || '' });
+    netSend({ t: j.act === 'spec' ? 'spec' : 'join', ver: VER, code: j.code, nick: nickRead(), pw: pw || '' });
   }
   $('#rmList').addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('button[data-c]'); if (!b || b.disabled) return;
@@ -15120,7 +15250,7 @@ var DM = (function () {
   $('#netListGo').addEventListener('click', function () { nickRead(); netListOpen(); });
   /* ── 관전 ── */
   function netSpecEnter(m) {
-    net.on = true; net.spec = true; net.me = -1; net.peerHere = true; net.code = m.code; net.mode = m.mode === 'classic' ? 'classic' : 'single'; net.roomName = roomClean(m.name);
+    net.on = true; net.spec = true; net.me = -1; net.peerHere = true; net.code = m.code; net.mode = modeOf(m.mode); net.roomName = roomClean(m.name);
     net.names = [nickClean(m.n && m.n[0]), nickClean(m.n && m.n[1])]; net.st = 'spec'; net.sin = [{}, {}]; net.spCl = null; net.spSt = 'lobby'; net.spNp = 2;
     net.backup = { sel: clone(sel), arena: arenaSel, fx: fxOn, sd: sdOn };
     netModal.hidden = true; document.body.classList.add('online', 'spec'); document.body.classList.remove('me0', 'me1');
@@ -15129,7 +15259,7 @@ var DM = (function () {
   function netSpecPanel() {
     var a = net.names[0] || 'P1', b = net.names[1] || 'P2', c = net.spCl, st = net.spSt, np = net.spNp | 0;
     $('#spHd').textContent = c ? '클래식 · ' + a + ' ' + c.wins[0] + ' : ' + c.wins[1] + ' ' + b : a + ' vs ' + b;
-    $('#spRoom').textContent = net.roomName + ' · ' + (net.mode === 'classic' ? '클래식 (beta)' : '1판 승부');
+    $('#spRoom').textContent = net.roomName + ' · ' + modeName(net.mode);
     var msg = '';
     if (np < 2) msg = '플레이어가 상대를 기다리는 중…';
     else if (st === 'lobby') msg = net.mode === 'classic' ? '두 사람이 덱을 짜는 중…' : '두 사람이 무기를 고르는 중…';
@@ -15169,6 +15299,7 @@ var DM = (function () {
     if (Array.isArray(m.nm)) net.names = [nickClean(m.nm[0]), nickClean(m.nm[1])];
     sel = [s0, s1]; arenaSel = (m.arena | 0) >= 0 && (m.arena | 0) < ARENAS.length ? (m.arena | 0) : 0;
     fxOn = true; sdOn = m.sd !== false;
+    if (net.mode === 'nospell') { s0.spells = []; s1.spells = []; }
     net.D = Math.max(3, Math.min(30, m.D | 0 || 6)); net.step = 0; net.round = m.round | 0;
     var sin = [{}, {}], li = Array.isArray(m.li) ? m.li : [-1, -1], f, p;
     if (Array.isArray(m.log)) m.log.forEach(function (e) { if (Array.isArray(e) && (e[0] === 0 || e[0] === 1) && Number.isInteger(e[1]) && e[1] >= 0 && Array.isArray(e[2])) sin[e[0]][e[1]] = e[2].filter(function (j) { return j === 0 || j === 1; }).slice(0, 2); });
@@ -15208,10 +15339,11 @@ var DM = (function () {
   $('#onlineBtn').addEventListener('click', function () { audio(); netShow('menu'); });
   function netCreateRoom(mode) {
     var nk = nickRead(); netShow('menu', '방을 만드는 중…');
-    netConnect(function () { netSend({ t: 'create', mode: mode, nick: nk, name: $('#rmName').value, pw: $('#rmPw').value, spec: rmSpecOn }); });
+    netConnect(function () { netSend({ t: 'create', ver: VER, mode: mode, nick: nk, name: $('#rmName').value, pw: $('#rmPw').value, spec: rmSpecOn }); });
   }
   $('#netCreate').addEventListener('click', function () { netCreateRoom('single'); });
   $('#netCreateC').addEventListener('click', function () { netCreateRoom('classic'); });
+  $('#netCreateN').addEventListener('click', function () { netCreateRoom('nospell'); });
   $('#netClose').addEventListener('click', function () {
     if (net.view === 'wait') netLeave();
     else if (net.view === 'pw') { net.pj = null; netShow('list'); netListReq(); }
@@ -15228,8 +15360,8 @@ var DM = (function () {
     if (!window.SPIN_ONLINE || pres.ws) return;
     var ws; try { ws = new WebSocket(netUrl()); } catch (e) { presRetry(); return; }
     pres.ws = ws;
-    ws.onopen = function () { pres.delay = 3000; try { ws.send(JSON.stringify({ t: 'hi' })); } catch (e) {} pres.ka = setInterval(function () { try { if (ws.readyState === 1) ws.send(JSON.stringify({ t: 'ping', c: 0 })); } catch (e) {} }, 20000); };
-    ws.onmessage = function (ev) { var m; try { m = JSON.parse(ev.data); } catch (e) { return; } if (m && m.t === 'online') presShow(m.n | 0); };
+    ws.onopen = function () { pres.delay = 3000; try { ws.send(JSON.stringify({ t: 'hi', ver: VER })); } catch (e) {} pres.ka = setInterval(function () { try { if (ws.readyState === 1) ws.send(JSON.stringify({ t: 'ping', c: 0 })); } catch (e) {} }, 20000); };
+    ws.onmessage = function (ev) { var m; try { m = JSON.parse(ev.data); } catch (e) { return; } if (m && m.t === 'online') presShow(m.n | 0); else if (m && m.t === 'ver') verBarShow(m.v); };
     ws.onclose = function () { if (pres.ka) { clearInterval(pres.ka); pres.ka = 0; } if (pres.ws === ws) pres.ws = null; presShow(-1); presRetry(); };
     ws.onerror = function () {};
   }

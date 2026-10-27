@@ -14,7 +14,19 @@ const PORT = +process.env.PORT || 8080;
 const GAME_FILE = process.env.GAME_FILE || path.join(__dirname, 'index.html');
 const LAT_MS = +process.env.LAT_MS || 0, JIT_MS = +process.env.JIT_MS || 0;   // 테스트용 인위 지연
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const GRACE_MS = +process.env.GRACE_MS || 40000;   // 연결이 끊긴 플레이어를 기다려 주는 시간
+const PICK_MS = +process.env.PICK_MS || 45000;     // 클래식에서 캐릭터를 고르는 제한 시간
 
+/* 서버 버전 = 게임 파일의 버전 표시. 버전이 다른 화면은 입장·재접속을 막는다 */
+let verCache = { mt: 0, v: '' };
+function serverVer() {
+  try { const mt = fs.statSync(GAME_FILE).mtimeMs; if (mt !== verCache.mt) { const h = fs.readFileSync(GAME_FILE, 'utf8'); const m = h.match(/class="verTag">([^<]+)</); verCache = { mt, v: m ? m[1].trim() : '' }; } } catch (e) {}
+  return verCache.v;
+}
+function verOk(ws, m) {
+  const v = serverVer(); if (!v || m.ver === v) return true;
+  rawSend(ws, { t: 'err', c: 'ver', m: '새 버전(' + v + ')이 나왔어요. 새로고침해 주세요', v }); return false;
+}
 function readGame() {
   let h = fs.readFileSync(GAME_FILE, 'utf8');
   const inj = '<script>window.SPIN_ONLINE=1;</script>';
@@ -43,6 +55,7 @@ function newCode() {
 function rawSend(ws, o) { if (ws && ws.readyState === 1) ws.send(JSON.stringify(o)); }
 /* 인위 지연을 걸되 순서는 유지 (TCP처럼) */
 function relay(ws, o) {
+  if (!ws) return;
   if (!LAT_MS && !JIT_MS) return rawSend(ws, o);
   ws._q = ws._q || []; const due = Date.now() + LAT_MS + Math.random() * JIT_MS;
   const last = ws._q.length ? ws._q[ws._q.length - 1].due : 0;
@@ -102,15 +115,32 @@ function startClassic(room) {
   const [a, b] = room.players;
   room.cl = { decks: [a.deck, b.deck], used: [[false, false, false], [false, false, false]], res: [[null, null, null], [null, null, null]], picks: [null, null], cur: null, wins: [0, 0], rd: 0, end: false };
   room.state = 'cpick'; room.over = [false, false]; room.rematch = [false, false];
-  const msg = { t: 'cstart', decks: room.cl.decks, arena: room.arena, sd: room.sd !== false };
-  relay(a.ws, msg); relay(b.ws, msg); specStatus(room);
+  const msg = { t: 'cstart', decks: room.cl.decks, arena: room.arena, sd: room.sd !== false, pt: PICK_MS };
+  relay(a.ws, msg); relay(b.ws, msg); specStatus(room); armPick(room);
+}
+/* 고르는 제한 시간: 시간이 지나면 못 고른 쪽은 안 쓴 캐릭터 중 하나가 무작위로 정해진다 */
+function killPick(room) { if (room.pickT) { clearTimeout(room.pickT); room.pickT = null; } if (room.cl) room.cl.dl = 0; }
+function armPick(room) {
+  killPick(room); const cl = room.cl; if (!cl) return;
+  cl.dl = Date.now() + PICK_MS;
+  room.pickT = setTimeout(() => {
+    room.pickT = null; if (room.state !== 'cpick' || !room.cl) return;
+    [0, 1].forEach((i) => {
+      if (cl.picks[i] !== null) return;
+      const free = [0, 1, 2].filter((k) => !cl.used[i][k]); if (!free.length) return;
+      cl.picks[i] = free[crypto.randomInt(free.length)];
+      const o = other(room, i); if (o) relay(o, { t: 'peerPicked' });
+    });
+    if (cl.picks[0] !== null && cl.picks[1] !== null) startFight(room);
+  }, PICK_MS);
 }
 function classicNext(room) {
   const cl = room.cl; if (!cl || cl.end) return;
   room.state = 'cpick'; cl.picks = [null, null]; room.rematch = [false, false];
-  room.players.forEach((p) => { if (p) relay(p.ws, { t: 'cnext', rd: cl.rd }); }); specStatus(room);
+  room.players.forEach((p) => { if (p) relay(p.ws, { t: 'cnext', rd: cl.rd, pt: PICK_MS }); }); specStatus(room); armPick(room);
 }
 function startFight(room) {
+  killPick(room);
   const cl = room.cl, pk = cl.picks.slice();
   cl.used[0][pk[0]] = true; cl.used[1][pk[1]] = true; cl.rd++; cl.picks = [null, null]; cl.cur = pk;
   startRound(room, [cl.decks[0][pk[0]], cl.decks[1][pk[1]]], pk);
@@ -124,9 +154,33 @@ function startRound(room, sels, pk) {
   const msg = { t: 'start', seed, arena: room.arena, sd: room.sd !== false, sel: sels || [a.sel, b.sel], D, round: room.round };
   if (pk) { msg.pk = pk; msg.rd = room.cl.rd; }
   msg.nm = namesOf(room);
-  room.lastStart = msg; room.log = []; room.lastIn = [-1, -1];
+  room.lastStart = msg; room.log = []; room.lastIn = [-1, -1]; room.lastCres = null;
   relay(a.ws, msg); relay(b.ws, msg);
   if (room.specs.length) { const sm = Object.assign({}, msg, { log: [], li: [-1, -1] }); room.specs.forEach((w) => rawSend(w, sm)); }
+}
+
+/* 재접속한 사람에게 보내는 방 상태 전체: 이걸로 화면을 다시 맞추고, 전투 중이면 입력 기록으로 처음부터 다시 계산한다 */
+function snapshot(r, idx) {
+  const cl = r.cl;
+  const o = { t: 'resumed', idx, code: r.code, mode: r.mode, name: r.name, st: r.state, np: r.players[1 - idx] ? 1 : 0, n: namesOf(r), sc: r.specs.length,
+    ready: [!!(r.players[0] && r.players[0].ready), !!(r.players[1] && r.players[1].ready)], rematch: r.rematch.slice(), over: r.over.slice(), arena: r.arena, sd: r.sd !== false,
+    cl: cl ? { decks: cl.decks, used: cl.used, res: cl.res, wins: cl.wins, rd: cl.rd, end: cl.end, cur: cl.cur, mypick: cl.picks[idx], opicked: cl.picks[1 - idx] !== null, dl: cl.dl ? Math.max(0, cl.dl - Date.now()) : 0 } : null,
+    cres: r.lastCres || null };
+  if ((r.state === 'play' || r.state === 'after') && r.lastStart) { o.start = Object.assign({}, r.lastStart, { nm: namesOf(r) }); o.log = r.log; o.li = r.lastIn; }
+  return o;
+}
+/* 플레이어를 방에서 내보낸다 (직접 나갔거나, 기다리는 시간이 지났을 때) */
+function dropPlayer(room, idx) {
+  const p = room.players[idx]; if (!p) return;
+  if (p.graceT) { clearTimeout(p.graceT); p.graceT = null; }
+  const hasOther = !!room.players[1 - idx], o = other(room, idx);
+  room.players[idx] = null;
+  if (hasOther) { if (o) rawSend(o, { t: 'left' }); room.state = 'lobby'; room.cl = null; room.lastStart = null; killPick(room); }
+  if (!room.players[0] && !room.players[1]) { killPick(room); room.specs.forEach((w) => { rawSend(w, { t: 'sclosed' }); w._room = null; }); room.specs = []; rooms.delete(room.code); }
+  else if (hasOther) {   // 남은 사람은 방장이 된다
+    if (idx === 0) { room.players[0] = room.players[1]; room.players[1] = null; if (room.players[0].ws) { room.players[0].ws._idx = 0; rawSend(room.players[0].ws, { t: 'host' }); } }
+    room.players.forEach((q) => { if (q) q.ready = false; }); sendNames(room); specStatus(room);
+  }
 }
 
 wss.on('connection', (ws) => {
@@ -146,16 +200,17 @@ wss.on('connection', (ws) => {
     if (ws._idx === -2 && m.t !== 'ping' && m.t !== 'leave' && m.t !== 'list') return;
     switch (m.t) {
       case 'ping': return relay(ws, { t: 'pong', c: m.c });
-      case 'hi': { if (!ws._pres) { ws._pres = true; rawSend(ws, { t: 'online', n: onlineCount() }); schedCount(); } return; }
+      case 'hi': { if (!ws._pres) { ws._pres = true; rawSend(ws, { t: 'online', n: onlineCount() }); schedCount(); } const sv = serverVer(); if (sv && m.ver !== sv) rawSend(ws, { t: 'ver', v: sv }); return; }
       case 'create': {
         if (room) return;
         const code = newCode(); if (!code) return rawSend(ws, { t: 'err', m: '방을 만들 수 없어요' });
-        const mode = m.mode === 'classic' ? 'classic' : 'single';
+        if (!verOk(ws, m)) return;
+        const mode = m.mode === 'classic' ? 'classic' : (m.mode === 'nospell' ? 'nospell' : 'single');
         if (rooms.size >= MAX_ROOMS) return rawSend(ws, { t: 'err', m: '지금은 방을 더 만들 수 없어요' });
         const nick = nickOf(m.nick), name = cleanText(m.name, 16) || (nick + '의 방'), pw = cleanText(m.pw, 8);
-        const r = { code, mode, name, pw, spec: m.spec !== false, specs: [], lastStart: null, log: [], lastIn: [-1, -1], cl: null, players: [{ ws, nick, sel: null, ready: false, rtt: 60 }, null], arena: 0, state: 'lobby', round: 0, over: [false, false], rematch: [false, false], hs: [{}, {}] };
+        const r = { code, mode, name, pw, spec: m.spec !== false, specs: [], lastStart: null, log: [], lastIn: [-1, -1], cl: null, players: [{ ws, nick, tok: crypto.randomBytes(12).toString('hex'), sel: null, ready: false, rtt: 60 }, null], arena: 0, pickT: null, lastCres: null, state: 'lobby', round: 0, over: [false, false], rematch: [false, false], hs: [{}, {}] };
         rooms.set(code, r); ws._room = r; ws._idx = 0;
-        rawSend(ws, { t: 'created', code, idx: 0, mode, name }); sendNames(r);
+        rawSend(ws, { t: 'created', code, idx: 0, mode, name, tok: r.players[0].tok }); sendNames(r);
         return;
       }
       case 'join': {
@@ -163,9 +218,10 @@ wss.on('connection', (ws) => {
         const code = String(m.code || '').toUpperCase().trim(); const r = rooms.get(code);
         if (!r) return rawSend(ws, { t: 'err', m: '그런 방이 없어요' });
         if (r.players[1]) return rawSend(ws, { t: 'err', m: '이미 가득 찬 방이에요' });
+        if (!verOk(ws, m)) return;
         if (!pwOk(ws, r, m)) return;
-        r.players[1] = { ws, nick: nickOf(m.nick), sel: null, ready: false, rtt: 60 }; ws._room = r; ws._idx = 1;
-        rawSend(ws, { t: 'joined', code, idx: 1, mode: r.mode, name: r.name }); rawSend(r.players[0].ws, { t: 'peer', n: 2 });
+        r.players[1] = { ws, nick: nickOf(m.nick), tok: crypto.randomBytes(12).toString('hex'), sel: null, ready: false, rtt: 60 }; ws._room = r; ws._idx = 1;
+        rawSend(ws, { t: 'joined', code, idx: 1, mode: r.mode, name: r.name, tok: r.players[1].tok }); rawSend(r.players[0].ws, { t: 'peer', n: 2 });
         sendNames(r); specStatus(r);
         if (r.players[0] && r.players[0].ready) rawSend(ws, { t: 'peerReady', v: true });   // 방장이 미리 준비해 뒀다면 바로 알려 준다
         return;
@@ -174,6 +230,7 @@ wss.on('connection', (ws) => {
         if (room) return;
         const code = String(m.code || '').toUpperCase().trim(); const r = rooms.get(code);
         if (!r) return rawSend(ws, { t: 'err', m: '그런 방이 없어요' });
+        if (!verOk(ws, m)) return;
         if (!r.spec) return rawSend(ws, { t: 'err', m: '관전을 허용하지 않는 방이에요' });
         if (r.specs.length >= MAX_SPEC) return rawSend(ws, { t: 'err', m: '관전 자리가 가득 찼어요' });
         if (!pwOk(ws, r, m)) return;
@@ -181,6 +238,20 @@ wss.on('connection', (ws) => {
         rawSend(ws, { t: 'sjoined', code, mode: r.mode, name: r.name, n: namesOf(r) }); sendNames(r);
         if (r.state === 'play' && r.lastStart) rawSend(ws, Object.assign({}, r.lastStart, { nm: namesOf(r), log: r.log, li: r.lastIn }));
         else specStatus(r, ws);
+        return;
+      }
+      case 'resume': {   // 연결이 끊겼다가 돌아온 플레이어: 방 번호 + 비밀 토큰으로 자기 자리를 되찾는다
+        if (room) return;
+        if (!verOk(ws, m)) return;
+        const r = rooms.get(String(m.code || '').toUpperCase()), tok = String(m.tok || '');
+        const idx = r ? r.players.findIndex((q) => q && q.tok === tok) : -1;
+        if (idx < 0) return rawSend(ws, { t: 'err', c: 'noresume', m: '방이 사라졌어요' });
+        const p = r.players[idx];
+        if (p.graceT) { clearTimeout(p.graceT); p.graceT = null; }
+        if (p.ws && p.ws !== ws) { const old = p.ws; old._room = null; try { old.close(); } catch (e) {} }
+        p.ws = ws; ws._room = r; ws._idx = idx;
+        rawSend(ws, snapshot(r, idx));
+        const o = other(r, idx); if (o) rawSend(o, { t: 'peerReturn' });
         return;
       }
       case 'list': {
@@ -192,7 +263,7 @@ wss.on('connection', (ws) => {
       case 'sel': {   // 내 선택 + (방장이면) 경기장 + 측정한 지연
         if (!room || room.state !== 'lobby' || room.mode === 'classic') return;
         const p = room.players[ws._idx]; if (!p || typeof m.sel !== 'object' || !m.sel) return;
-        p.sel = m.sel; p.rtt = Math.max(0, Math.min(2000, +m.rtt || 60));
+        p.sel = room.mode === 'nospell' ? Object.assign({}, m.sel, { spells: [] }) : m.sel; p.rtt = Math.max(0, Math.min(2000, +m.rtt || 60));
         if (ws._idx === 0 && Number.isInteger(m.arena) && m.arena >= 0 && m.arena < 64) room.arena = m.arena;
         if (ws._idx === 0 && typeof m.sd === 'boolean') room.sd = m.sd;
         return;
@@ -232,7 +303,8 @@ wss.on('connection', (ws) => {
         if (m.t === 'in') {   // 관전자용 기록: 비어 있지 않은 입력만 저장하고, 어디까지 받았는지(lastIn)만 따로 기억한다
           if (!Number.isInteger(m.f) || m.f < 0 || m.f > 1000000 || !Array.isArray(m.a) || m.a.length > 2) return;
           m.a = m.a.filter((j) => j === 0 || j === 1);
-          if (m.f > room.lastIn[ws._idx]) room.lastIn[ws._idx] = m.f;
+          if (m.f <= room.lastIn[ws._idx]) return;   // 이미 받은 프레임(재전송 등)은 무시
+          room.lastIn[ws._idx] = m.f;
           if (m.a.length && room.log.length < 8000) room.log.push([ws._idx, m.f, m.a]);
           if (room.specs.length) { const so = { t: 'in', p: ws._idx, f: m.f, a: m.a }; room.specs.forEach((w) => rawSend(w, so)); }
         }
@@ -255,7 +327,7 @@ wss.on('connection', (ws) => {
               if (cl.cur) { cl.res[0][cl.cur[0]] = w0 === 0 ? 'W' : (w0 === 1 ? 'L' : 'D'); cl.res[1][cl.cur[1]] = w0 === 1 ? 'W' : (w0 === 0 ? 'L' : 'D'); }
               res = { t: 'cres', w: w0, wins: cl.wins.slice(), rd: cl.rd, end: cl.end, mw: cl.end ? (cl.wins[0] > cl.wins[1] ? 0 : (cl.wins[1] > cl.wins[0] ? 1 : -1)) : -2 };
             }
-            room.players.forEach((p) => { if (p) relay(p.ws, res); });
+            room.lastCres = res; room.players.forEach((p) => { if (p) relay(p.ws, res); });
           }
           specStatus(room);
         }
@@ -269,23 +341,26 @@ wss.on('connection', (ws) => {
       }
       case 'back': {   // 선택 화면으로 돌아가기 (둘 다 준비 해제)
         if (!room) return;
-        room.state = 'lobby'; room.cl = null; room.players.forEach((p) => { if (p) p.ready = false; });
+        room.state = 'lobby'; room.cl = null; killPick(room); room.players.forEach((p) => { if (p) p.ready = false; });
         const o = other(room, ws._idx); if (o) rawSend(o, { t: 'peerBack' });
         specStatus(room);
         return;
       }
-      case 'leave': return ws.close();
+      case 'leave': ws._leaving = true; return ws.close();
     }
   }
   ws.on('close', () => {
+    if (ws._iq && ws._iq.length) { const q = ws._iq; ws._iq = []; q.forEach((e) => handle(e.data)); }   // (지연 시뮬레이션용) 닫히기 전에 도착한 메시지를 먼저 처리
     if (ws._pres) schedCount();
     const room = ws._room; if (!room) return;
     if (ws._idx === -2) { room.specs = room.specs.filter((w) => w !== ws); sendNames(room); return; }
-    const o = other(room, ws._idx);
-    room.players[ws._idx] = null;
-    if (o) { rawSend(o, { t: 'left' }); room.state = 'lobby'; room.cl = null; room.lastStart = null; }
-    if (!room.players[0] && !room.players[1]) { room.specs.forEach((w) => { rawSend(w, { t: 'sclosed' }); w._room = null; }); room.specs = []; rooms.delete(room.code); }
-    else if (o) { /* 남은 사람은 방장이 된다 */ if (ws._idx === 0) { room.players[0] = room.players[1]; room.players[1] = null; room.players[0].ws._idx = 0; rawSend(room.players[0].ws, { t: 'host' }); } room.players.forEach((p) => { if (p) { p.ready = false; } }); sendNames(room); specStatus(room); }
+    const idx = ws._idx, p = room.players[idx];
+    if (!p || p.ws !== ws) return;   // 이미 재접속으로 다른 연결이 이 자리를 잇고 있다
+    if (ws._leaving) return dropPlayer(room, idx);
+    /* 갑자기 끊김: 자리를 잠시 비워 두고 기다린다. 돌아오면 이어서 한다 */
+    p.ws = null;
+    const o = other(room, idx); if (o) rawSend(o, { t: 'peerGone', g: GRACE_MS });
+    p.graceT = setTimeout(() => { p.graceT = null; if (room.players[idx] === p && !p.ws) dropPlayer(room, idx); }, GRACE_MS);
   });
   ws.on('error', () => {});
 });
