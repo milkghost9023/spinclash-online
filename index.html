@@ -308,6 +308,10 @@ body.clsSel #hudBars { display: none; }
 .rtabs button { --rc: var(--ink); display: inline-flex; align-items: center; gap: 3px; min-height: 32px; padding: 0 8px; font-size: 12px; font-weight: 700; background: var(--field); border: 2px solid var(--line); border-bottom: 5px solid var(--rc); border-radius: 3px; }
 .rtabs button small { font-size: 10px; color: var(--muted); font-weight: 700; }
 .rtabs button[aria-pressed="true"] { background: var(--rc); color: #14100d; }
+.rtabs button.lk { opacity: 0.5; }
+.rtabs button.lk::before { content: '🔒'; font-size: 10px; margin-right: 1px; }
+.cmdTag { display: block; margin-top: 3px; font-size: 11px; font-weight: 700; color: var(--muted); }
+.cmdTag[hidden] { display: none; }
 .rtabs button[aria-pressed="true"] small { color: inherit; opacity: 0.75; }
 .rtabs button.rnd { margin-left: auto; border-bottom-color: var(--line); }
 /* 고침: 칸 넘침, 이름 겹침, 빈 공간 */
@@ -498,7 +502,7 @@ body.clsSel #hudBars { display: none; }
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v519</span>
+      <span class="verTag">v520</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -558,6 +562,7 @@ body.clsSel #hudBars { display: none; }
       <h2>온라인 대전</h2>
       <div class="netBox" id="netMenu"><p class="netTxt">친구와 1대1 대결해요</p>
         <label class="fld"><span>닉네임</span><input class="txt" id="nickIn" maxlength="10" autocomplete="off" spellcheck="false" aria-label="닉네임"></label>
+        <small class="cmdTag" id="cmdTag" hidden>✦ 제작자 권한 · 닉네임 "유령" 사용 가능</small>
         <label class="fld"><span>방 이름</span><input class="txt" id="rmName" maxlength="16" autocomplete="off" spellcheck="false" placeholder="비우면 자동" aria-label="방 이름"></label>
         <label class="fld"><span>비밀번호</span><input class="txt" id="rmPw" maxlength="8" autocomplete="off" spellcheck="false" placeholder="선택 · 비우면 누구나" aria-label="방 비밀번호"></label>
         <div class="row2"><span>관전 허용</span><button type="button" class="tog" id="rmSpec" aria-pressed="true">켬</button></div>
@@ -583,7 +588,7 @@ body.clsSel #hudBars { display: none; }
         <button type="button" class="tog" id="tickBtn" aria-pressed="false">끔</button></div>
       <div class="row"><span class="nm">소리</span>
         <button type="button" class="tog" id="snd" aria-pressed="true">켬</button></div>
-      <div class="row"><span class="nm">닉네임<small id="nickMsg">온라인에서 상대·관전자에게 보여요</small></span>
+      <div class="row"><span class="nm">닉네임<small id="nickMsg">온라인에서 상대·관전자에게 보여요</small><small class="cmdTag" id="cmdTag2" hidden>✦ 제작자 권한 · 닉네임 "유령" 사용 가능</small></span>
         <span class="cpn"><input id="nickSet" type="text" maxlength="10" autocomplete="off" spellcheck="false" placeholder="닉네임" aria-label="닉네임"><button type="button" class="tog" id="nickBtn">저장</button></span></div>
       <div class="row"><span class="nm">쿠폰<small id="cpnMsg">코드를 넣으면 새 무기가 열려요</small></span>
         <span class="cpn"><input id="cpnIn" type="text" maxlength="24" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="코드" aria-label="쿠폰 코드"><button type="button" class="tog" id="cpnBtn">적용</button></span></div>
@@ -924,11 +929,12 @@ var DM = (function () {
   var RAR = { halberd: 0, selene: 6, sisyphus: 6, boomerang: 1, archmage: 5, morrigan: 6, chronos: 6, snake: 6, chef: 5, lightning: 5, rusty: 1, cannon: 2, laser: 2, shuriken: 2, greatbow: 2, hammer: 1, whip: 1, handfan: 2, giant: 1, beast: 3, gumiho: 5, sulnyeo: 5, trumpet: 1, ash: 6, sword: 0, dummy: 0, dagger: 0, bow: 0, spear: 0, fire: 2, ice: 2, azure: 2, dark: 3, great: 0, robin: 3, angler: 3, vampire: 4, scythe: 4, dancer: 3, hyup: 3, ronin: 3, master: 4, katana: 5, torch: 5, holy: 5, tactician: 4, freak: 4, fighter: 1, dbaxe: 1, rapier: 2, pickaxe: 1, tycoon: 4, extg: 2, michael: 6, mace: 0, elf: 1, sniper: 1, witch: 5, guard: 3, silver: 2, black: 6, plague: 3, songwriter: 1, revolver: 4, thunder: 2, axe: 0, magician: 4, bounty: 4, paewang: 6 };
   var RAR_INFO = [{ n: '일반', c: '#8b94a1' }, { n: '희귀', c: '#2fb857' }, { n: '초희귀', c: '#3d8bff' }, { n: '영웅', c: '#a05cf0' }, { n: '신화', c: '#e8383d' }, { n: '전설', c: '#ffc21a' }, { n: '태고', c: '#3a2a5e' }];
   /* 쿠폰: 기본은 일반~신화(등급 0~4). 쿠폰 코드를 넣으면 해당 등급이 열린다. (브라우저에 저장, 코드는 클라이언트에 있어서 정식 쿠폰은 나중에 서버 검증 필요) */
-  var COUPONS = { spin: { rar: [4], n: '신화' }, beta: { rar: [5], n: '전설' }, '30': { rar: [6], n: '태고' } };
+  var COUPONS = { spin: { rar: [4], n: '신화' }, beta: { rar: [5], n: '전설' }, '30': { rar: [6], n: '태고' }, command: { rar: [], n: '제작자', cmd: true } };
   var cpnApplied = [];
   try { cpnApplied = JSON.parse(localStorage.getItem('spinclash.cpn') || '[]').filter(function (c) { return Object.prototype.hasOwnProperty.call(COUPONS, c); }); } catch (e) { cpnApplied = []; }
   function rarOpen(r) { return r < 4 || cpnApplied.some(function (c) { return COUPONS[c].rar.indexOf(r) >= 0; }); }
   function isLocked(type) { return !rarOpen(RAR[type]); }
+  function cmdOn() { return cpnApplied.indexOf('command') >= 0; }
   var WCOL = { halberd: '#b8c4d6', witch: '#b04ae0', sniper: '#7d8a9c', selene: '#bcd7ff', sisyphus: '#b5651d', boomerang: '#e0a05a', archmage: '#5a6cff', morrigan: '#7b3fe4', chronos: '#ffd34a', snake: '#cfe39a', chef: '#e8edf5', lightning: '#ffe45c', rusty: '#b5651d', cannon: '#4a505a', laser: '#ff2e4d', shuriken: '#8fa6c4', greatbow: '#d4a24a', hammer: '#8d97a6', whip: '#9b6a3a', handfan: '#e8dcc0', giant: '#b98a5e', beast: '#9a6a3c', gumiho: '#ff8a3d', sulnyeo: '#8fdcff', trumpet: '#f0c030', ash: '#9a98a8', dummy: '#c9a46a', paewang: '#b99aff', bounty: '#c4161c', magician: '#b04ad8', axe: '#d9a066', thunder: '#ffe45c', revolver: '#c9a14a', songwriter: '#ffb347', plague: '#8ac926', freak: '#a8222e', fighter: '#e3592f', rapier: '#8fb8ff', pickaxe: '#8a929e', tycoon: '#ffd34a', extg: '#e23a32', michael: '#ffe27a', dbaxe: '#d98a4a', black: '#2b2b33', silver: '#dbe5f0', guard: '#9fb4c8', elf: '#8fe39a', mace: '#c98a4a', sword: '#dfe7f2', spear: '#ffd166', dagger: '#ff6b6b', bow: '#7bd88f', fire: '#ff8a1f', ice: '#7fd3ff', katana: '#ffffff', master: '#38d9c0', dancer: '#ff7eb6', hyup: '#e0a458', ronin: '#8fb8d8', great: '#ff5a2a', dark: '#b36bff', scythe: '#7a7cff', robin: '#b8e04a', azure: '#6ec6ff', vampire: '#c4162a', angler: '#4fb3d9', torch: '#ffb43a', holy: '#f5c542', tactician: '#8a93a6' };
   var SD_START = 60, SD_STEP = 10;   // 서든데스 시작 시간(초), 단계 간격
   var DIRS = [
@@ -14625,7 +14631,7 @@ var DM = (function () {
       var pc0 = palOf(colId(i)), cd0 = el.querySelector('.cdot'); cd0.className = 'cdot' + (pc0.shiny ? ' shiny ' + pc0.id : (pc0.sig ? ' sig ' + pc0.id : '')); cd0.style.setProperty('--sc', pc0.c); el.querySelector('.cn').textContent = pc0.n; el.querySelector('.ccb').setAttribute('aria-expanded', String(!!el._copen)); el.querySelector('.ccb em').textContent = el._copen ? '▴' : '▾'; el.querySelector('.cbadges').hidden = !el._copen;
       el.querySelector('.picker').hidden = !el._open;
       if (el._rt === undefined) el._rt = String(RAR[sel[i].type]);
-      el.querySelectorAll('[data-rt]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.rt === el._rt)); });
+      el.querySelectorAll('[data-rt]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.rt === el._rt)); b.classList.toggle('lk', b.dataset.rt !== 'all' && !rarOpen(+b.dataset.rt)); });
       el.querySelectorAll('.chips button').forEach(function (b) { b.hidden = el._rt !== 'all' && b.dataset.r !== el._rt; });
       el.querySelectorAll('.chips [data-type]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.type === sel[i].type)); b.classList.toggle('lk', isLocked(b.dataset.type)); b.classList.toggle('us', i === net.me && clsActive() && clsTypeUsed(b.dataset.type)); });
       el.querySelectorAll('[data-dir]').forEach(function (b) { b.setAttribute('aria-pressed', String(+b.dataset.dir === sel[i].dir)); });
@@ -14718,27 +14724,44 @@ var DM = (function () {
   }, true);
   /* 닉네임 (이 기기에 저장) */
   function nickClean(x) { x = String(x == null ? '' : x).replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '').replace(/\s+/g, ' ').trim(); return Array.from(x).slice(0, 10).join('').trim(); }
+  /* "유령"은 제작자 전용 닉네임 (공백·보이지 않는 글자를 끼운 변형 포함) */
+  function nickGhost(x) { return String(x == null ? '' : x).normalize('NFKC').replace(/[\s\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '') === '유령'; }
+  function nickBad(x) { return nickGhost(x) && !cmdOn(); }
+  function nickGuest() { return '손님' + (1000 + Math.floor(Math.random() * 9000)); }
+  /* 다른 사람 화면에 보일 때: 제작자 닉네임에는 작은 표시를 붙인다 */
+  function nickNet(x) { x = nickClean(x); return nickGhost(x) ? x + ' ✦제작자' : x; }
   var nick = ''; try { nick = nickClean(localStorage.getItem('spinclash.nick')); } catch (e) {}
+  if (nickBad(nick)) nick = '';
   if (!nick) { nick = '손님' + (1000 + Math.floor(Math.random() * 9000)); try { localStorage.setItem('spinclash.nick', nick); } catch (e) {} }
-  function nickSave(v) { v = nickClean(v); if (!v) return false; nick = v; try { localStorage.setItem('spinclash.nick', nick); } catch (e) {} $('#nickIn').value = nick; $('#nickSet').value = nick; return true; }
+  function nickSave(v) { v = nickClean(v); if (!v || nickBad(v)) return false; nick = v; try { localStorage.setItem('spinclash.nick', nick); } catch (e) {} $('#nickIn').value = nick; $('#nickSet').value = nick; return true; }
   function nickRead() { if (!nickSave($('#nickIn').value)) $('#nickIn').value = nick; return nick; }
+  function cmdTagSync() { var on = cmdOn(); ['#cmdTag', '#cmdTag2'].forEach(function (q) { var t = $(q); if (t) t.hidden = !on; }); }
   $('#nickIn').value = nick; $('#nickSet').value = nick;
-  function nickApply() { var m = $('#nickMsg'); if (nickSave($('#nickSet').value)) m.textContent = '저장했어요: ' + nick; else { $('#nickSet').value = nick; m.textContent = '닉네임을 입력해 주세요'; } }
+  function nickApply() { var m = $('#nickMsg'); if (nickSave($('#nickSet').value)) m.textContent = '저장했어요: ' + nick; else { var bad = nickBad($('#nickSet').value); $('#nickSet').value = nick; m.textContent = bad ? '이 닉네임은 쓸 수 없어요' : '닉네임을 입력해 주세요'; } }
   $('#nickBtn').addEventListener('click', nickApply);
   $('#nickSet').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); nickApply(); } });
   $('#nickIn').addEventListener('change', nickRead);
   function cpnRefresh(msg) {
     var m = $('#cpnMsg'); if (!m) return;
-    m.textContent = msg || (cpnApplied.length ? '열린 등급: ' + cpnApplied.map(function (c) { return COUPONS[c].n; }).join(' · ') : '코드를 넣으면 새 무기가 열려요');
+    var op = cpnApplied.filter(function (c) { return !COUPONS[c].cmd; });
+    m.textContent = msg || (op.length ? '열린 등급: ' + op.map(function (c) { return COUPONS[c].n; }).join(' · ') : '코드를 넣으면 새 무기가 열려요');
+    cmdTagSync();
   }
   function cpnApply() {
     var inp = $('#cpnIn'), c = inp.value.trim().toLowerCase();
     if (!c) { cpnRefresh('코드를 입력해 주세요'); return; }
+    if (c === 'nocommand') {   /* 제작자 권한 박탈 */
+      var had = cmdOn(); cpnApplied = cpnApplied.filter(function (x) { return x !== 'command'; }); try { localStorage.setItem('spinclash.cpn', JSON.stringify(cpnApplied)); } catch (e) {}
+      inp.value = ''; var reset = '';
+      if (nickGhost(nick)) { nick = nickGuest(); try { localStorage.setItem('spinclash.nick', nick); } catch (e) {} $('#nickIn').value = nick; $('#nickSet').value = nick; reset = ' · 닉네임은 ' + nick + ' 으로 바뀌었어요'; }
+      cpnRefresh(had ? '제작자 권한을 해제했어요' + reset : '해제할 제작자 권한이 없어요'); return;
+    }
     if (!Object.prototype.hasOwnProperty.call(COUPONS, c)) { cpnRefresh('없는 코드예요'); return; }
     if (cpnApplied.indexOf(c) >= 0) { inp.value = ''; cpnRefresh('이미 적용된 코드예요'); return; }
     cpnApplied.push(c); try { localStorage.setItem('spinclash.cpn', JSON.stringify(cpnApplied)); } catch (e) {}
-    inp.value = ''; cpnRefresh(COUPONS[c].n + ' 등급이 열렸어요!'); sync();
+    inp.value = ''; cpnRefresh(COUPONS[c].cmd ? '제작자 권한이 열렸어요 · 닉네임 "유령" 사용 가능' : COUPONS[c].n + ' 등급이 열렸어요!'); sync();
   }
+  cmdTagSync();
   $('#cpnBtn').addEventListener('click', cpnApply);
   $('#cpnIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); cpnApply(); } });
   function openSettings() {
@@ -14882,7 +14905,7 @@ var DM = (function () {
       case 'sjoined': net.pj = null; netListStop(); netSpecEnter(m); break;
       case 'sst': netSpecStatus(m); break;
       case 'sclosed': if (net.spec) { netReset(); showScreen('title'); netShow('menu', '방이 닫혔어요', true); } break;
-      case 'names': net.names = [nickClean(m.n && m.n[0]), nickClean(m.n && m.n[1])]; net.sc = Math.max(0, m.sc | 0); specTagSync(); if (net.joinNote && net.names[1] && !net.spec) { net.joinNote = false; netNotify(net.names[1] + ' 님이 들어왔어요!', true); } if (net.spec && net.st === 'spec') netSpecPanel(); else if (net.on && !net.spec && net.st === 'select') netSelUI(); else if (net.cl && net.st === 'cpick') clsRender(); break;
+      case 'names': net.names = [nickNet(m.n && m.n[0]), nickNet(m.n && m.n[1])]; net.sc = Math.max(0, m.sc | 0); specTagSync(); if (net.joinNote && net.names[1] && !net.spec) { net.joinNote = false; netNotify(net.names[1] + ' 님이 들어왔어요!', true); } if (net.spec && net.st === 'spec') netSpecPanel(); else if (net.on && !net.spec && net.st === 'select') netSelUI(); else if (net.cl && net.st === 'cpick') clsRender(); break;
       case 'rooms': net.rooms = Array.isArray(m.l) ? m.l.slice(0, 40) : []; if (net.view === 'list' && !net.on) { netListRender(); var nm = $('#netMsg'); if (!nm.classList.contains('bad')) nm.textContent = ''; } break;
       case 'peer': net.peerHere = true; net.hadPeer = true; net.joinNote = true; net.sentType = null; if (!net.on) netEnterSelect(); else netSelUI(); break;
       case 'resumed': netResumed(m); break;
@@ -14975,7 +14998,7 @@ var DM = (function () {
     net.mySel = clone(sel[net.me]);
     var s0 = netSane(m.sel && m.sel[0]), s1 = netSane(m.sel && m.sel[1]);
     if (s1.col === s0.col) s1.col = s0.col === 'red' ? 'blue' : 'red';
-    if (Array.isArray(m.nm)) net.names = [nickClean(m.nm[0]), nickClean(m.nm[1])];
+    if (Array.isArray(m.nm)) net.names = [nickNet(m.nm[0]), nickNet(m.nm[1])];
     sel = [s0, s1]; arenaSel = (m.arena | 0) >= 0 && (m.arena | 0) < ARENAS.length ? (m.arena | 0) : 0;
     fxOn = true; sdOn = m.sd !== false;
     net.D = Math.max(3, Math.min(30, m.D | 0 || 6)); net.step = 0; net.loc = {}; net.opp = {}; net.pend = []; net.hs = {}; net.ohs = {}; net.stall = 0; net.maxStall = 0; net.round = m.round | 0;
@@ -15154,7 +15177,7 @@ var DM = (function () {
     if (!net.on || net.spec) return;
     net.pgAt = 0; net.stall = 0; net.lastPong = Date.now();
     net.me = m.idx === 1 ? 1 : 0; net.mode = modeOf(m.mode); net.peerHere = !!m.np; if (m.np) net.hadPeer = true;
-    if (Array.isArray(m.n)) net.names = [nickClean(m.n[0]), nickClean(m.n[1])];
+    if (Array.isArray(m.n)) net.names = [nickNet(m.n[0]), nickNet(m.n[1])];
     net.sc = Math.max(0, m.sc | 0); specTagSync();
     var rdy = Array.isArray(m.ready) ? m.ready : [false, false];
     var run = (m.st === 'play' || m.st === 'after') && m.start;
@@ -15226,7 +15249,7 @@ var DM = (function () {
       var row = document.createElement('div'); row.className = 'rm';
       var inf = document.createElement('div'); inf.className = 'rmi';
       var nm = document.createElement('b'); nm.className = 'rmn'; nm.textContent = (r.lk ? '🔒 ' : '') + roomClean(r.nm);
-      var sm = document.createElement('small'); sm.textContent = nickClean(r.h) + ' · ' + (r.md === 'classic' ? '클래식' : (r.md === 'nospell' ? '노 스펠전' : '진검승부')) + ' · ' + st + ' · ' + np + '/2' + ((r.sc | 0) > 0 ? ' · 👁 ' + (r.sc | 0) : '');
+      var sm = document.createElement('small'); sm.textContent = nickNet(r.h) + ' · ' + (r.md === 'classic' ? '클래식' : (r.md === 'nospell' ? '노 스펠전' : '진검승부')) + ' · ' + st + ' · ' + np + '/2' + ((r.sc | 0) > 0 ? ' · 👁 ' + (r.sc | 0) : '');
       inf.appendChild(nm); inf.appendChild(sm);
       var act = document.createElement('div'); act.className = 'rma';
       var jb = document.createElement('button'); jb.type = 'button'; jb.textContent = '참가'; jb.dataset.c = r.c; jb.dataset.act = 'join'; jb.disabled = np >= 2;
@@ -15237,7 +15260,7 @@ var DM = (function () {
   function netPwAsk(msg, bad) { netShow('pw', msg || '', !!bad); $('#pwIn').value = ''; setTimeout(function () { $('#pwIn').focus(); }, 50); }
   function netDoJoin(pw) {
     var j = net.pj; if (!j) return;
-    netSend({ t: j.act === 'spec' ? 'spec' : 'join', ver: VER, code: j.code, nick: nickRead(), pw: pw || '' });
+    netSend({ t: j.act === 'spec' ? 'spec' : 'join', cp: cmdOn() ? 'command' : '', ver: VER, code: j.code, nick: nickRead(), pw: pw || '' });
   }
   $('#rmList').addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('button[data-c]'); if (!b || b.disabled) return;
@@ -15251,7 +15274,7 @@ var DM = (function () {
   /* ── 관전 ── */
   function netSpecEnter(m) {
     net.on = true; net.spec = true; net.me = -1; net.peerHere = true; net.code = m.code; net.mode = modeOf(m.mode); net.roomName = roomClean(m.name);
-    net.names = [nickClean(m.n && m.n[0]), nickClean(m.n && m.n[1])]; net.st = 'spec'; net.sin = [{}, {}]; net.spCl = null; net.spSt = 'lobby'; net.spNp = 2;
+    net.names = [nickNet(m.n && m.n[0]), nickNet(m.n && m.n[1])]; net.st = 'spec'; net.sin = [{}, {}]; net.spCl = null; net.spSt = 'lobby'; net.spNp = 2;
     net.backup = { sel: clone(sel), arena: arenaSel, fx: fxOn, sd: sdOn };
     netModal.hidden = true; document.body.classList.add('online', 'spec'); document.body.classList.remove('me0', 'me1');
     showScreen('spec'); netSpecPanel(); specTagSync();
@@ -15276,7 +15299,7 @@ var DM = (function () {
   }
   function netSpecStatus(m) {
     if (!net.on || !net.spec) return;
-    if (Array.isArray(m.n)) net.names = [nickClean(m.n[0]), nickClean(m.n[1])];
+    if (Array.isArray(m.n)) net.names = [nickNet(m.n[0]), nickNet(m.n[1])];
     if (m.name) net.roomName = roomClean(m.name);
     var c = null;
     if (m.cl && Array.isArray(m.cl.decks) && m.cl.decks.length === 2) {
@@ -15296,7 +15319,7 @@ var DM = (function () {
     if (!net.on || !net.spec) return;
     var s0 = netSane(m.sel && m.sel[0]), s1 = netSane(m.sel && m.sel[1]);
     if (s1.col === s0.col) s1.col = s0.col === 'red' ? 'blue' : 'red';
-    if (Array.isArray(m.nm)) net.names = [nickClean(m.nm[0]), nickClean(m.nm[1])];
+    if (Array.isArray(m.nm)) net.names = [nickNet(m.nm[0]), nickNet(m.nm[1])];
     sel = [s0, s1]; arenaSel = (m.arena | 0) >= 0 && (m.arena | 0) < ARENAS.length ? (m.arena | 0) : 0;
     fxOn = true; sdOn = m.sd !== false;
     if (net.mode === 'nospell') { s0.spells = []; s1.spells = []; }
@@ -15339,7 +15362,7 @@ var DM = (function () {
   $('#onlineBtn').addEventListener('click', function () { audio(); netShow('menu'); });
   function netCreateRoom(mode) {
     var nk = nickRead(); netShow('menu', '방을 만드는 중…');
-    netConnect(function () { netSend({ t: 'create', ver: VER, mode: mode, nick: nk, name: $('#rmName').value, pw: $('#rmPw').value, spec: rmSpecOn }); });
+    netConnect(function () { netSend({ t: 'create', cp: cmdOn() ? 'command' : '', ver: VER, mode: mode, nick: nk, name: $('#rmName').value, pw: $('#rmPw').value, spec: rmSpecOn }); });
   }
   $('#netCreate').addEventListener('click', function () { netCreateRoom('single'); });
   $('#netCreateC').addEventListener('click', function () { netCreateRoom('classic'); });
