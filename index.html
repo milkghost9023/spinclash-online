@@ -512,7 +512,7 @@ body.clsSel #hudBars { display: none; }
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v522</span>
+      <span class="verTag">v523</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -948,13 +948,15 @@ var DM = (function () {
   };
   var RAR = { halberd: 0, selene: 6, sisyphus: 6, boomerang: 1, archmage: 5, morrigan: 6, chronos: 6, snake: 6, chef: 5, lightning: 5, rusty: 1, cannon: 2, laser: 2, shuriken: 2, greatbow: 2, hammer: 1, whip: 1, handfan: 2, giant: 1, beast: 3, gumiho: 5, sulnyeo: 5, trumpet: 1, ash: 6, sword: 0, dummy: 0, dagger: 0, bow: 0, spear: 0, fire: 2, ice: 2, azure: 2, dark: 3, great: 0, robin: 3, angler: 3, vampire: 4, scythe: 4, dancer: 3, hyup: 3, ronin: 3, master: 4, katana: 5, torch: 5, holy: 5, tactician: 4, freak: 4, fighter: 1, dbaxe: 1, rapier: 2, pickaxe: 1, tycoon: 4, extg: 2, michael: 6, mace: 0, elf: 1, sniper: 1, witch: 5, guard: 3, silver: 2, black: 6, plague: 3, songwriter: 1, revolver: 4, thunder: 2, axe: 0, magician: 4, bounty: 4, paewang: 6 };
   var RAR_INFO = [{ n: '일반', c: '#8b94a1' }, { n: '희귀', c: '#2fb857' }, { n: '초희귀', c: '#3d8bff' }, { n: '영웅', c: '#a05cf0' }, { n: '신화', c: '#e8383d' }, { n: '전설', c: '#ffc21a' }, { n: '태고', c: '#3a2a5e' }];
-  /* 쿠폰: 기본은 일반~신화(등급 0~4). 쿠폰 코드를 넣으면 해당 등급이 열린다. (브라우저에 저장, 코드는 클라이언트에 있어서 정식 쿠폰은 나중에 서버 검증 필요) */
-  var COUPONS = { spin: { rar: [4], n: '신화' }, beta: { rar: [5], n: '전설' }, '30': { rar: [6], n: '태고' }, command: { rar: [], n: '제작자', cmd: true } };
-  var cpnApplied = [];
-  try { cpnApplied = JSON.parse(localStorage.getItem('spinclash.cpn') || '[]').filter(function (c) { return Object.prototype.hasOwnProperty.call(COUPONS, c); }); } catch (e) { cpnApplied = []; }
-  function rarOpen(r) { return r < 4 || cpnApplied.some(function (c) { return COUPONS[c].rar.indexOf(r) >= 0; }); }
+  /* 쿠폰: 기본은 일반~영웅(등급 0~3). 로그인한 계정이 코드를 넣으면(서버가 코드를 확인) 신화·전설·태고 등급이 계정에 저장돼서 어느 기기에서든 열린다.
+     acct.me.g = 서버가 알려 준 열린 권한 ['r4','r5','r6','cmd'] — 손님은 모두 잠김 */
+  var acct = { tk: '', me: null, mail: false, busy: false, view: 'out', tab: 'login', rst: '' };
+  var accBoot = false;   // 저장된 로그인으로 /api/me 확인 중일 때는 잠긴 무기 선택을 건드리지 않는다
+  var GRANT_NAME = { r4: '신화', r5: '전설', r6: '태고' };
+  function grantHas(g) { return !!(acct.me && acct.me.g && acct.me.g.indexOf(g) >= 0); }
+  function rarOpen(r) { return r < 4 || grantHas('r' + r); }
   function isLocked(type) { return !rarOpen(RAR[type]); }
-  function cmdOn() { return cpnApplied.indexOf('command') >= 0; }
+  function cmdOn() { return grantHas('cmd'); }
   var WCOL = { halberd: '#b8c4d6', witch: '#b04ae0', sniper: '#7d8a9c', selene: '#bcd7ff', sisyphus: '#b5651d', boomerang: '#e0a05a', archmage: '#5a6cff', morrigan: '#7b3fe4', chronos: '#ffd34a', snake: '#cfe39a', chef: '#e8edf5', lightning: '#ffe45c', rusty: '#b5651d', cannon: '#4a505a', laser: '#ff2e4d', shuriken: '#8fa6c4', greatbow: '#d4a24a', hammer: '#8d97a6', whip: '#9b6a3a', handfan: '#e8dcc0', giant: '#b98a5e', beast: '#9a6a3c', gumiho: '#ff8a3d', sulnyeo: '#8fdcff', trumpet: '#f0c030', ash: '#9a98a8', dummy: '#c9a46a', paewang: '#b99aff', bounty: '#c4161c', magician: '#b04ad8', axe: '#d9a066', thunder: '#ffe45c', revolver: '#c9a14a', songwriter: '#ffb347', plague: '#8ac926', freak: '#a8222e', fighter: '#e3592f', rapier: '#8fb8ff', pickaxe: '#8a929e', tycoon: '#ffd34a', extg: '#e23a32', michael: '#ffe27a', dbaxe: '#d98a4a', black: '#2b2b33', silver: '#dbe5f0', guard: '#9fb4c8', elf: '#8fe39a', mace: '#c98a4a', sword: '#dfe7f2', spear: '#ffd166', dagger: '#ff6b6b', bow: '#7bd88f', fire: '#ff8a1f', ice: '#7fd3ff', katana: '#ffffff', master: '#38d9c0', dancer: '#ff7eb6', hyup: '#e0a458', ronin: '#8fb8d8', great: '#ff5a2a', dark: '#b36bff', scythe: '#7a7cff', robin: '#b8e04a', azure: '#6ec6ff', vampire: '#c4162a', angler: '#4fb3d9', torch: '#ffb43a', holy: '#f5c542', tactician: '#8a93a6' };
   var SD_START = 60, SD_STEP = 10;   // 서든데스 시작 시간(초), 단계 간격
   var DIRS = [
@@ -1066,7 +1068,7 @@ var DM = (function () {
   }
   try {
     var saved = JSON.parse(localStorage.getItem('spinclash.sel3') || 'null');
-    if (saved && saved.length === 2 && saved.every(function (x) { return W[x.type] && (x.trait === 0 || x.trait === 1 || x.trait === 2) && typeof x.ang === 'number' && x.dir >= 0 && x.dir < 9; })) { sel = saved; sel.forEach(function (x) { if (isLocked(x.type)) { x.type = 'sword'; x.trait = 0; } }); }
+    if (saved && saved.length === 2 && saved.every(function (x) { return W[x.type] && (x.trait === 0 || x.trait === 1 || x.trait === 2) && typeof x.ang === 'number' && x.dir >= 0 && x.dir < 9; })) { sel = saved; try { accBoot = !!localStorage.getItem('spinclash.sess'); } catch (e) {} if (!accBoot) sel.forEach(function (x) { if (isLocked(x.type)) { x.type = 'sword'; x.trait = 0; } }); }
     var ai = parseInt(localStorage.getItem('spinclash.arena') || '0', 10);
     if (ai >= 0 && ai < 6) arenaSel = ai;
     if (localStorage.getItem('spinclash.fx') === '0') fxOn = false;
@@ -14639,6 +14641,7 @@ var DM = (function () {
   function sync() {
     if (typeof netTypeSend === 'function') netTypeSend();
     if (typeof clsTabsSync === 'function') clsTabsSync();
+    if (!accBoot) sel.forEach(function (x) { if (isLocked(x.type)) { x.type = 'sword'; x.trait = 0; } });   // 로그아웃·권한 해제로 잠기게 된 무기는 검으로
     sel.forEach(function (x) { if (x.trait > W[x.type].traits.length) x.trait = 0; });
     applyColors();
     cardEls.forEach(function (el, i) {
@@ -14742,8 +14745,7 @@ var DM = (function () {
     else if (b.dataset.spell) uiTick(1.25);
     else uiTick(1);
   }, true);
-  /* 계정 상태: 로그인하면 닉네임은 계정 것이 우선 (손님 닉네임은 이 기기에 따로 남겨 둔다) */
-  var acct = { tk: '', me: null, mail: false, busy: false, view: 'out', tab: 'login', rst: '' };
+  /* 계정 상태(acct)는 위쪽에 있음: 로그인하면 닉네임은 계정 것이 우선 (손님 닉네임은 이 기기에 따로 남겨 둔다) */
   /* 닉네임 (이 기기에 저장) */
   function nickClean(x) { x = String(x == null ? '' : x).replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '').replace(/\s+/g, ' ').trim(); return Array.from(x).slice(0, 10).join('').trim(); }
   /* "유령"·"유우령"(유 뒤에 우를 늘린 것)이 어디라도 들어간 닉네임은 제작자 전용 (공백·보이지 않는 글자를 끼운 변형 포함) */
@@ -14765,23 +14767,29 @@ var DM = (function () {
   $('#nickIn').addEventListener('change', nickRead);
   function cpnRefresh(msg) {
     var m = $('#cpnMsg'); if (!m) return;
-    var op = cpnApplied.filter(function (c) { return !COUPONS[c].cmd; });
-    m.textContent = msg || (op.length ? '열린 등급: ' + op.map(function (c) { return COUPONS[c].n; }).join(' · ') : '코드를 넣으면 새 무기가 열려요');
+    var op = ['r4', 'r5', 'r6'].filter(grantHas);
+    m.textContent = msg || (!acct.me ? (window.SPIN_ACC ? '쿠폰은 로그인하면 쓸 수 있어요' : '쿠폰은 지금 쓸 수 없어요') : (op.length ? '열린 등급: ' + op.map(function (g) { return GRANT_NAME[g]; }).join(' · ') : '코드를 넣으면 새 무기가 열려요'));
     cmdTagSync();
   }
   function cpnApply() {
     var inp = $('#cpnIn'), c = inp.value.trim().toLowerCase();
     if (!c) { cpnRefresh('코드를 입력해 주세요'); return; }
-    if (c === 'nocommand') {   /* 제작자 권한 박탈 */
-      var had = cmdOn(); cpnApplied = cpnApplied.filter(function (x) { return x !== 'command'; }); try { localStorage.setItem('spinclash.cpn', JSON.stringify(cpnApplied)); } catch (e) {}
-      inp.value = ''; var reset = '';
-      if (nickGhost(nick)) { nick = nickGuest(); try { localStorage.setItem('spinclash.nick', nick); } catch (e) {} $('#nickIn').value = nick; $('#nickSet').value = nick; reset = ' · 닉네임은 ' + nick + ' 으로 바뀌었어요'; }
-      cpnRefresh(had ? '제작자 권한을 해제했어요' + reset : '해제할 제작자 권한이 없어요'); return;
-    }
-    if (!Object.prototype.hasOwnProperty.call(COUPONS, c)) { cpnRefresh('없는 코드예요'); return; }
-    if (cpnApplied.indexOf(c) >= 0) { inp.value = ''; cpnRefresh('이미 적용된 코드예요'); return; }
-    cpnApplied.push(c); try { localStorage.setItem('spinclash.cpn', JSON.stringify(cpnApplied)); } catch (e) {}
-    inp.value = ''; cpnRefresh(COUPONS[c].cmd ? '제작자 권한이 열렸어요 · 닉네임 "유령" 사용 가능' : COUPONS[c].n + ' 등급이 열렸어요!'); sync();
+    if (!acct.me) { cpnRefresh(window.SPIN_ACC ? '쿠폰은 로그인하면 쓸 수 있어요' : '쿠폰은 지금 쓸 수 없어요'); return; }
+    if (acct.busy) return;
+    acct.busy = true; $('#cpnBtn').disabled = true; cpnRefresh('확인하는 중…');
+    acApi('/api/coupon', { c: c }).then(function (j) {
+      acct.busy = false; $('#cpnBtn').disabled = false;
+      if (j.status === 401 && j.c === 'auth') { acClear(); cpnRefresh('로그인이 만료됐어요. 다시 로그인해 주세요'); return; }
+      if (j.me && acct.me) { acct.me = j.me; }
+      var t;
+      if (!j.ok) t = j.m || '코드를 확인하지 못했어요';
+      else if (j.k === 'revoke') t = '제작자 권한을 해제했어요' + (j.me && acct.me && /^플레이어\d+$/.test(j.me.n) ? ' · 닉네임은 ' + j.me.n + ' 으로 바뀌었어요' : '');
+      else if (j.k === 'norev') t = '해제할 제작자 권한이 없어요';
+      else if (j.k === 'dup') t = '이미 적용된 코드예요';
+      else t = j.g === 'cmd' ? '제작자 권한이 열렸어요 · 닉네임 "유령" 사용 가능' : (GRANT_NAME[j.g] || '') + ' 등급이 열렸어요!';
+      if (j.ok) inp.value = '';
+      accUiSync(); cpnRefresh(t); sync();
+    });
   }
   cmdTagSync();
   $('#cpnBtn').addEventListener('click', cpnApply);
@@ -14803,8 +14811,22 @@ var DM = (function () {
     $('#nickIn').readOnly = !!acct.me; $('#nickSet').readOnly = !!acct.me; $('#nickBtn').disabled = !!acct.me;
     if (acct.me) $('#nickMsg').textContent = '계정 닉네임이에요 · 계정 창에서 바꿔요';
   }
-  function acSetSession(tk, me, mail) { acct.tk = tk; acct.me = me; acct.mail = !!mail; try { localStorage.setItem('spinclash.sess', tk); } catch (e) {} accUiSync(); }
-  function acClear() { acct.tk = ''; acct.me = null; try { localStorage.removeItem('spinclash.sess'); } catch (e) {} accUiSync(); if (!acct.me && window.SPIN_ACC) $('#nickMsg').textContent = '온라인에서 상대·관전자에게 보여요'; }
+  function acSetSession(tk, me, mail) { acct.tk = tk; acct.me = me; acct.mail = !!mail; try { localStorage.setItem('spinclash.sess', tk); } catch (e) {} accUiSync(); cpnMigrate(); sync(); cpnRefresh(); }
+  /* 예전에 이 기기에 저장해 둔 쿠폰(손님 시절)을 로그인한 계정으로 옮긴다: 코드를 서버가 다시 확인하고, 확인이 끝난 건 기기에서 지운다 */
+  function cpnMigrate() {
+    var old = []; try { old = JSON.parse(localStorage.getItem('spinclash.cpn') || '[]'); } catch (e) {} if (!Array.isArray(old) || !old.length) return;
+    var keep = [], i = 0;
+    (function next() {
+      if (!acct.me || i >= old.length) { try { if (keep.length) localStorage.setItem('spinclash.cpn', JSON.stringify(keep)); else localStorage.removeItem('spinclash.cpn'); } catch (e) {} if (acct.me) { accUiSync(); sync(); cpnRefresh(); } return; }
+      var c = String(old[i++] || '').slice(0, 40);
+      acApi('/api/coupon', { c: c }).then(function (j) {
+        if (j.c === 'net' || j.status >= 500 || j.status === 429) keep.push(c);   // 나중에 다시 시도
+        else if (j.me && acct.me) acct.me = j.me;
+        next();
+      });
+    })();
+  }
+  function acClear() { acct.tk = ''; acct.me = null; try { localStorage.removeItem('spinclash.sess'); } catch (e) {} accUiSync(); sync(); cpnRefresh(); if (!acct.me && window.SPIN_ACC) $('#nickMsg').textContent = '온라인에서 상대·관전자에게 보여요'; }
   var accEl = $('#accModal'), accBody = $('#accBody');
   function acMsg(t, bad) { var m = $('#accMsg'); m.textContent = t || ''; m.classList.toggle('bad', !!bad); }
   function acOpen(view) {
@@ -14896,10 +14918,11 @@ var DM = (function () {
     $('#accClose').addEventListener('click', acClose);
     accEl.addEventListener('click', function (e) { if (e.target === accEl) acClose(); });
     var tk0 = ''; try { tk0 = localStorage.getItem('spinclash.sess') || ''; } catch (e) {}
-    if (tk0) { acct.tk = tk0; acApi('/api/me').then(function (j) { if (j.ok) acSetSession(tk0, j.me, j.mail); else if (j.status === 401) acClear(); }); }
+    if (tk0) { acct.tk = tk0; accBoot = true; acApi('/api/me').then(function (j) { if (j.ok) { accBoot = false; acSetSession(tk0, j.me, j.mail); } else if (j.status === 401) { accBoot = false; acClear(); } }); } else accBoot = false;
     var rq = ''; try { rq = new URLSearchParams(location.search).get('reset') || ''; } catch (e) {}
     if (rq) { acct.rst = rq; try { history.replaceState(null, '', location.pathname); } catch (e) {} acOpen('reset'); }
   }
+  if (!window.SPIN_ACC) accBoot = false;
   accUiSync();
   function openSettings() {
     if ((phase === 'playing' || phase === 'countdown') && !demo && !paused && !net.on) { paused = true; modalPaused = true; pauseBtn.textContent = '계속하기'; }
@@ -15398,7 +15421,7 @@ var DM = (function () {
   function netPwAsk(msg, bad) { netShow('pw', msg || '', !!bad); $('#pwIn').value = ''; setTimeout(function () { $('#pwIn').focus(); }, 50); }
   function netDoJoin(pw) {
     var j = net.pj; if (!j) return;
-    netSend({ t: j.act === 'spec' ? 'spec' : 'join', tk: acct.tk, cp: cmdOn() ? 'command' : '', ver: VER, code: j.code, nick: nickRead(), pw: pw || '' });
+    netSend({ t: j.act === 'spec' ? 'spec' : 'join', tk: acct.tk, ver: VER, code: j.code, nick: nickRead(), pw: pw || '' });
   }
   $('#rmList').addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('button[data-c]'); if (!b || b.disabled) return;
@@ -15500,7 +15523,7 @@ var DM = (function () {
   $('#onlineBtn').addEventListener('click', function () { audio(); netShow('menu'); });
   function netCreateRoom(mode) {
     var nk = nickRead(); netShow('menu', '방을 만드는 중…');
-    netConnect(function () { netSend({ t: 'create', tk: acct.tk, cp: cmdOn() ? 'command' : '', ver: VER, mode: mode, nick: nk, name: $('#rmName').value, pw: $('#rmPw').value, spec: rmSpecOn }); });
+    netConnect(function () { netSend({ t: 'create', tk: acct.tk, ver: VER, mode: mode, nick: nk, name: $('#rmName').value, pw: $('#rmPw').value, spec: rmSpecOn }); });
   }
   $('#netCreate').addEventListener('click', function () { netCreateRoom('single'); });
   $('#netCreateC').addEventListener('click', function () { netCreateRoom('classic'); });

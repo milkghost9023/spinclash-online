@@ -72,11 +72,10 @@ function cleanText(s, max) {
   s = String(s == null ? '' : s).replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '').replace(/\s+/g, ' ').trim();
   return Array.from(s).slice(0, max).join('').trim();
 }
-/* "유령"(유우령 등 늘린 변형 포함)이 들어간 닉네임은 제작자 전용: 제작자 코드(해시로만 비교)를 보낸 사람만 쓸 수 있다. 공백·보이지 않는 글자를 끼운 변형도 같이 막는다 */
-const CMD_HASH = crypto.createHash('sha256').update('command').digest('hex');
+/* "유령"(유우령 등 늘린 변형 포함)이 들어간 닉네임은 제작자 전용: 로그인한 계정 중 제작자 권한이 있는 계정만 쓸 수 있다(계정 모듈이 검사).
+ * 손님은 쓸 수 없고, 공백·보이지 않는 글자를 끼운 변형도 같이 막는다 */
 function isGhost(s) { return String(s == null ? '' : s).normalize('NFKC').replace(/[\s\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '').search(/유[유우]*령/) >= 0; }
-function cmdOk(cp) { return typeof cp === 'string' && cp.length < 40 && crypto.createHash('sha256').update(cp.trim().toLowerCase()).digest('hex') === CMD_HASH; }
-function nickOf(s, cp) { const n = cleanText(s, 10); if ((isGhost(n) && !cmdOk(cp)) || accounts.nickTaken(n)) return '손님' + (1000 + crypto.randomInt(9000)); return n || ('손님' + (1000 + crypto.randomInt(9000))); }   // 가입자가 쓰는 닉네임을 손님이 따라 쓸 수 없다
+function nickOf(s) { const n = cleanText(s, 10); if (isGhost(n) || accounts.nickTaken(n)) return '손님' + (1000 + crypto.randomInt(9000)); return n || ('손님' + (1000 + crypto.randomInt(9000))); }   // 가입자가 쓰는 닉네임을 손님이 따라 쓸 수 없다
 function namesOf(room) { return room.players.map((p) => (p ? p.nick : '')); }
 function sendNames(room) {
   const o = { t: 'names', n: namesOf(room), sc: room.specs.length };
@@ -226,7 +225,7 @@ wss.on('connection', (ws) => {
         if (!verOk(ws, m)) return;
         const mode = m.mode === 'classic' ? 'classic' : (m.mode === 'nospell' ? 'nospell' : 'single');
         if (rooms.size >= MAX_ROOMS) return rawSend(ws, { t: 'err', m: '지금은 방을 더 만들 수 없어요' });
-        const nick = m._u ? m._u.nick : nickOf(m.nick, m.cp), name = cleanText(m.name, 16) || (nick + '의 방'), pw = cleanText(m.pw, 8);
+        const nick = m._u ? m._u.nick : nickOf(m.nick), name = cleanText(m.name, 16) || (nick + '의 방'), pw = cleanText(m.pw, 8);
         const r = { code, mode, name, pw, spec: m.spec !== false, specs: [], lastStart: null, log: [], lastIn: [-1, -1], cl: null, players: [{ ws, nick, uid: m._u ? m._u.id : 0, tok: crypto.randomBytes(12).toString('hex'), sel: null, ready: false, rtt: 60 }, null], arena: 0, pickT: null, lastCres: null, state: 'lobby', round: 0, over: [false, false], rematch: [false, false], hs: [{}, {}] };
         rooms.set(code, r); ws._room = r; ws._idx = 0;
         rawSend(ws, { t: 'created', code, idx: 0, mode, name, tok: r.players[0].tok }); sendNames(r);
@@ -239,7 +238,7 @@ wss.on('connection', (ws) => {
         if (r.players[1]) return rawSend(ws, { t: 'err', m: '이미 가득 찬 방이에요' });
         if (!verOk(ws, m)) return;
         if (!pwOk(ws, r, m)) return;
-        r.players[1] = { ws, nick: m._u ? m._u.nick : nickOf(m.nick, m.cp), uid: m._u ? m._u.id : 0, tok: crypto.randomBytes(12).toString('hex'), sel: null, ready: false, rtt: 60 }; ws._room = r; ws._idx = 1;
+        r.players[1] = { ws, nick: m._u ? m._u.nick : nickOf(m.nick), uid: m._u ? m._u.id : 0, tok: crypto.randomBytes(12).toString('hex'), sel: null, ready: false, rtt: 60 }; ws._room = r; ws._idx = 1;
         rawSend(ws, { t: 'joined', code, idx: 1, mode: r.mode, name: r.name, tok: r.players[1].tok }); rawSend(r.players[0].ws, { t: 'peer', n: 2 });
         sendNames(r); specStatus(r);
         if (r.players[0] && r.players[0].ready) rawSend(ws, { t: 'peerReady', v: true });   // 방장이 미리 준비해 뒀다면 바로 알려 준다
@@ -253,7 +252,7 @@ wss.on('connection', (ws) => {
         if (!r.spec) return rawSend(ws, { t: 'err', m: '관전을 허용하지 않는 방이에요' });
         if (r.specs.length >= MAX_SPEC) return rawSend(ws, { t: 'err', m: '관전 자리가 가득 찼어요' });
         if (!pwOk(ws, r, m)) return;
-        ws._room = r; ws._idx = -2; ws._nick = m._u ? m._u.nick : nickOf(m.nick, m.cp); r.specs.push(ws);
+        ws._room = r; ws._idx = -2; ws._nick = m._u ? m._u.nick : nickOf(m.nick); r.specs.push(ws);
         rawSend(ws, { t: 'sjoined', code, mode: r.mode, name: r.name, n: namesOf(r) }); sendNames(r);
         if (r.state === 'play' && r.lastStart) rawSend(ws, Object.assign({}, r.lastStart, { nm: namesOf(r), log: r.log, li: r.lastIn }));
         else specStatus(r, ws);

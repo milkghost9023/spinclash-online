@@ -21,6 +21,23 @@ function cleanNick(s) {
   s = String(s == null ? '' : s).replace(/[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁦-⁩﻿]/g, '').replace(/\s+/g, ' ').trim();
   return Array.from(s).slice(0, 10).join('').trim();
 }
+/* 쿠폰으로 열리는 권한: r4=신화 · r5=전설 · r6=태고 등급, cmd=제작자 권한(닉네임 "유령" 사용). 코드는 환경변수 COUPON_CODES 에만 있다
+ * 형식: 코드=권한,코드=권한 …  (권한 앞에 -를 붙이면 그 권한을 뺏는 코드)  예) abc=r4,def=r5,ghi=r6,jkl=cmd,mno=-cmd */
+const GRANTS = new Set(['r4', 'r5', 'r6', 'cmd']);
+function parseCoupons(str) {
+  const m = new Map();
+  String(str || '').split(',').forEach((part) => {
+    const i = part.indexOf('='); if (i < 1) return;
+    const code = part.slice(0, i).trim().toLowerCase(); let g = part.slice(i + 1).trim(); const rev = g.charAt(0) === '-'; if (rev) g = g.slice(1);
+    if (code && code.length <= 40 && GRANTS.has(g)) m.set(code, { g, rev });
+  });
+  return m;
+}
+function grantList(u) {
+  const a = String(u.grants || '').split(',').filter((x) => GRANTS.has(x));
+  if (u.owner && a.indexOf('cmd') < 0) a.push('cmd');
+  return a;
+}
 function isGhost(s) { return normKey(s).search(/유[유우]*령/) >= 0; }
 function maskEmail(e) { if (!e) return ''; const [a, d] = e.split('@'); return (a.length <= 2 ? a[0] + '*' : a.slice(0, 2) + '***') + '@' + d; }
 const sha = (s) => crypto.createHash('sha256').update(s).digest('hex');
@@ -64,7 +81,8 @@ CREATE TABLE IF NOT EXISTS user_tokens (
   email_key TEXT,
   expires_at TIMESTAMPTZ NOT NULL
 );
-CREATE INDEX IF NOT EXISTS user_tokens_user_idx ON user_tokens (user_id, kind);`;
+CREATE INDEX IF NOT EXISTS user_tokens_user_idx ON user_tokens (user_id, kind);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS grants TEXT NOT NULL DEFAULT '';`;
 
   A.init = async function init() {
     if (!env.DATABASE_URL) { console.log('[accounts] 꺼짐: DATABASE_URL 이 없어요 (손님 모드만 동작)'); return; }
@@ -131,10 +149,10 @@ CREATE INDEX IF NOT EXISTS user_tokens_user_idx ON user_tokens (user_id, kind);`
     if (BAD_PW.has(p.toLowerCase()) || (u && p.toLowerCase() === u)) return { err: '너무 쉬운 비밀번호예요' };
     return { v: p };
   }
-  function vNick(n, owner) {
+  function vNick(n, owner, ghost) {
     n = cleanNick(n); const len = Array.from(n).length;
     if (len < 2) return { err: '닉네임은 2~10자예요' };
-    if (isGhost(n) && !owner) return { err: '이 닉네임은 쓸 수 없어요' };
+    if (isGhost(n) && !owner && !ghost) return { err: '이 닉네임은 쓸 수 없어요' };
     if (!owner && /제작자|운영자|관리자/.test(normKey(n))) return { err: '이 닉네임은 쓸 수 없어요' };
     if (/^손님\d*$/.test(n)) return { err: '"손님"으로 시작하는 숫자 닉네임은 손님 전용이에요' };
     return { v: n };
@@ -153,14 +171,14 @@ CREATE INDEX IF NOT EXISTS user_tokens_user_idx ON user_tokens (user_id, kind);`
     await q('DELETE FROM sessions WHERE user_id = $1 AND token_hash NOT IN (SELECT token_hash FROM sessions WHERE user_id = $1 ORDER BY created_at DESC LIMIT ' + MAX_SESSIONS + ') RETURNING 1', [uid]);
     return tk;
   }
-  const USER_COLS = 'u.id, u.username, u.nick, u.is_owner, u.email, u.email_verified';
+  const USER_COLS = 'u.id, u.username, u.nick, u.is_owner, u.email, u.email_verified, u.grants';
   async function userFromToken(tk) {
     if (!A.enabled || typeof tk !== 'string' || tk.length < 20 || tk.length > 80) return null;
     const r = await q('SELECT ' + USER_COLS + ' FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token_hash = $1 AND s.expires_at > now()', [sha(tk)]);
-    return r.rows[0] ? { id: r.rows[0].id, username: r.rows[0].username, nick: r.rows[0].nick, owner: !!r.rows[0].is_owner, email: r.rows[0].email, ev: !!r.rows[0].email_verified } : null;
+    return r.rows[0] ? { id: r.rows[0].id, username: r.rows[0].username, nick: r.rows[0].nick, owner: !!r.rows[0].is_owner, email: r.rows[0].email, ev: !!r.rows[0].email_verified, grants: r.rows[0].grants || '' } : null;
   }
   A.userFromToken = (tk) => userFromToken(tk).catch(() => null);
-  const me = (u) => ({ u: u.username, n: u.nick, e: maskEmail(u.email), ev: !!u.ev, o: !!u.owner });
+  const me = (u) => ({ u: u.username, n: u.nick, e: maskEmail(u.email), ev: !!u.ev, o: !!u.owner, g: grantList(u) });
 
   /* ── 메일 ── */
   function mailProvider() { return env.MAIL_PROVIDER || (env.BREVO_API_KEY ? 'brevo' : (env.RESEND_API_KEY ? 'resend' : (env.MAIL_FILE ? 'file' : ''))); }
@@ -222,6 +240,7 @@ CREATE INDEX IF NOT EXISTS user_tokens_user_idx ON user_tokens (user_id, kind);`
       switch (p) {
         case '/api/logout': await q('DELETE FROM sessions WHERE token_hash = $1 RETURNING 1', [sha(bearer(req))]); send(res, 200, { ok: true }); return true;
         case '/api/nick': await setNick(u, b, res); return true;
+        case '/api/coupon': await redeem(u, b, addr, res); return true;
         case '/api/pw': await setPw(u, b, req, res); return true;
         case '/api/email': await setEmail(u, b, req, res); return true;
         case '/api/delete': await delAccount(u, b, res); return true;
@@ -252,14 +271,14 @@ CREATE INDEX IF NOT EXISTS user_tokens_user_idx ON user_tokens (user_id, kind);`
     }
     nickKeys.set(normKey(n.v), 1);
     const tk = await newSession(row.id);
-    send(res, 200, { ok: true, tk, me: { u: u.v, n: n.v, e: '', ev: false, o: owner }, mail: A.mailOn });
+    send(res, 200, { ok: true, tk, me: me({ username: u.v, nick: n.v, email: null, ev: false, owner, grants: '' }), mail: A.mailOn });
   }
 
   async function login(b, addr, res) {
     const uname = String(b.u == null ? '' : b.u).trim().toLowerCase().slice(0, 32); const pw = String(b.p == null ? '' : b.p).slice(0, 200);
     const kIp = 'lfi:' + addr, kU = 'lfu:' + uname;
     if (!rateLeft(kIp, 20, 600 * 1000) || !rateLeft(kU, 8, 600 * 1000)) return fail(res, 429, 'rate', '로그인을 너무 많이 틀렸어요. 10분 뒤에 다시 해 주세요');
-    const r = await q('SELECT id, username, pw_hash, nick, is_owner, email, email_verified FROM users WHERE username = $1', [uname]);
+    const r = await q('SELECT id, username, pw_hash, nick, is_owner, email, email_verified, grants FROM users WHERE username = $1', [uname]);
     const row = r.rows[0];
     let good = false;
     if (row) good = await limited(() => checkPw(pw, row.pw_hash)); else await limited(() => dummyCheck(pw));
@@ -269,16 +288,52 @@ CREATE INDEX IF NOT EXISTS user_tokens_user_idx ON user_tokens (user_id, kind);`
     if (isOwnerName(row.username) && !owner) { owner = true; await q('UPDATE users SET is_owner = TRUE WHERE id = $1 RETURNING 1', [row.id]); }
     await q('UPDATE users SET last_login = now() WHERE id = $1 RETURNING 1', [row.id]);
     const tk = await newSession(row.id);
-    send(res, 200, { ok: true, tk, me: me({ username: row.username, nick: row.nick, email: row.email, ev: row.email_verified, owner }), mail: A.mailOn });
+    send(res, 200, { ok: true, tk, me: me({ username: row.username, nick: row.nick, email: row.email, ev: row.email_verified, owner, grants: row.grants || '' }), mail: A.mailOn });
   }
 
   async function setNick(u, b, res) {
     if (!rate('nick:' + u.id, 5, 3600 * 1000)) return fail(res, 429, 'rate', '닉네임을 너무 자주 바꿨어요. 잠시 후 다시 해 주세요');
-    const n = vNick(b.n, u.owner); if (n.err) return fail(res, 400, 'nick', n.err);
+    const n = vNick(b.n, u.owner, grantList(u).indexOf('cmd') >= 0); if (n.err) return fail(res, 400, 'nick', n.err);
     try { await q('UPDATE users SET nick = $1, nick_key = $2 WHERE id = $3 RETURNING 1', [n.v, normKey(n.v), u.id]); }
     catch (e) { if (isUniq(e, 'nick')) return fail(res, 409, 'nick', '이미 있는 닉네임이에요'); throw e; }
     nickKeys.delete(normKey(u.nick)); nickKeys.set(normKey(n.v), 1);
     send(res, 200, { ok: true, me: me(Object.assign({}, u, { nick: n.v })) });
+  }
+
+  /* 쿠폰: 코드는 서버에서만 확인하고, 결과(열린 권한)는 계정에 저장한다. 틀린 코드만 시도 횟수에 센다 */
+  let couponMap = null;
+  async function redeem(u, b, addr, res) {
+    if (!couponMap) couponMap = parseCoupons(env.COUPON_CODES);
+    if (!couponMap.size) return fail(res, 503, 'cpn', '쿠폰이 아직 준비되지 않았어요');
+    const code = String(b.c == null ? '' : b.c).trim().toLowerCase().slice(0, 40);
+    if (!code) return fail(res, 400, 'cpn', '코드를 입력해 주세요');
+    const kU = 'cpf:' + u.id, kIp = 'cpi:' + addr;
+    if (!rateLeft(kU, 10, 600 * 1000) || !rateLeft(kIp, 40, 600 * 1000)) return fail(res, 429, 'rate', '코드를 너무 많이 틀렸어요. 10분 뒤에 다시 해 주세요');
+    const hit = couponMap.get(code);
+    if (!hit) { rate(kU, 1e9, 600 * 1000); rate(kIp, 1e9, 600 * 1000); return send(res, 200, { ok: false, k: 'none', m: '없는 코드예요' }); }
+    const cur = grantList({ grants: u.grants, owner: false });   // 저장된 권한만 (제작자 계정의 자동 cmd 는 따로)
+    let kind, nick = u.nick;
+    if (hit.rev) {
+      if (cur.indexOf(hit.g) < 0) return send(res, 200, { ok: true, k: 'norev', g: hit.g, me: me(u) });
+      const left = cur.filter((x) => x !== hit.g);
+      await q('UPDATE users SET grants = $1 WHERE id = $2 RETURNING 1', [left.join(','), u.id]);
+      u.grants = left.join(',');
+      if (hit.g === 'cmd' && !u.owner && isGhost(u.nick)) {   // 제작자 권한을 잃으면 "유령" 닉네임도 바꾼다
+        for (let i = 0; i < 20; i++) {
+          const nn = '플레이어' + (1000 + crypto.randomInt(9000));
+          try { await q('UPDATE users SET nick = $1, nick_key = $2 WHERE id = $3 RETURNING 1', [nn, normKey(nn), u.id]); nickKeys.delete(normKey(u.nick)); nickKeys.set(normKey(nn), 1); nick = nn; break; }
+          catch (e) { if (!isUniq(e, 'nick')) throw e; }
+        }
+      }
+      kind = 'revoke';
+    } else {
+      if (cur.indexOf(hit.g) >= 0 || (hit.g === 'cmd' && u.owner)) return send(res, 200, { ok: true, k: 'dup', g: hit.g, me: me(u) });
+      cur.push(hit.g);
+      await q('UPDATE users SET grants = $1 WHERE id = $2 RETURNING 1', [cur.join(','), u.id]);
+      u.grants = cur.join(',');
+      kind = 'grant';
+    }
+    send(res, 200, { ok: true, k: kind, g: hit.g, me: me(Object.assign({}, u, { nick })) });
   }
 
   async function verifyOwnPw(u, pw) {

@@ -27,5 +27,6 @@ Node 서버를 돌릴 수 있는 곳(예: Render)에 이 폴더를 올리고
 - `DATABASE_URL` : Postgres 접속 문자열 (예: Neon). 이게 없거나 연결이 안 되면 계정 기능만 꺼지고 게임은 손님으로 계속 된다. `/health` 에 `acc=ok|off|err` 로 표시.
 - `OWNER_USERNAME` : 제작자 아이디(소문자). 이 아이디로 가입하면 제작자 계정이 되어 닉네임 "유령"을 쓸 수 있다. **배포 직후 가장 먼저 이 아이디로 가입할 것.**
 - `BASE_URL` : 메일 속 링크 주소 (예: https://spinclash-online.onrender.com). 비우면 접속 주소를 그대로 쓴다.
+- `COUPON_CODES` : 쿠폰 코드표. 코드는 서버에서만 확인하고 코드표는 저장소에 두지 않는다. 형식 `코드=권한,코드=권한` (권한: `r4` 신화 · `r5` 전설 · `r6` 태고 등급 열기, `cmd` 제작자 권한, 앞에 `-` 를 붙이면 그 권한을 빼앗는 코드). 예: `abc123=r4,def456=r5,ghi789=r6`. 비우면 쿠폰 기능이 꺼진다. 쿠폰은 로그인한 계정에만 적용되고 계정(DB)에 저장된다.
 - 메일(비밀번호 재설정용, 선택): `MAIL_PROVIDER`=`brevo`|`resend`, `BREVO_API_KEY` 또는 `RESEND_API_KEY`, `MAIL_FROM`(보내는 주소), `MAIL_FROM_NAME`. Render 무료 서버는 SMTP 포트(25/465/587)가 막혀 있어서 HTTP API 방식만 쓴다.
 - 테스트용: `REG_PER_HOUR`(IP당 시간당 가입 수, 기본 5), `MAIL_FILE`(메일 대신 파일에 기록)
