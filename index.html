@@ -473,43 +473,66 @@ body.clsSel #hudBars { display: none; }
 
 
 /* ===== 새 홈 화면 (전투 준비·전투 화면과 색을 분리해서 #home 안에서만 쓴다) ===== */
-#home { --h-bg: #16203a; --h-ink: #0a1020; --h-plate: #2c3d6c; --h-plate2: #324578; --h-txt: #e4ebf8; --h-mute: #8fa3cc; --h-acc: #33c8f0; --h-acc2: #7eeaff;
-  position: fixed; inset: 0; z-index: 15; display: flex; flex-direction: column; background: var(--h-bg); color: var(--h-txt); font-family: var(--body); overflow: hidden;
-  padding-top: env(safe-area-inset-top, 0px); }
+#home { --ink: #0a1020; --pl: #2c3d6c; --pl2: #324578; --hacc: #33c8f0; --hacc2: #7eeaff;
+  position: fixed; inset: 0; z-index: 15; display: flex; flex-direction: column; background: #16203a; color: #fff; font-family: 'Noto Sans KR', system-ui, sans-serif; overflow: hidden; }
 #home[hidden] { display: none; }
-#home .hw { width: 100%; max-width: 540px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; min-height: 0; }
-#home .hbar { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: linear-gradient(#1c2848, #121a30); border-bottom: 3px solid var(--h-ink); }
-#home .hav { width: 46px; height: 46px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #5a73b8, #26356a); border: 3px solid var(--h-ink); display: grid; place-items: center; flex: none; }
-#home .hnm { flex: 1; min-width: 0; line-height: 1.2; }
-#home .hnm b { display: block; font-size: 16px; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-#home .hnm span { font-size: 12px; color: var(--h-mute); }
-#home .hgear { width: 44px; height: 44px; border-radius: 8px; border: 3px solid var(--h-ink); background: var(--h-plate2); color: var(--h-txt); font-size: 20px; box-shadow: 0 3px 0 var(--h-ink); }
-#home .hgear:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--h-ink); }
-#home .hmain { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 14px; padding: 14px 14px 12px; overflow-y: auto; }
-#home .harena { position: relative; flex: 1 1 auto; min-height: 220px; border-radius: 10px; border: 4px solid var(--h-ink); padding: 8px; background: linear-gradient(#e4ebf8, #a4b4d2); box-shadow: 0 5px 0 var(--h-ink); }
-#home .hfield { position: relative; width: 100%; height: 100%; border: 3px solid var(--h-ink); border-radius: 3px; overflow: hidden;
-  background: repeating-conic-gradient(#324578 0 25%, #2c3d6c 0 50%) 0 0 / 56px 56px; }
-#home .hfield::before { content: ''; position: absolute; inset: 0; background:
-  radial-gradient(circle at 50% 50%, transparent 0 22%, rgba(255,255,255,0.10) 22.5% 23.5%, transparent 24% 44%, rgba(255,255,255,0.10) 44.5% 45.5%, transparent 46% 66%, rgba(255,255,255,0.10) 66.5% 67.5%, transparent 68%);
-  pointer-events: none; }
-#home .hme { position: absolute; left: 14%; bottom: 10%; width: 32%; max-width: 130px; aspect-ratio: 1; border-radius: 50%; border: 4px solid var(--h-ink); box-shadow: 0 5px 0 rgba(0,0,0,0.3); }
-#home .hme img { position: absolute; left: 50%; top: 50%; width: 125%; height: 125%; max-width: none; transform: translate(-50%, -50%); filter: drop-shadow(0 2px 0 rgba(0,0,0,0.35)); }
-#home .hfoe { position: absolute; right: 12%; top: 10%; width: 28%; max-width: 110px; aspect-ratio: 1; border-radius: 50%; border: 3px dashed rgba(255,255,255,0.45); background: rgba(255,255,255,0.05); display: grid; place-items: center; color: rgba(255,255,255,0.35); font: 400 56px var(--display); }
-#home .hfoeL { position: absolute; right: 8%; top: calc(10% + min(28%, 110px) + 4px); width: 38%; text-align: center; font-size: 12px; color: var(--h-mute); font-weight: 700; }
-#home .hvs { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 54px; height: 54px; display: grid; place-items: center; font: 400 22px var(--display); color: #fff; -webkit-text-stroke: 4px var(--h-ink); paint-order: stroke fill;
-  background: #ff6a2b; clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%); }
-#home .hbtns { display: flex; flex-direction: column; gap: 12px; flex: none; }
-#home .hb { position: relative; width: 100%; border: 4px solid var(--h-ink); border-radius: 10px; font-family: var(--display); font-weight: 400; color: #fff; -webkit-text-stroke: 3.5px var(--h-ink); paint-order: stroke fill; letter-spacing: 0.02em; text-align: center; }
-#home .hb small { display: block; margin-top: 2px; font: 700 12px var(--body); -webkit-text-stroke: 0; color: rgba(255,255,255,0.8); letter-spacing: 0; }
-#home .hb.on { min-height: 84px; font-size: 38px; background: linear-gradient(#7eeaff, #33c8f0 55%, #1fa6d4); box-shadow: 0 6px 0 var(--h-ink), inset 0 3px 0 rgba(255,255,255,0.55); }
-#home .hb.off { min-height: 64px; font-size: 28px; background: linear-gradient(#5a73b8, #324578 60%, #2a3b6c); box-shadow: 0 5px 0 var(--h-ink), inset 0 3px 0 rgba(255,255,255,0.3); }
-#home .hb:active { transform: translateY(3px); box-shadow: 0 2px 0 var(--h-ink); }
-#home .hnav { flex: none; display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; background: #101830; border-top: 4px solid var(--h-ink); padding-bottom: env(safe-area-inset-bottom, 0px); }
-#home .hnav button { position: relative; min-height: 64px; padding: 8px 0 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; border: 0; background: transparent; color: var(--h-mute); font: 700 12px var(--body); }
-#home .hnav button svg { width: 30px; height: 30px; }
-#home .hnav button.cur { color: #fff; background: linear-gradient(#3a4f8e, #26356a); box-shadow: inset 0 3px 0 var(--h-acc); }
-#home .hnav button.cur svg { transform: translateY(-2px) scale(1.12); }
-
+#home * { box-sizing: border-box; }
+#home button { font: inherit; color: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+#home .hw { width: 100%; max-width: 480px; margin: 0 auto; display: flex; flex-direction: column; flex: 1; min-height: 0; }
+#home .tx { font-family: 'Black Han Sans', 'Noto Sans KR', sans-serif; font-weight: 400; color: #fff; -webkit-text-stroke: 3px var(--ink); paint-order: stroke fill; letter-spacing: 0.02em; }
+#home .hbar { flex: none; height: calc(60px + env(safe-area-inset-top, 0px)); padding: env(safe-area-inset-top, 0px) 8px 0; display: flex; align-items: center; gap: 8px; background: linear-gradient(#25335a, #1a2646); border-bottom: 3px solid var(--ink); box-shadow: inset 0 1px 0 rgba(255,255,255,0.12); }
+#home .hav { position: relative; flex: none; width: 46px; height: 46px; padding: 0; border-radius: 50%; background: linear-gradient(#e4ebf8, #b2c0dc); border: 3px solid var(--ink); display: grid; place-items: center; }
+#home .hnm { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+#home .hnm .tx { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+#home .htr { display: flex; align-items: center; gap: 3px; }
+#home .htr svg { flex: none; width: 22px; height: 22px; }
+#home .hchip { position: relative; flex: 0 0 auto; width: 76px; height: 32px; margin-left: 12px; padding-right: 8px; display: flex; align-items: center; justify-content: flex-end; background: #0d1428; border: 2px solid var(--ink); border-radius: 6px; box-shadow: inset 0 2px 3px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.12); }
+#home .hchip svg { position: absolute; left: -12px; top: -2px; width: 30px; height: 30px; }
+#home .hchip .tx { font-size: 15px; }
+#home .hgear { flex: none; width: 38px; height: 38px; padding: 0; display: grid; place-items: center; border-radius: 8px; background: linear-gradient(#46598a, #34446e); border: 3px solid var(--ink); box-shadow: inset 0 2px 0 rgba(255,255,255,0.2), 0 2px 0 var(--ink); font-size: 18px; line-height: 1; }
+#home .hgear:active { transform: translateY(2px); box-shadow: none; }
+#home .hmain { flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; gap: 10px; padding: 10px 10px 10px; overflow-y: auto; }
+#home .hcards { flex: none; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+#home .hcard { position: relative; height: 56px; padding: 0 8px; display: flex; align-items: center; gap: 7px; text-align: left; color: var(--ink); border-radius: 7px; background: linear-gradient(#e4ebf8, #b2c0dc); border: 3px solid var(--ink); box-shadow: inset 0 2px 0 rgba(255,255,255,0.7), 0 3px 0 rgba(0,0,0,0.35); }
+#home .hcard:active { transform: translateY(2px); box-shadow: inset 0 2px 0 rgba(255,255,255,0.7), 0 1px 0 rgba(0,0,0,0.35); }
+#home .hcard svg { flex: none; }
+#home .hcard .ct { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; line-height: 1.15; }
+#home .hcard b { font: 900 12px 'Noto Sans KR', sans-serif; white-space: nowrap; }
+#home .hcard .cs { font: 700 11px 'Noto Sans KR', sans-serif; color: #46598a; white-space: nowrap; }
+#home .hcard .cb { flex: none; height: 24px; padding: 0 7px; display: flex; align-items: center; border-radius: 5px; background: linear-gradient(#aab6d2, #8393b8); border: 2px solid var(--ink); font: 900 11px 'Noto Sans KR', sans-serif; color: #2a3558; }
+#home .hbarq { position: relative; height: 14px; border-radius: 3px; background: var(--ink); overflow: hidden; }
+#home .hbarq .tx { position: absolute; inset: 0; display: grid; place-items: center; font-size: 10px; -webkit-text-stroke: 2.4px var(--ink); color: #9fb0d4; }
+#home .harena { position: relative; flex: 1 1 auto; min-height: 250px; padding: 7px; border-radius: 10px; background: linear-gradient(#e4ebf8, #a4b4d2); border: 4px solid var(--ink); box-shadow: inset 0 2px 0 rgba(255,255,255,0.6), 0 4px 0 rgba(0,0,0,0.4); }
+#home .harena i.rv { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #6a7fb0; border: 1.4px solid var(--ink); }
+#home .hfield { position: relative; width: 100%; height: 100%; border: 3px solid var(--ink); border-radius: 3px; overflow: hidden;
+  background: conic-gradient(#324578 25%, #2c3d6c 0 50%, #324578 0 75%, #2c3d6c 0) 0 0 / 25% 25%; }
+#home .hfield > svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+#home .hme { position: absolute; left: 36%; top: 69%; width: 318px; height: 318px; transform: translate(-50%, -50%); pointer-events: none; }
+#home .hme .sh { position: absolute; left: 50%; top: 50%; width: 86px; height: 81px; transform: translate(-44%, -42%); border-radius: 50%; background: rgba(0,0,0,0.25); }
+#home .hme img { position: absolute; inset: 0; width: 100%; height: 100%; animation: hSway 3.2s ease-in-out infinite alternate; }
+@keyframes hSway { from { transform: rotate(-7deg); } to { transform: rotate(7deg); } }
+@media (prefers-reduced-motion: reduce) { #home .hme img { animation: none; } }
+#home .hvs { position: absolute; left: 50%; top: 50%; width: 46px; height: 46px; transform: translate(-50%, -50%); clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%); background: var(--ink); display: grid; place-items: center; }
+#home .hvs span { width: 40px; height: 40px; clip-path: polygon(30% 0, 70% 0, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0 70%, 0 30%); background: linear-gradient(#ff9a4a, #ff5a1a); display: grid; place-items: center; font-size: 15px; }
+#home .hwait { position: absolute; left: 73%; top: 44%; width: 80px; transform: translateX(-50%); text-align: center; font: 900 11px 'Noto Sans KR', sans-serif; color: rgba(255,255,255,0.55); }
+#home .hsel { flex: none; display: flex; align-items: center; gap: 6px; height: 38px; }
+#home .hsel .ar { flex: none; width: 32px; height: 36px; padding: 0; border: 0; background: none; display: grid; place-items: center; }
+#home .hsel .ar:active svg { transform: scale(0.88); }
+#home .hsel .nm { flex: 1; height: 36px; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 6px; background: #0d1428; border: 2px solid var(--ink); box-shadow: inset 0 2px 3px rgba(0,0,0,0.5), 0 1px 0 rgba(255,255,255,0.15); }
+#home .hsel .nm .tx { font-size: 18px; -webkit-text-stroke: 4px var(--ink); }
+#home .hsel .rt { height: 18px; padding: 0 7px; display: flex; align-items: center; border-radius: 4px; border: 2px solid var(--ink); background: #8b94a1; font: 900 11px 'Noto Sans KR', sans-serif; color: #fff; text-shadow: 0 1px 0 rgba(0,0,0,0.55); }
+#home .hon { flex: none; position: relative; width: 100%; height: 86px; padding: 0 0 6px; border-radius: 9px; border: 4px solid var(--ink); background: linear-gradient(#7eeaff 0, #33c8f0 50%, #1090c8 100%); box-shadow: inset 0 4px 0 rgba(255,255,255,0.6), inset 0 -6px 0 rgba(0,40,90,0.3), 0 5px 0 var(--ink); font-size: 34px; -webkit-text-stroke: 7px var(--ink); }
+#home .hon:active, #home .hoff:active { transform: translateY(3px); box-shadow: inset 0 4px 0 rgba(255,255,255,0.5), 0 2px 0 var(--ink); }
+#home .hon i, #home .hoff i { position: absolute; top: 8px; width: 6px; height: 6px; border-radius: 3px; background: rgba(255,255,255,0.7); }
+#home .hoff { flex: none; position: relative; width: 100%; height: 62px; margin-bottom: 4px; padding: 0 14px; display: flex; align-items: center; justify-content: center; gap: 10px; border-radius: 9px; border: 4px solid var(--ink); background: linear-gradient(#e4ebf8, #b2c0dc); box-shadow: inset 0 3px 0 rgba(255,255,255,0.7), 0 5px 0 var(--ink); color: var(--ink); }
+#home .hoff b { font-family: 'Black Han Sans', 'Noto Sans KR', sans-serif; font-weight: 400; font-size: 24px; letter-spacing: 0.02em; }
+#home .hnav { flex: none; height: calc(82px + env(safe-area-inset-bottom, 0px)); padding-bottom: env(safe-area-inset-bottom, 0px); display: flex; background: var(--ink); border-top: 4px solid var(--ink); }
+#home .hnav button { position: relative; flex: 1; height: 100%; margin: 0 1.5px; padding: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; border: 0; background: linear-gradient(#46598a, #34446e); box-shadow: inset 0 3px 0 rgba(255,255,255,0.18), inset 0 -4px 0 rgba(0,0,0,0.2); }
+#home .hnav button .tx { font-size: 11px; }
+#home .hnav button.cur { background: linear-gradient(#e4ebf8, #b2c0dc); box-shadow: inset 0 3px 0 rgba(255,255,255,0.35), inset 0 -4px 0 rgba(0,0,0,0.2); transform: translateY(-6px); height: calc(100% + 6px); border-radius: 6px 6px 0 0; }
+#home .hnav button.cur .tx { font-size: 13px; }
+#home .hnav .dot { position: absolute; right: -4px; top: -4px; min-width: 16px; height: 16px; border-radius: 8px; background: #ef3a3a; border: 2px solid #fff; box-shadow: 0 0 0 1.5px var(--ink); }
+#home .hnav button:not(.cur):active { transform: translateY(2px); }
 @media (max-width: 359px) { .players { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .bar i { transition: none; } .btn:active { transform: none; } .overlay h2 { animation: none; } }
 </style>
@@ -551,7 +574,7 @@ body.clsSel #hudBars { display: none; }
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v526</span>
+      <span class="verTag">v527</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -610,31 +633,53 @@ body.clsSel #hudBars { display: none; }
 <div id="home" hidden>
   <div class="hw">
     <header class="hbar">
-      <div class="hav" aria-hidden="true"><svg width="30" height="30" viewBox="0 0 32 32" fill="none" stroke="#0a1020" stroke-width="2"><circle cx="16" cy="16" r="12" fill="#cfd8ea"/><circle cx="16" cy="16" r="6.5" fill="#f6c915"/><circle cx="16" cy="16" r="2.4" fill="#0a1020"/></svg></div>
-      <div class="hnm"><b id="hmNick">손님</b><span id="hmSub"></span></div>
+      <button type="button" class="hav" id="hmAv" aria-label="프로필"><svg width="32" height="32" viewBox="0 0 120 120" aria-hidden="true"><g transform="rotate(-38 60 60)"><path d="M60 4L68 24L65 64H55L52 24Z" fill="#fff" stroke="#0a1020" stroke-width="6" stroke-linejoin="round"/></g><circle cx="60" cy="60" r="36" fill="#9aa6bb" stroke="#0a1020" stroke-width="7"/><circle cx="60" cy="60" r="15" fill="#f6c915" stroke="#0a1020" stroke-width="6"/></svg></button>
+      <div class="hnm"><b class="tx" id="hmNick">손님</b><span class="htr"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3h10v7a5 5 0 0 1-10 0z" fill="#f6c915" stroke="#0a1020" stroke-width="2.4" stroke-linejoin="round"/><path d="M7 5H3v2.5A3.5 3.5 0 0 0 7 11M17 5h4v2.5A3.5 3.5 0 0 1 17 11" fill="none" stroke="#0a1020" stroke-width="2.4"/><path d="M12 15v3M8 21h8" stroke="#0a1020" stroke-width="3.2" stroke-linecap="round"/></svg><span class="tx" id="hmTr">0</span></span></div>
+      <div class="hchip"><svg viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="12.5" fill="#f6c915" stroke="#0a1020" stroke-width="3"/><circle cx="15" cy="15" r="7.4" fill="#f0a800" stroke="#a86a00" stroke-width="1.6"/><path d="M8 9a9 9 0 0 1 5-3.4" stroke="#fff6b0" stroke-width="2.2" fill="none" stroke-linecap="round"/></svg><span class="tx">0</span></div>
+      <div class="hchip"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M15 3l10 6v11l-10 8L5 20V9z" fill="#3ed46a" stroke="#0a1020" stroke-width="3" stroke-linejoin="round"/><path d="M5 9l10 6 10-6M15 15v13" stroke="#14803a" stroke-width="1.4" fill="none"/><path d="M9 10l5-3" stroke="#d6ffd0" stroke-width="2.2" stroke-linecap="round"/></svg><span class="tx">0</span></div>
       <button type="button" class="hgear" id="hmGear" aria-label="설정">⚙</button>
     </header>
     <main class="hmain">
-      <div class="harena" aria-hidden="true"><div class="hfield">
-        <div class="hme" id="hmMe"><img id="hmMeImg" alt=""></div>
-        <div class="hvs">VS</div>
-        <div class="hfoe">?</div><div class="hfoeL">상대 대기</div>
-      </div></div>
-      <div class="hbtns">
-        <button type="button" class="hb on" id="hmOnline">온라인 대전<small>친구와 방에서 1대1 · 관전도 가능</small></button>
-        <button type="button" class="hb off" id="hmOffline">오프라인 대전<small>한 기기에서 2인 · 캐릭터를 직접 짜요</small></button>
+      <div class="hcards">
+        <button type="button" class="hcard" data-soon="무료 상자"><svg width="36" height="32" viewBox="0 0 48 44" aria-hidden="true"><path d="M5 20a19 14 0 0 1 38 0v18a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z" fill="#8fa3cc" stroke="#0a1020" stroke-width="3.4"/><path d="M5 22h38" stroke="#0a1020" stroke-width="3.4"/><path d="M14 8v32M34 8v32" stroke="#f6c915" stroke-width="4.4"/><rect x="19" y="19" width="10" height="12" rx="2" fill="#f6c915" stroke="#0a1020" stroke-width="3.4"/></svg><span class="ct"><b>무료 상자</b><span class="cs">곧 열려요</span></span><span class="cb">준비 중</span></button>
+        <button type="button" class="hcard" data-soon="퀘스트"><svg width="30" height="32" viewBox="0 0 38 40" aria-hidden="true"><path d="M7 5h24v26a4 4 0 0 1-4 4H11a4 4 0 0 1-4-4z" fill="#fff" stroke="#0a1020" stroke-width="3.4" stroke-linejoin="round"/><path d="M13 14h13M13 20h13M13 26h8" stroke="#6a7fb0" stroke-width="3" stroke-linecap="round"/><circle cx="27" cy="28" r="4.4" fill="#ff6a2b" stroke="#0a1020" stroke-width="2.4"/></svg><span class="ct"><b>오늘의 퀘스트</b><span class="hbarq"><span class="tx">준비 중</span></span></span></button>
       </div>
+      <div class="harena" aria-hidden="true">
+        <i class="rv" style="left:2px;top:2px"></i><i class="rv" style="right:2px;top:2px"></i><i class="rv" style="left:2px;bottom:2px"></i><i class="rv" style="right:2px;bottom:2px"></i>
+        <div class="hfield">
+          <svg viewBox="0 0 358 360" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <g fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="3"><circle cx="179" cy="180" r="150"/><circle cx="179" cy="180" r="98"/><circle cx="179" cy="180" r="46"/><path d="M179 0V360M0 180H358"/></g>
+            <path d="M114 256L54 136L96 32" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="3.4" stroke-dasharray="3 9" stroke-linecap="round"/>
+            <path d="M98.8 23.4L100.8 39.9L87.5 35.5z" fill="rgba(255,255,255,0.45)"/>
+            <path d="M262 94L322 208L284 336" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="3.4" stroke-dasharray="3 9" stroke-linecap="round"/>
+            <circle cx="262" cy="94" r="60" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.4)" stroke-width="3.4" stroke-dasharray="8 8"/>
+            <circle cx="262" cy="94" r="38" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="3"/>
+            <path d="M30 326l14-14 14 14-14 14z" fill="none" stroke="#5aa0ff" stroke-width="3.4"/>
+            <path d="M302 32l14-14 14 14-14 14z" fill="none" stroke="#ff6a6a" stroke-width="3.4"/>
+            <text x="262" y="114" text-anchor="middle" font-family="'Black Han Sans','Noto Sans KR',sans-serif" font-size="64" fill="rgba(255,255,255,0.35)" stroke="#0a1020" stroke-width="5" paint-order="stroke">?</text>
+          </svg>
+          <div class="hme"><span class="sh"></span><img id="hmMeImg" alt=""></div>
+          <div class="hvs"><span class="tx">VS</span></div>
+          <span class="hwait">상대 대기</span>
+        </div>
+      </div>
+      <div class="hsel">
+        <button type="button" class="ar" id="hmPrev" aria-label="이전 캐릭터"><svg width="28" height="28" viewBox="0 0 30 30" aria-hidden="true"><path d="M20 4L8 15l12 11z" fill="#f6c915" stroke="#0a1020" stroke-width="3.4" stroke-linejoin="round"/></svg></button>
+        <span class="nm"><span class="tx" id="hmWn">검</span><span class="rt" id="hmRt">일반</span></span>
+        <button type="button" class="ar" id="hmNext" aria-label="다음 캐릭터"><svg width="28" height="28" viewBox="0 0 30 30" aria-hidden="true"><path d="M10 4l12 11-12 11z" fill="#f6c915" stroke="#0a1020" stroke-width="3.4" stroke-linejoin="round"/></svg></button>
+      </div>
+      <button type="button" class="hon tx" id="hmOnline"><i style="left:8px"></i><i style="right:8px"></i>온라인 대전</button>
+      <button type="button" class="hoff" id="hmOffline"><svg width="34" height="30" viewBox="0 0 24 22" aria-hidden="true"><path d="M3 3l13 13M21 3L8 16" stroke="#0a1020" stroke-width="5.6" stroke-linecap="round"/><path d="M3 3l13 13M21 3L8 16" stroke="#6a7fb0" stroke-width="2.6" stroke-linecap="round"/></svg><b>오프라인 대전</b></button>
     </main>
-    <nav class="hnav" aria-label="하단 메뉴">
-      <button type="button" data-hn="shop"><svg viewBox="0 0 32 32" fill="none" stroke="#0a1020" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="13" width="22" height="14" rx="2" fill="#e8b33a"/><path d="M5 13l3-7h16l3 7z" fill="#f6c915"/><rect x="13" y="16" width="6" height="6" fill="#fff6b0"/></svg>상점</button>
-      <button type="button" data-hn="col"><svg viewBox="0 0 32 32" fill="none" stroke="#0a1020" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="7" y="5" width="15" height="21" rx="2" fill="#3d8bff" transform="rotate(-8 14 15)"/><rect x="11" y="7" width="15" height="21" rx="2" fill="#fff" transform="rotate(6 18 17)"/><circle cx="18" cy="17" r="4" fill="#f6c915"/></svg>컬렉션</button>
-      <button type="button" data-hn="play" class="cur" aria-current="page"><svg viewBox="0 0 32 32" fill="none" stroke="#0a1020" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M6 6l20 20M26 6L6 26" stroke-width="5" stroke="#0a1020"/><path d="M6 6l20 20M26 6L6 26" stroke-width="2.6" stroke="#e4ebf8"/></svg>대전</button>
-      <button type="button" data-hn="rank"><svg viewBox="0 0 32 32" fill="none" stroke="#0a1020" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 5h14v8a7 7 0 0 1-14 0z" fill="#f6c915"/><path d="M9 8H4v2a5 5 0 0 0 5 5M23 8h5v2a5 5 0 0 1-5 5" /><path d="M16 20v5M10 27h12" stroke-width="3"/></svg>랭킹</button>
-      <button type="button" data-hn="me"><svg viewBox="0 0 32 32" fill="none" stroke="#0a1020" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><circle cx="16" cy="11" r="6" fill="#ffd6a8"/><path d="M5 28c0-7 5-10 11-10s11 3 11 10z" fill="#3d8bff"/></svg>프로필</button>
+    <nav class="hnav" aria-label="주요 메뉴">
+      <button type="button" data-hn="shop"><svg width="44" height="40" viewBox="0 0 44 40" aria-hidden="true"><path d="M6 4h32l3 10H3z" fill="#fff" stroke="#0a1020" stroke-width="3" stroke-linejoin="round"/><path d="M12 4l-2 10M20 4l-1 10M28 4l1 10M36 4l2 10" stroke="#f6c915" stroke-width="5"/><path d="M6 4h32l3 10H3z" fill="none" stroke="#0a1020" stroke-width="3" stroke-linejoin="round"/><rect x="7" y="14" width="30" height="20" fill="#8a5a3a" stroke="#0a1020" stroke-width="3"/><rect x="5" y="30" width="34" height="7" rx="1.5" fill="#6b4630" stroke="#0a1020" stroke-width="3"/></svg><span class="tx">상점</span></button>
+      <button type="button" data-hn="col"><svg width="44" height="40" viewBox="0 0 44 40" aria-hidden="true"><rect x="6" y="6" width="19" height="27" rx="3" transform="rotate(-12 15 20)" fill="#3d8bff" stroke="#0a1020" stroke-width="3"/><rect x="18" y="5" width="19" height="27" rx="3" transform="rotate(8 27 18)" fill="#f4ecd2" stroke="#0a1020" stroke-width="3"/><circle cx="27" cy="18" r="5" fill="#f6c915" stroke="#0a1020" stroke-width="2.4" transform="rotate(8 27 18)"/></svg><span class="tx">컬렉션</span></button>
+      <button type="button" data-hn="play" class="cur" aria-current="page"><svg width="48" height="44" viewBox="0 0 48 44" aria-hidden="true"><path d="M8 5l24 24M40 5L16 29" stroke="#0a1020" stroke-width="10" stroke-linecap="round"/><path d="M8 5l24 24M40 5L16 29" stroke="#e9eef7" stroke-width="5" stroke-linecap="round"/><path d="M6 39l9-9M42 39l-9-9" stroke="#0a1020" stroke-width="10" stroke-linecap="round"/><path d="M6 39l9-9M42 39l-9-9" stroke="#f6c915" stroke-width="5" stroke-linecap="round"/></svg><span class="tx">대전</span></button>
+      <button type="button" data-hn="rank"><svg width="44" height="40" viewBox="0 0 44 40" aria-hidden="true"><path d="M12 4h20v13a10 10 0 0 1-20 0z" fill="#f6c915" stroke="#0a1020" stroke-width="3" stroke-linejoin="round"/><path d="M12 8H5v4a7 7 0 0 0 7 7M32 8h7v4a7 7 0 0 1-7 7" fill="none" stroke="#0a1020" stroke-width="3"/><path d="M22 27v6M14 37h16" stroke="#0a1020" stroke-width="5" stroke-linecap="round"/><path d="M16 9v7" stroke="#fff6b0" stroke-width="2.6" stroke-linecap="round"/></svg><span class="tx">랭킹</span></button>
+      <button type="button" data-hn="me"><svg width="44" height="40" viewBox="0 0 44 40" aria-hidden="true"><path d="M7 38c0-9 6-13 15-13s15 4 15 13z" fill="#3d8bff" stroke="#0a1020" stroke-width="3" stroke-linejoin="round"/><circle cx="22" cy="14" r="9" fill="#f3c9a0" stroke="#0a1020" stroke-width="3"/><path d="M13 12c1-7 6-9 9-9s8 2 9 9c-4-2-8-3-9-3s-5 1-9 3z" fill="#d9442a" stroke="#0a1020" stroke-width="2.4" stroke-linejoin="round"/></svg><span class="tx">프로필</span></button>
     </nav>
   </div>
 </div>
-
   <div class="modal" id="netModal" hidden style="z-index:22">
     <div class="sheet" role="dialog" aria-label="온라인 대전">
       <h2>온라인 대전</h2>
@@ -14775,11 +14820,40 @@ var DM = (function () {
   /* ---------- 화면 전환 ---------- */
   function clearFx() { hbFx.length = 0; wcFx.length = 0; snpFx.length = 0; slArr.length = 0; slFx.length = 0; bmArr.length = 0; amOrbs.length = 0; amBolts.length = 0; mrFx.length = 0; mrFeath.length = 0; crArrows.length = 0; crWaves.length = 0; rsShards.length = 0; chProj.length = 0; chDishes.length = 0; chFx.length = 0; asAmb.fl.length = 0; asAmb.g = 0; asAmb.prev = {}; roars.length = 0; cnBalls.length = 0; cnFx.length = 0; asCut(); asFx.length = 0; asDust.length = 0; miPetals.length = 0; miFx.length = 0; exSmoke.length = 0; tcCoins.length = 0; paItems.length = 0; paFx.length = 0; ftFx.length = 0; pwHands.length = 0; pwBones.length = 0; pwFogs.length = 0; bhCoins.length = 0; bhBlood.length = 0; bhSplats.length = 0; bhVig = 0; songNotes.length = 0; mgCards.length = 0; firePs.length = 0; clones.length = 0; fkGlobs.length = 0; fkPuds.length = 0; fkMarks.length = 0; fkGuts.length = 0; gmFloors.length = 0; gmFx.length = 0; syFx.length = 0; sySnow.length = 0; particles.length = 0; floaters.length = 0; slashes.length = 0; trail.length = 0; fishes.length = 0; shards.length = 0; cracksFx.length = 0; bursts.length = 0; slapFxs.length = 0; phxFxs.length = 0; arrows.length = 0; rains.length = 0; rings.length = 0; banners.length = 0; confetti.length = 0; shake = 0; slowT = 0; darkFlash = 0; hitStopT = 0; zoomT = 0; sdShow = 0; cine = null; winner = -1; }
   var screenName = 'title', modalPaused = false;
+  var homeTypes = function () { var a = Object.keys(W).filter(function (k) { return !isLocked(k); }); a.sort(function (x, y) { return (RAR[x] || 0) - (RAR[y] || 0); }); return a; };
+  var homeTok = 0;
+  function homeBall(done) {
+    var S = 900, cv2 = document.createElement('canvas'), sv, f = { x: 0, y: 0, i: 0, ang: -2.25, icon: true, swing: 0, type: sel[0].type, trait: 0, hits: 0, zan: 0, dark: 0, charged: false, hp: 100, maxHp: 100, flash: 0, inv: 0, ghost: 0, glT: 0, burnLv: 0 };
+    cv2.width = cv2.height = S;
+    var un = false; try { un = !!unarmed(f); } catch (e0) {}
+    function paint(im) {
+      sv = ctx;
+      try {
+        ctx = cv2.getContext('2d');
+        if (im) { ctx.drawImage(im, S / 2 - 300, S / 2 - 310, 300, 300); }
+        ctx.translate(S / 2, S / 2); var k = 112 / R; ctx.scale(k, k);
+        if (!un) { ctx.save(); drawWeapon(f); ctx.restore(); }
+        ctx.save(); drawBody(f); ctx.restore();
+        done(cv2.toDataURL('image/png'));
+      } catch (e) { done(''); } finally { ctx = sv; }
+    }
+    if (!un) { paint(null); return; }
+    var url = ''; try { url = makeIcon(sel[0].type); } catch (e1) {}
+    if (!url) { paint(null); return; }
+    var im = new Image(); im.onload = function () { paint(im); }; im.onerror = function () { paint(null); }; im.src = url;
+  }
   function homeSync() {
     var n = (acct && acct.me) ? acct.me.n : nick;
-    $('#hmNick').textContent = n; $('#hmSub').textContent = (acct && acct.me) ? '로그인됨' : '손님';
-    var p = palOf(colId(0)), me = $('#hmMe'); me.style.background = p.c;
-    try { $('#hmMeImg').src = makeIcon(sel[0].type); } catch (e) {}
+    $('#hmNick').textContent = n;
+    var t = sel[0].type, w = W[t] || {}, ri = RAR_INFO[RAR[t] || 0] || RAR_INFO[0];
+    $('#hmWn').textContent = w.name || t; var rt = $('#hmRt'); rt.textContent = ri.n; rt.style.background = ri.c;
+    var my = ++homeTok;
+    homeBall(function (u) { if (my === homeTok && u) $('#hmMeImg').src = u; });
+  }
+  function homeStep(d) {
+    var a = homeTypes(), i = a.indexOf(sel[0].type); if (!a.length) return;
+    var nt = a[(i + d + a.length) % a.length];
+    sel[0].type = nt; sel[0].trait = 0; fixSpells(sel[0]); sync(); homeSync();
   }
   function showScreen(name) {
     screenName = name;
@@ -15601,6 +15675,10 @@ var DM = (function () {
   $('#hmOffline').addEventListener('click', function () { audio(); showScreen('select'); });
   $('#hmGear').addEventListener('click', openSettings);
   document.querySelectorAll('#home .hnav button').forEach(function (b) { b.addEventListener('click', function () { if (b.dataset.hn !== 'play') netNotify('준비 중이에요'); }); });
+  document.querySelectorAll('#home .hcard').forEach(function (b) { b.addEventListener('click', function () { netNotify(b.dataset.soon + '은(는) 준비 중이에요'); }); });
+  $('#hmAv').addEventListener('click', function () { netNotify('프로필은 준비 중이에요'); });
+  $('#hmPrev').addEventListener('click', function () { homeStep(-1); });
+  $('#hmNext').addEventListener('click', function () { homeStep(1); });
   function netCreateRoom(mode) {
     var nk = nickRead(); netShow('menu', '방을 만드는 중…');
     netConnect(function () { netSend({ t: 'create', tk: acct.tk, ver: VER, mode: mode, nick: nk, name: $('#rmName').value, pw: $('#rmPw').value, spec: rmSpecOn }); });
