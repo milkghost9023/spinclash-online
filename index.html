@@ -312,6 +312,16 @@ body.clsSel #hudBars { display: none; }
 .rtabs button.lk::before { content: '🔒'; font-size: 10px; margin-right: 1px; }
 .cmdTag { display: block; margin-top: 3px; font-size: 11px; font-weight: 700; color: var(--muted); }
 .cmdTag[hidden] { display: none; }
+.accRow { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-weight: 700; font-size: 13px; }
+.accRow[hidden], #accRow2[hidden] { display: none; }
+.accRow .btn { flex: none; }
+#accModal .sheet { max-height: calc(100dvh - 32px); overflow-y: auto; }
+#accBody { display: flex; flex-direction: column; gap: 10px; }
+.accSec { display: flex; flex-direction: column; gap: 8px; padding-top: 10px; border-top: 2px dashed var(--line); }
+.accSec h3 { margin: 0; font-size: 14px; }
+.accSec small, #accBody small { color: var(--muted); font-weight: 400; font-size: 12px; overflow-wrap: anywhere; }
+.accLink { align-self: center; background: none; border: 0; padding: 4px; font: inherit; font-size: 12px; color: var(--muted); text-decoration: underline; }
+.btn.danger { border-color: var(--p2); color: var(--p2); }
 .rtabs button[aria-pressed="true"] small { color: inherit; opacity: 0.75; }
 .rtabs button.rnd { margin-left: auto; border-bottom-color: var(--line); }
 /* 고침: 칸 넘침, 이름 겹침, 빈 공간 */
@@ -502,7 +512,7 @@ body.clsSel #hudBars { display: none; }
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v521</span>
+      <span class="verTag">v522</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -561,6 +571,7 @@ body.clsSel #hudBars { display: none; }
     <div class="sheet" role="dialog" aria-label="온라인 대전">
       <h2>온라인 대전</h2>
       <div class="netBox" id="netMenu"><p class="netTxt">친구와 1대1 대결해요</p>
+        <div class="accRow" id="accRow" hidden><span id="accInfo"></span><button type="button" class="btn small" id="accBtn">로그인 / 가입</button></div>
         <label class="fld"><span>닉네임</span><input class="txt" id="nickIn" maxlength="10" autocomplete="off" spellcheck="false" aria-label="닉네임"></label>
         <small class="cmdTag" id="cmdTag" hidden>✦ 제작자 권한 · 닉네임 "유령" 사용 가능</small>
         <label class="fld"><span>방 이름</span><input class="txt" id="rmName" maxlength="16" autocomplete="off" spellcheck="false" placeholder="비우면 자동" aria-label="방 이름"></label>
@@ -577,6 +588,14 @@ body.clsSel #hudBars { display: none; }
       <button class="btn" id="netClose">닫기</button>
     </div>
   </div>
+  <div class="modal" id="accModal" hidden style="z-index:23">
+    <div class="sheet" role="dialog" aria-label="계정">
+      <h2>계정</h2>
+      <div id="accBody"></div>
+      <p class="netTxt" id="accMsg"></p>
+      <button class="btn" id="accClose">닫기</button>
+    </div>
+  </div>
   <div class="modal" id="settings" hidden>
     <div class="sheet" role="dialog" aria-label="설정">
       <h2>설정</h2>
@@ -588,6 +607,7 @@ body.clsSel #hudBars { display: none; }
         <button type="button" class="tog" id="tickBtn" aria-pressed="false">끔</button></div>
       <div class="row"><span class="nm">소리</span>
         <button type="button" class="tog" id="snd" aria-pressed="true">켬</button></div>
+      <div class="row" id="accRow2" hidden><span class="nm">계정<small id="accInfo2"></small></span><button type="button" class="tog" id="accBtn2">열기</button></div>
       <div class="row"><span class="nm">닉네임<small id="nickMsg">온라인에서 상대·관전자에게 보여요</small><small class="cmdTag" id="cmdTag2" hidden>✦ 제작자 권한 · 닉네임 "유령" 사용 가능</small></span>
         <span class="cpn"><input id="nickSet" type="text" maxlength="10" autocomplete="off" spellcheck="false" placeholder="닉네임" aria-label="닉네임"><button type="button" class="tog" id="nickBtn">저장</button></span></div>
       <div class="row"><span class="nm">쿠폰<small id="cpnMsg">코드를 넣으면 새 무기가 열려요</small></span>
@@ -14722,6 +14742,8 @@ var DM = (function () {
     else if (b.dataset.spell) uiTick(1.25);
     else uiTick(1);
   }, true);
+  /* 계정 상태: 로그인하면 닉네임은 계정 것이 우선 (손님 닉네임은 이 기기에 따로 남겨 둔다) */
+  var acct = { tk: '', me: null, mail: false, busy: false, view: 'out', tab: 'login', rst: '' };
   /* 닉네임 (이 기기에 저장) */
   function nickClean(x) { x = String(x == null ? '' : x).replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '').replace(/\s+/g, ' ').trim(); return Array.from(x).slice(0, 10).join('').trim(); }
   /* "유령"·"유우령"(유 뒤에 우를 늘린 것)이 어디라도 들어간 닉네임은 제작자 전용 (공백·보이지 않는 글자를 끼운 변형 포함) */
@@ -14733,11 +14755,11 @@ var DM = (function () {
   var nick = ''; try { nick = nickClean(localStorage.getItem('spinclash.nick')); } catch (e) {}
   if (nickBad(nick)) nick = '';
   if (!nick) { nick = '손님' + (1000 + Math.floor(Math.random() * 9000)); try { localStorage.setItem('spinclash.nick', nick); } catch (e) {} }
-  function nickSave(v) { v = nickClean(v); if (!v || nickBad(v)) return false; nick = v; try { localStorage.setItem('spinclash.nick', nick); } catch (e) {} $('#nickIn').value = nick; $('#nickSet').value = nick; return true; }
-  function nickRead() { if (!nickSave($('#nickIn').value)) $('#nickIn').value = nick; return nick; }
+  function nickSave(v) { if (acct.me) return false; v = nickClean(v); if (!v || nickBad(v)) return false; nick = v; try { localStorage.setItem('spinclash.nick', nick); } catch (e) {} $('#nickIn').value = nick; $('#nickSet').value = nick; return true; }
+  function nickRead() { if (acct.me) { $('#nickIn').value = acct.me.n; return acct.me.n; } if (!nickSave($('#nickIn').value)) $('#nickIn').value = nick; return nick; }
   function cmdTagSync() { var on = cmdOn(); ['#cmdTag', '#cmdTag2'].forEach(function (q) { var t = $(q); if (t) t.hidden = !on; }); }
   $('#nickIn').value = nick; $('#nickSet').value = nick;
-  function nickApply() { var m = $('#nickMsg'); if (nickSave($('#nickSet').value)) m.textContent = '저장했어요: ' + nick; else { var bad = nickBad($('#nickSet').value); $('#nickSet').value = nick; m.textContent = bad ? '이 닉네임은 쓸 수 없어요' : '닉네임을 입력해 주세요'; } }
+  function nickApply() { var m = $('#nickMsg'); if (acct.me) { m.textContent = '계정 닉네임이에요 · 계정 창에서 바꿔요'; $('#nickSet').value = acct.me.n; return; } if (nickSave($('#nickSet').value)) m.textContent = '저장했어요: ' + nick; else { var bad = nickBad($('#nickSet').value); $('#nickSet').value = nick; m.textContent = bad ? '이 닉네임은 쓸 수 없어요' : '닉네임을 입력해 주세요'; } }
   $('#nickBtn').addEventListener('click', nickApply);
   $('#nickSet').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); nickApply(); } });
   $('#nickIn').addEventListener('change', nickRead);
@@ -14764,6 +14786,121 @@ var DM = (function () {
   cmdTagSync();
   $('#cpnBtn').addEventListener('click', cpnApply);
   $('#cpnIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); cpnApply(); } });
+
+  /* ═══════ 계정: 가입·로그인·닉네임·이메일(비밀번호 재설정용) ═══════ */
+  function acApi(path, body) {
+    var o = { method: body === undefined ? 'GET' : 'POST', headers: {} };
+    if (acct.tk) o.headers['Authorization'] = 'Bearer ' + acct.tk;
+    if (body !== undefined) { o.headers['Content-Type'] = 'application/json'; o.body = JSON.stringify(body); }
+    return fetch(path, o).then(function (r) { return r.json().catch(function () { return { ok: false, m: '서버 응답이 이상해요' }; }).then(function (j) { j.status = r.status; return j; }); }, function () { return { ok: false, c: 'net', m: '서버에 연결하지 못했어요' }; });
+  }
+  function accUiSync() {
+    var on = !!window.SPIN_ACC; $('#accRow').hidden = !on; $('#accRow2').hidden = !on; if (!on) return;
+    $('#accInfo').textContent = acct.me ? '로그인: ' + acct.me.n : '손님으로 하는 중';
+    $('#accInfo2').textContent = acct.me ? acct.me.u + ' · ' + acct.me.n : '저장·트로피는 로그인하면 쓸 수 있어요';
+    $('#accBtn').textContent = acct.me ? '계정' : '로그인 / 가입'; $('#accBtn2').textContent = acct.me ? '계정' : '로그인';
+    $('#nickIn').value = acct.me ? acct.me.n : nick; $('#nickSet').value = acct.me ? acct.me.n : nick;
+    $('#nickIn').readOnly = !!acct.me; $('#nickSet').readOnly = !!acct.me; $('#nickBtn').disabled = !!acct.me;
+    if (acct.me) $('#nickMsg').textContent = '계정 닉네임이에요 · 계정 창에서 바꿔요';
+  }
+  function acSetSession(tk, me, mail) { acct.tk = tk; acct.me = me; acct.mail = !!mail; try { localStorage.setItem('spinclash.sess', tk); } catch (e) {} accUiSync(); }
+  function acClear() { acct.tk = ''; acct.me = null; try { localStorage.removeItem('spinclash.sess'); } catch (e) {} accUiSync(); if (!acct.me && window.SPIN_ACC) $('#nickMsg').textContent = '온라인에서 상대·관전자에게 보여요'; }
+  var accEl = $('#accModal'), accBody = $('#accBody');
+  function acMsg(t, bad) { var m = $('#accMsg'); m.textContent = t || ''; m.classList.toggle('bad', !!bad); }
+  function acOpen(view) {
+    if (net.on) { netNotify('온라인 중에는 계정을 바꿀 수 없어요', false); return; }
+    acct.view = view || (acct.me ? 'in' : 'out'); acMsg(''); accEl.hidden = false; acRender();
+  }
+  function acClose() { accEl.hidden = true; acct.rst = ''; }
+  function acMk(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function acFld(id, label, type, max, ph, ac) {
+    var l = acMk('label', 'fld'), sp = acMk('span', '', label), i = acMk('input', 'txt'); i.id = id; i.type = type || 'text'; i.maxLength = max || 64; if (ph) i.placeholder = ph;
+    i.autocomplete = ac || 'off'; i.spellcheck = false; i.setAttribute('autocapitalize', 'off'); i.setAttribute('autocorrect', 'off'); l.appendChild(sp); l.appendChild(i); return l;
+  }
+  function acBtn(text, cls, fn) { var b = acMk('button', 'btn' + (cls ? ' ' + cls : ''), text); b.type = 'button'; b.addEventListener('click', function () { if (acct.busy) return; fn(b); }); return b; }
+  function acV(id) { var e = $('#' + id); return e ? e.value : ''; }
+  function acEnter(go) { accBody.querySelectorAll('input').forEach(function (i) { i.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); go.click(); } }); }); }
+  function acRun(btn, path, body, done) {
+    acct.busy = true; if (btn) btn.disabled = true; acMsg('처리하는 중…');
+    acApi(path, body).then(function (j) { acct.busy = false; if (btn) btn.disabled = false; if (j.status === 401 && j.c === 'auth') { acClear(); acct.view = 'out'; acRender(); acMsg('로그인이 만료됐어요. 다시 로그인해 주세요', true); return; } done(j); });
+  }
+  function acRender() {
+    accBody.textContent = ''; var v = acct.view;
+    if (v === 'out') {
+      var tabs = acMk('div', 'row2'); var reg = acct.tab === 'reg';
+      [['login', '로그인'], ['reg', '가입']].forEach(function (t) { var b = acMk('button', 'tog', t[1]); b.type = 'button'; b.setAttribute('aria-pressed', String(acct.tab === t[0])); b.style.flex = '1'; b.addEventListener('click', function () { acct.tab = t[0]; acMsg(''); acRender(); }); tabs.appendChild(b); });
+      accBody.appendChild(tabs);
+      accBody.appendChild(acFld('acU', '아이디', 'text', 16, '영문·숫자·_ 4~16자', 'username'));
+      if (reg) accBody.appendChild(acFld('acN', '닉네임', 'text', 10, '2~10자 · 게임에서 보여요', 'off'));
+      accBody.appendChild(acFld('acP', '비밀번호', 'password', 64, reg ? '8자 이상' : '', reg ? 'new-password' : 'current-password'));
+      if (reg) accBody.appendChild(acFld('acP2', '확인', 'password', 64, '한 번 더', 'new-password'));
+      var go = acBtn(reg ? '가입하기' : '로그인', 'primary', function (b) {
+        var u = acV('acU'), p = acV('acP');
+        if (reg) {
+          if (p !== acV('acP2')) { acMsg('비밀번호 확인이 달라요', true); return; }
+          acRun(b, '/api/register', { u: u, p: p, n: acV('acN') }, function (j) { if (!j.ok) { acMsg(j.m || '가입하지 못했어요', true); return; } acSetSession(j.tk, j.me, j.mail); acct.view = 'in'; acRender(); acMsg('가입했어요! 환영해요, ' + j.me.n); });
+        } else acRun(b, '/api/login', { u: u, p: p }, function (j) { if (!j.ok) { acMsg(j.m || '로그인하지 못했어요', true); return; } acSetSession(j.tk, j.me, j.mail); acct.view = 'in'; acRender(); acMsg('로그인했어요'); });
+      });
+      accBody.appendChild(go); acEnter(go);
+      if (reg) accBody.appendChild(acMk('small', '', '이메일은 안 받아요. 비밀번호를 잊을 때를 대비하려면 가입 뒤 계정 창에서 이메일을 등록해 둬요.'));
+      else { var fg = acMk('button', 'accLink', '비밀번호를 잊었어요'); fg.type = 'button'; fg.addEventListener('click', function () { acct.view = 'forgot'; acMsg(''); acRender(); }); accBody.appendChild(fg); }
+    } else if (v === 'forgot') {
+      accBody.appendChild(acMk('small', '', '인증된 이메일을 등록해 둔 계정만 재설정할 수 있어요.'));
+      accBody.appendChild(acFld('acF', '아이디/메일', 'text', 100, '아이디 또는 이메일', 'username'));
+      var g2 = acBtn('재설정 메일 보내기', 'primary', function (b) { acRun(b, '/api/reset', { id: acV('acF') }, function (j) { acMsg(j.ok ? (j.m || '메일을 보냈어요') : (j.m || '요청하지 못했어요'), !j.ok); }); });
+      accBody.appendChild(g2); acEnter(g2);
+      accBody.appendChild(acBtn('돌아가기', '', function () { acct.view = 'out'; acMsg(''); acRender(); }));
+    } else if (v === 'reset') {
+      accBody.appendChild(acMk('small', '', '새 비밀번호를 정해요.'));
+      accBody.appendChild(acFld('acP', '새 비번', 'password', 64, '8자 이상', 'new-password'));
+      accBody.appendChild(acFld('acP2', '확인', 'password', 64, '한 번 더', 'new-password'));
+      var g3 = acBtn('비밀번호 바꾸기', 'primary', function (b) {
+        if (acV('acP') !== acV('acP2')) { acMsg('비밀번호 확인이 달라요', true); return; }
+        acRun(b, '/api/reset/confirm', { t: acct.rst, p: acV('acP') }, function (j) { if (!j.ok) { acMsg(j.m || '바꾸지 못했어요', true); return; } acct.rst = ''; acct.view = 'out'; acct.tab = 'login'; acRender(); acMsg('바꿨어요! 새 비밀번호로 로그인해 주세요'); });
+      });
+      accBody.appendChild(g3); acEnter(g3);
+    } else if (v === 'in' && acct.me) {
+      var me = acct.me;
+      accBody.appendChild(acMk('p', 'netTxt', me.u + (me.o ? ' · 제작자' : '')));
+      var s1 = acMk('div', 'accSec'); s1.appendChild(acMk('h3', '', '닉네임')); s1.appendChild(acFld('acNick', '닉네임', 'text', 10, '', 'off')); accBody.appendChild(s1);
+      var inp = $('#acNick'); inp.value = me.n;
+      s1.appendChild(acBtn('닉네임 저장', '', function (b) { acRun(b, '/api/nick', { n: acV('acNick') }, function (j) { if (!j.ok) { acMsg(j.m || '바꾸지 못했어요', true); return; } acct.me = j.me; accUiSync(); acRender(); acMsg('닉네임을 바꿨어요'); }); }));
+      var s2 = acMk('div', 'accSec'); s2.appendChild(acMk('h3', '', '이메일 (비밀번호 재설정용)'));
+      s2.appendChild(acMk('small', '', me.e ? '등록됨: ' + me.e + (me.ev ? ' · 인증됨' : ' · 인증 대기 (메일의 링크를 눌러요)') : '아직 등록 안 함'));
+      accBody.appendChild(s2);
+      if (!acct.mail) s2.appendChild(acMk('small', '', '메일 서비스가 아직 준비되지 않았어요'));
+      else {
+        s2.appendChild(acFld('acE', '이메일', 'email', 100, 'name@example.com', 'email')); s2.appendChild(acFld('acEP', '비밀번호', 'password', 64, '확인용 현재 비밀번호', 'current-password'));
+        s2.appendChild(acBtn(me.e ? '이메일 바꾸기' : '이메일 등록', '', function (b) { acRun(b, '/api/email', { e: acV('acE'), p: acV('acEP') }, function (j) { if (!j.ok) { acMsg(j.m || '등록하지 못했어요', true); return; } acct.me = j.me; acRender(); acMsg('인증 메일을 보냈어요. 메일의 링크를 눌러 주세요'); }); }));
+        if (me.e && !me.ev) s2.appendChild(acBtn('인증 메일 다시 보내기', '', function (b) { acRun(b, '/api/email', { resend: true }, function (j) { acMsg(j.ok ? '다시 보냈어요' : (j.m || '보내지 못했어요'), !j.ok); }); }));
+        if (me.e) s2.appendChild(acBtn('이메일 지우기', '', function (b) { acRun(b, '/api/email', { e: '', p: acV('acEP') }, function (j) { if (!j.ok) { acMsg(j.m || '지우지 못했어요 (비밀번호를 위 칸에 넣어요)', true); return; } acct.me = j.me; acRender(); acMsg('이메일을 지웠어요'); }); }));
+      }
+      var s3 = acMk('div', 'accSec'); s3.appendChild(acMk('h3', '', '비밀번호 바꾸기'));
+      s3.appendChild(acFld('acOld', '지금', 'password', 64, '', 'current-password')); s3.appendChild(acFld('acNew', '새 비번', 'password', 64, '8자 이상', 'new-password'));
+      s3.appendChild(acBtn('비밀번호 바꾸기', '', function (b) { acRun(b, '/api/pw', { o: acV('acOld'), p: acV('acNew') }, function (j) { if (!j.ok) { acMsg(j.m || '바꾸지 못했어요', true); return; } acRender(); acMsg('비밀번호를 바꿨어요 (다른 기기는 로그아웃돼요)'); }); }));
+      accBody.appendChild(s3);
+      var s4 = acMk('div', 'accSec');
+      s4.appendChild(acBtn('로그아웃', '', function (b) { acRun(b, '/api/logout', {}, function () { acClear(); acct.view = 'out'; acct.tab = 'login'; acRender(); acMsg('로그아웃했어요'); }); }));
+      s4.appendChild(acFld('acDel', '삭제 확인', 'password', 64, '계정을 지우려면 비밀번호', 'current-password'));
+      s4.appendChild(acBtn('계정 삭제', 'danger', function (b) {
+        if (!acV('acDel')) { acMsg('삭제하려면 비밀번호를 넣어요', true); return; }
+        if (!window.confirm('계정을 삭제하면 되돌릴 수 없어요. 정말 지울까요?')) return;
+        acRun(b, '/api/delete', { p: acV('acDel') }, function (j) { if (!j.ok) { acMsg(j.m || '삭제하지 못했어요', true); return; } acClear(); acct.view = 'out'; acRender(); acMsg('계정을 삭제했어요'); });
+      }));
+      accBody.appendChild(s4);
+    } else { acct.view = 'out'; acRender(); }
+  }
+  if (window.SPIN_ACC) {
+    $('#accBtn').addEventListener('click', function () { acOpen(); });
+    $('#accBtn2').addEventListener('click', function () { acOpen(); });
+    $('#accClose').addEventListener('click', acClose);
+    accEl.addEventListener('click', function (e) { if (e.target === accEl) acClose(); });
+    var tk0 = ''; try { tk0 = localStorage.getItem('spinclash.sess') || ''; } catch (e) {}
+    if (tk0) { acct.tk = tk0; acApi('/api/me').then(function (j) { if (j.ok) acSetSession(tk0, j.me, j.mail); else if (j.status === 401) acClear(); }); }
+    var rq = ''; try { rq = new URLSearchParams(location.search).get('reset') || ''; } catch (e) {}
+    if (rq) { acct.rst = rq; try { history.replaceState(null, '', location.pathname); } catch (e) {} acOpen('reset'); }
+  }
+  accUiSync();
   function openSettings() {
     if ((phase === 'playing' || phase === 'countdown') && !demo && !paused && !net.on) { paused = true; modalPaused = true; pauseBtn.textContent = '계속하기'; }
     $('#settings').hidden = false; miBuildPick(); cpnRefresh();
@@ -14914,6 +15051,7 @@ var DM = (function () {
       case 'ver': verBarShow(m.v); break;
       case 'err':
         if (m.c === 'ver') verBarShow(m.v);
+        if (m.c === 'auth') acClear();
         if (net.rc) { netRcFail(m.c === 'noresume' ? '방이 사라졌어요 (서버가 다시 시작됐을 수 있어요)' : (m.m || '재접속에 실패했어요')); break; }
         if (m.c === 'pw' || m.c === 'wrongpw') { netPwAsk(m.m, m.c === 'wrongpw'); break; }
         if (net.pj && net.pj.from === 'list') { netShow('list', m.m || '오류', true); netListReq(); break; }
@@ -15260,7 +15398,7 @@ var DM = (function () {
   function netPwAsk(msg, bad) { netShow('pw', msg || '', !!bad); $('#pwIn').value = ''; setTimeout(function () { $('#pwIn').focus(); }, 50); }
   function netDoJoin(pw) {
     var j = net.pj; if (!j) return;
-    netSend({ t: j.act === 'spec' ? 'spec' : 'join', cp: cmdOn() ? 'command' : '', ver: VER, code: j.code, nick: nickRead(), pw: pw || '' });
+    netSend({ t: j.act === 'spec' ? 'spec' : 'join', tk: acct.tk, cp: cmdOn() ? 'command' : '', ver: VER, code: j.code, nick: nickRead(), pw: pw || '' });
   }
   $('#rmList').addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('button[data-c]'); if (!b || b.disabled) return;
@@ -15362,7 +15500,7 @@ var DM = (function () {
   $('#onlineBtn').addEventListener('click', function () { audio(); netShow('menu'); });
   function netCreateRoom(mode) {
     var nk = nickRead(); netShow('menu', '방을 만드는 중…');
-    netConnect(function () { netSend({ t: 'create', cp: cmdOn() ? 'command' : '', ver: VER, mode: mode, nick: nk, name: $('#rmName').value, pw: $('#rmPw').value, spec: rmSpecOn }); });
+    netConnect(function () { netSend({ t: 'create', tk: acct.tk, cp: cmdOn() ? 'command' : '', ver: VER, mode: mode, nick: nk, name: $('#rmName').value, pw: $('#rmPw').value, spec: rmSpecOn }); });
   }
   $('#netCreate').addEventListener('click', function () { netCreateRoom('single'); });
   $('#netCreateC').addEventListener('click', function () { netCreateRoom('classic'); });

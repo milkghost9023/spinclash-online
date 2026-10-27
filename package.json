@@ -2,9 +2,9 @@
   "name": "spinclash-server",
   "version": "0.1.0",
   "private": true,
-  "description": "스핀 클래시 온라인 서버 (방 코드 1:1 중계)",
+  "description": "스핀 클래시 온라인 서버 (방 코드 1:1 중계 + 계정)",
   "main": "server.js",
   "scripts": { "start": "node server.js" },
-  "dependencies": { "ws": "^8.18.0" },
+  "dependencies": { "ws": "^8.18.0", "pg": "^8.13.0" },
   "engines": { "node": ">=18" }
 }

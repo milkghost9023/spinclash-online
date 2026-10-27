@@ -9,6 +9,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { WebSocketServer } = require('ws');
+const accounts = require('./accounts')();
 
 const PORT = +process.env.PORT || 8080;
 const GAME_FILE = process.env.GAME_FILE || path.join(__dirname, 'index.html');
@@ -29,16 +30,17 @@ function verOk(ws, m) {
 }
 function readGame() {
   let h = fs.readFileSync(GAME_FILE, 'utf8');
-  const inj = '<script>window.SPIN_ONLINE=1;</script>';
+  const inj = '<script>window.SPIN_ONLINE=1;' + (accounts.enabled ? 'window.SPIN_ACC=1;' : '') + '</script>';
   return h.indexOf('<head>') >= 0 ? h.replace('<head>', '<head>' + inj) : inj + h;
 }
 
 const server = http.createServer((req, res) => {
   const u = (req.url || '/').split('?')[0];
+  if (u.indexOf('/api/') === 0) { accounts.handle(req, res).then((h) => { if (!h && !res.headersSent) { res.writeHead(404); res.end('not found'); } }, () => { if (!res.headersSent) { res.writeHead(500); res.end('error'); } }); return; }
   if (u === '/' || u === '/index.html') {
     let body; try { body = readGame(); } catch (e) { res.writeHead(500); res.end('game file missing'); return; }
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' }); res.end(body);
-  } else if (u === '/health') { res.writeHead(200, { 'Content-Type': 'text/plain' }); res.end('ok rooms=' + rooms.size + ' online=' + onlineCount()); }
+  } else if (u === '/health') { res.writeHead(200, { 'Content-Type': 'text/plain' }); res.end('ok rooms=' + rooms.size + ' online=' + onlineCount() + ' acc=' + accounts.state); }
   else { res.writeHead(404); res.end('not found'); }
 });
 
@@ -74,7 +76,7 @@ function cleanText(s, max) {
 const CMD_HASH = crypto.createHash('sha256').update('command').digest('hex');
 function isGhost(s) { return String(s == null ? '' : s).normalize('NFKC').replace(/[\s\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '').search(/유[유우]*령/) >= 0; }
 function cmdOk(cp) { return typeof cp === 'string' && cp.length < 40 && crypto.createHash('sha256').update(cp.trim().toLowerCase()).digest('hex') === CMD_HASH; }
-function nickOf(s, cp) { const n = cleanText(s, 10); if (isGhost(n) && !cmdOk(cp)) return '손님' + (1000 + crypto.randomInt(9000)); return n || ('손님' + (1000 + crypto.randomInt(9000))); }
+function nickOf(s, cp) { const n = cleanText(s, 10); if ((isGhost(n) && !cmdOk(cp)) || accounts.nickTaken(n)) return '손님' + (1000 + crypto.randomInt(9000)); return n || ('손님' + (1000 + crypto.randomInt(9000))); }   // 가입자가 쓰는 닉네임을 손님이 따라 쓸 수 없다
 function namesOf(room) { return room.players.map((p) => (p ? p.nick : '')); }
 function sendNames(room) {
   const o = { t: 'names', n: namesOf(room), sc: room.specs.length };
@@ -200,6 +202,19 @@ wss.on('connection', (ws) => {
     if (++ws._cnt > 400) { ws.close(1008, 'rate'); return; }
     let m; try { m = JSON.parse(data.toString()); } catch (e) { return; }
     if (!m || typeof m.t !== 'string') return;
+    /* 로그인한 사람이면 방 만들기·참가·관전 때 세션 토큰으로 계정을 확인한다 (닉네임은 계정 것이 우선) */
+    if (m._u === undefined && typeof m.tk === 'string' && m.tk && (m.t === 'create' || m.t === 'join' || m.t === 'spec') && accounts.enabled && !ws._room) {
+      if (ws._authing) return; ws._authing = true;
+      accounts.userFromToken(m.tk).then((u) => {
+        ws._authing = false; if (ws.readyState !== 1) return;
+        if (!u) return rawSend(ws, { t: 'err', c: 'auth', m: '로그인이 만료됐어요. 다시 로그인해 주세요' });
+        m._u = u; run(m);
+      });
+      return;
+    }
+    run(m);
+  }
+  function run(m) {
     const room = ws._room;
     if (ws._idx === -2 && m.t !== 'ping' && m.t !== 'leave' && m.t !== 'list') return;
     switch (m.t) {
@@ -211,8 +226,8 @@ wss.on('connection', (ws) => {
         if (!verOk(ws, m)) return;
         const mode = m.mode === 'classic' ? 'classic' : (m.mode === 'nospell' ? 'nospell' : 'single');
         if (rooms.size >= MAX_ROOMS) return rawSend(ws, { t: 'err', m: '지금은 방을 더 만들 수 없어요' });
-        const nick = nickOf(m.nick, m.cp), name = cleanText(m.name, 16) || (nick + '의 방'), pw = cleanText(m.pw, 8);
-        const r = { code, mode, name, pw, spec: m.spec !== false, specs: [], lastStart: null, log: [], lastIn: [-1, -1], cl: null, players: [{ ws, nick, tok: crypto.randomBytes(12).toString('hex'), sel: null, ready: false, rtt: 60 }, null], arena: 0, pickT: null, lastCres: null, state: 'lobby', round: 0, over: [false, false], rematch: [false, false], hs: [{}, {}] };
+        const nick = m._u ? m._u.nick : nickOf(m.nick, m.cp), name = cleanText(m.name, 16) || (nick + '의 방'), pw = cleanText(m.pw, 8);
+        const r = { code, mode, name, pw, spec: m.spec !== false, specs: [], lastStart: null, log: [], lastIn: [-1, -1], cl: null, players: [{ ws, nick, uid: m._u ? m._u.id : 0, tok: crypto.randomBytes(12).toString('hex'), sel: null, ready: false, rtt: 60 }, null], arena: 0, pickT: null, lastCres: null, state: 'lobby', round: 0, over: [false, false], rematch: [false, false], hs: [{}, {}] };
         rooms.set(code, r); ws._room = r; ws._idx = 0;
         rawSend(ws, { t: 'created', code, idx: 0, mode, name, tok: r.players[0].tok }); sendNames(r);
         return;
@@ -224,7 +239,7 @@ wss.on('connection', (ws) => {
         if (r.players[1]) return rawSend(ws, { t: 'err', m: '이미 가득 찬 방이에요' });
         if (!verOk(ws, m)) return;
         if (!pwOk(ws, r, m)) return;
-        r.players[1] = { ws, nick: nickOf(m.nick, m.cp), tok: crypto.randomBytes(12).toString('hex'), sel: null, ready: false, rtt: 60 }; ws._room = r; ws._idx = 1;
+        r.players[1] = { ws, nick: m._u ? m._u.nick : nickOf(m.nick, m.cp), uid: m._u ? m._u.id : 0, tok: crypto.randomBytes(12).toString('hex'), sel: null, ready: false, rtt: 60 }; ws._room = r; ws._idx = 1;
         rawSend(ws, { t: 'joined', code, idx: 1, mode: r.mode, name: r.name, tok: r.players[1].tok }); rawSend(r.players[0].ws, { t: 'peer', n: 2 });
         sendNames(r); specStatus(r);
         if (r.players[0] && r.players[0].ready) rawSend(ws, { t: 'peerReady', v: true });   // 방장이 미리 준비해 뒀다면 바로 알려 준다
@@ -238,7 +253,7 @@ wss.on('connection', (ws) => {
         if (!r.spec) return rawSend(ws, { t: 'err', m: '관전을 허용하지 않는 방이에요' });
         if (r.specs.length >= MAX_SPEC) return rawSend(ws, { t: 'err', m: '관전 자리가 가득 찼어요' });
         if (!pwOk(ws, r, m)) return;
-        ws._room = r; ws._idx = -2; ws._nick = nickOf(m.nick, m.cp); r.specs.push(ws);
+        ws._room = r; ws._idx = -2; ws._nick = m._u ? m._u.nick : nickOf(m.nick, m.cp); r.specs.push(ws);
         rawSend(ws, { t: 'sjoined', code, mode: r.mode, name: r.name, n: namesOf(r) }); sendNames(r);
         if (r.state === 'play' && r.lastStart) rawSend(ws, Object.assign({}, r.lastStart, { nm: namesOf(r), log: r.log, li: r.lastIn }));
         else specStatus(r, ws);
@@ -369,4 +384,5 @@ wss.on('connection', (ws) => {
   ws.on('error', () => {});
 });
 
+accounts.init().catch((e) => console.log('[accounts] 시작 오류:', e && e.message));
 server.listen(PORT, () => console.log('spinclash server on :' + PORT + (LAT_MS || JIT_MS ? ' (인위지연 ' + LAT_MS + '+' + JIT_MS + 'ms)' : '')));
