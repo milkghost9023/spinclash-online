@@ -502,7 +502,7 @@ body.clsSel #hudBars { display: none; }
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v520</span>
+      <span class="verTag">v521</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -14724,8 +14724,8 @@ var DM = (function () {
   }, true);
   /* 닉네임 (이 기기에 저장) */
   function nickClean(x) { x = String(x == null ? '' : x).replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '').replace(/\s+/g, ' ').trim(); return Array.from(x).slice(0, 10).join('').trim(); }
-  /* "유령"은 제작자 전용 닉네임 (공백·보이지 않는 글자를 끼운 변형 포함) */
-  function nickGhost(x) { return String(x == null ? '' : x).normalize('NFKC').replace(/[\s\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '') === '유령'; }
+  /* "유령"·"유우령"(유 뒤에 우를 늘린 것)이 어디라도 들어간 닉네임은 제작자 전용 (공백·보이지 않는 글자를 끼운 변형 포함) */
+  function nickGhost(x) { return String(x == null ? '' : x).normalize('NFKC').replace(/[\s\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '').search(/유[유우]*령/) >= 0; }
   function nickBad(x) { return nickGhost(x) && !cmdOn(); }
   function nickGuest() { return '손님' + (1000 + Math.floor(Math.random() * 9000)); }
   /* 다른 사람 화면에 보일 때: 제작자 닉네임에는 작은 표시를 붙인다 */

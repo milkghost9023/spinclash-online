@@ -70,9 +70,9 @@ function cleanText(s, max) {
   s = String(s == null ? '' : s).replace(/[\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '').replace(/\s+/g, ' ').trim();
   return Array.from(s).slice(0, max).join('').trim();
 }
-/* "유령"은 제작자 전용 닉네임: 제작자 코드(해시로만 비교)를 보낸 사람만 쓸 수 있다. 공백·보이지 않는 글자를 끼운 변형도 같이 막는다 */
+/* "유령"(유우령 등 늘린 변형 포함)이 들어간 닉네임은 제작자 전용: 제작자 코드(해시로만 비교)를 보낸 사람만 쓸 수 있다. 공백·보이지 않는 글자를 끼운 변형도 같이 막는다 */
 const CMD_HASH = crypto.createHash('sha256').update('command').digest('hex');
-function isGhost(s) { return String(s == null ? '' : s).normalize('NFKC').replace(/[\s\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '') === '유령'; }
+function isGhost(s) { return String(s == null ? '' : s).normalize('NFKC').replace(/[\s\u0000-\u001f\u007f-\u009f\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '').search(/유[유우]*령/) >= 0; }
 function cmdOk(cp) { return typeof cp === 'string' && cp.length < 40 && crypto.createHash('sha256').update(cp.trim().toLowerCase()).digest('hex') === CMD_HASH; }
 function nickOf(s, cp) { const n = cleanText(s, 10); if (isGhost(n) && !cmdOk(cp)) return '손님' + (1000 + crypto.randomInt(9000)); return n || ('손님' + (1000 + crypto.randomInt(9000))); }
 function namesOf(room) { return room.players.map((p) => (p ? p.nick : '')); }
