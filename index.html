@@ -939,7 +939,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v588</span>
+      <span class="verTag">v590</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -15450,11 +15450,14 @@ var DM = (function () {
   /* 쿠폰 초기화: 이 값이 바뀔 때마다 이 기기의 쿠폰 사용 기록을 지우고, c2 부터는 캐릭터·토큰(전용·공유)·재능·스펠을, c3 부터는 상점 구매 기록(패스·패키지·정기 상품)도 한 번 처음 상태로 돌린다. 서버(accounts.js)의 COUPON_RESET_ID 와 같이 올린다 */
   (function () { var RID = 'c3'; try { if (localStorage.getItem('spinclash.rst') !== RID) { eco.test = false; eco.own = { sword: 1, dagger: 1, bow: 1 }; eco.seen = { sword: 1, dagger: 1, bow: 1 }; eco.tok = {}; eco.stok = {}; eco.tal = {}; eco.spl = {}; eco.pk = {}; eco.sp = {}; eco.pass = 0; eco.login = ''; localStorage.removeItem('spinclash.cpn'); localStorage.setItem(ECO_KEY, JSON.stringify(eco)); localStorage.setItem('spinclash.rst', RID); } } catch (e) {} })();
   function ecoLoad() {
-    var d = { coin: 0, gem: 0, tok: {}, own: { sword: 1, dagger: 1, bow: 1 }, tal: {}, spl: {}, day: '', played: 0, box: [], tk: {}, pass: 0, pk: {}, stok: {}, sp: {}, login: '', test: false, seen: { sword: 1, dagger: 1, bow: 1 }, boss: null };
+    var d = { coin: 0, gem: 0, tok: {}, own: { sword: 1, dagger: 1, bow: 1 }, tal: {}, spl: {}, day: '', played: 0, box: [], tk: {}, pass: 0, pk: {}, stok: {}, sp: {}, login: '', test: false, tr: 0, seen: { sword: 1, dagger: 1, bow: 1 }, boss: null };
     try { var j = JSON.parse(localStorage.getItem(ECO_KEY) || 'null'); if (j && typeof j === 'object') for (var k in d) if (j[k] != null) d[k] = j[k]; } catch (e) {}
     return d;
   }
   function ecoSave() { try { localStorage.setItem(ECO_KEY, JSON.stringify(eco)); } catch (e) {} }
+  var TR_WIN = 30;   /* 베타: 매칭 클래식에서 최종 승리하면 트로피 +30, 져도 감점 없음 */
+  function trUi() { var e = $('#hmTr'); if (e) e.textContent = String(Math.max(0, eco.tr | 0)); }
+  trUi();
   function ecoDay() { var t = new Date(); return t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate(); }
   function ecoRoll() { var d = ecoDay(); if (eco.day !== d) { eco.day = d; eco.played = 0; ecoSave(); } }
   function wpick(a) { var s = 0, i; for (i = 0; i < a.length; i++) s += a[i]; var r = Math.random() * s; for (i = 0; i < a.length; i++) { r -= a[i]; if (r < 0) return i; } return a.length - 1; }
@@ -16820,7 +16823,7 @@ var DM = (function () {
     if (c.end) {
       a.hidden = true; var t = $('#overTitle');
       t.textContent = c.mw === -1 ? '최종 무승부' : (c.mw === net.me ? '최종 승리!' : '최종 패배…'); t.style.color = c.mw === -1 ? 'var(--ink)' : (c.mw === 0 ? 'var(--p1)' : 'var(--p2)');
-      $('#overSub').textContent = '클래식 ' + mine + ' : ' + theirs + ' · ' + c.baseSub;
+      $('#overSub').textContent = '클래식 ' + mine + ' : ' + theirs + (c.trGain ? ' · 트로피 +' + c.trGain : '') + ' · ' + c.baseSub;
     } else {
       a.hidden = false; a.disabled = false; a.textContent = net.rematch ? '대기 취소' : (net.peerRematch ? '다음 판 시작' : '다음 판');
       $('#overSub').textContent = '지금까지 ' + mine + ' : ' + theirs + ' · ' + c.baseSub;
@@ -16959,7 +16962,9 @@ var DM = (function () {
     if (m.bad) { c.bad = true; $('#overTitle').textContent = '동기화 오류'; $('#overTitle').style.color = 'var(--p2)'; $('#overSub').textContent = '두 기기의 결과가 달라요. 방에서 나가서 다시 시도해 주세요.'; netOverUI(); return; }
     c.wins = [m.wins[0] | 0, m.wins[1] | 0]; c.rd = m.rd | 0; c.end = !!m.end; c.mw = m.mw;
     if (c.cur) { c.res[0][c.cur[0]] = m.w === 0 ? 'W' : (m.w === 1 ? 'L' : 'D'); c.res[1][c.cur[1]] = m.w === 1 ? 'W' : (m.w === 0 ? 'L' : 'D'); }
-    c.got = true; netOverUI();
+    c.got = true;
+    if (c.end && c.mw === net.me && net.mmRoom && !c.paid) { c.paid = true; c.trGain = TR_WIN; eco.tr = (eco.tr | 0) + TR_WIN; ecoSave(); trUi(); }
+    netOverUI();
   }
   clsEl.addEventListener('click', function (e) {
     var c = net.cl; if (!c || net.st !== 'cpick') return;
@@ -17126,7 +17131,12 @@ var DM = (function () {
     var w = net.ws; net.ws = null; netTimers(false); if (w) setTimeout(function () { try { w.close(); } catch (e) {} }, 300);
     mmStop(); netShow('menu');
   }
-  function aiName(me) { var n; do { n = nickGuest(); } while (n === me); return n; }   /* AI도 계정 없는 사람처럼 '손님1234' 형식 */
+  /* AI 닉네임: 1/2 확률로 아래 목록 중 하나, 나머지 1/2은 계정 없는 사람처럼 '손님1234' (내 닉네임과 같으면 다시 뽑음) */
+  var AI_NICKS = ['감자튀김', '저점매수', 'diii', '공쭈님', '리모컨잃어버림', 'jdrheksk', '검성', '주몽', 'ㅈ꼭지', 'ㅋㅋㅋㅋㅋ', 'ohohoh', 'Faaah'];
+  function aiName(me) {
+    var n; do { n = Math.random() < 0.5 ? AI_NICKS[Math.floor(Math.random() * AI_NICKS.length)] : nickGuest(); } while (n === me);
+    return n;
+  }
   /* AI 상대의 덱: 내 덱의 같은 칸 캐릭터와 등급을 비교해서 정한다 (최대 전설, 태고는 안 나옴)
      1/9 = 3칸 다 더 높음 · 1/9 = 2칸 더 높음 · 2/9 = 1칸 더 높음 · 나머지 5/9 = 더 높은 칸 없음
      더 높은 칸은 +1등급(25%는 +2), 나머지 칸은 같은 등급이거나(65%) 낮은 등급(35%). 재능은 무작위, 스펠은 내 덱과 같은 개수만큼 무작위 */
