@@ -221,7 +221,7 @@ body.online .ctrl { display: none; }
 .onlRow b { overflow-wrap: anywhere; }
 .onlRow i { font-style: normal; font-size: 12px; color: var(--muted); white-space: nowrap; align-self: center; }
 .onlRow.fight i, .onlRow.prep i { color: var(--p2); }
-.onlRow.mm i { color: var(--p1); }
+.onlRow.mm i, .onlRow.custom i { color: var(--p1); }
 #clsSpReset { align-self: center; min-height: 36px; font-size: 13px; }
 #clsSpReset[hidden] { display: none; }
 #netModal .sheet { max-height: calc(100vh - 32px); overflow-y: auto; }
@@ -946,7 +946,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v596</span>
+      <span class="verTag">v597</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -17314,9 +17314,9 @@ var DM = (function () {
   /* 접속 인원: 페이지를 열어 둔 동안 가벼운 연결 하나를 유지하고 서버가 알려 주는 숫자를 메인 화면 구석에 보여 준다 */
   var pres = { ws: null, t: 0, ka: 0, delay: 3000, n: -1 };
   /* 내 닉네임·지금 하는 일을 서버에 알린다 (제작자의 접속자 목록용): 바뀔 때만 보낸다 */
-  var PST = { home: '홈', mm: '매칭 중', prep: '전투 준비중', fight: '전투중', spec: '관전중', off: '오프라인' }, presSent = { k: '', s: '' }, onl = { open: false, list: [] };
+  var PST = { home: '홈', mm: '대전 매칭 중', prep: '대전 준비중', fight: '대전중', custom: '커스텀', spec: '관전 중', off: '오프라인' }, presSent = { k: '', s: '' }, onl = { open: false, list: [] };
   function presStat() {
-    if (net.on) return net.spec ? 'spec' : (net.st === 'play' || net.st === 'after' || net.st === 'desync' ? 'fight' : 'prep');
+    if (net.on) return net.spec ? 'spec' : (!net.mmRoom ? 'custom' : (net.st === 'play' || net.st === 'after' || net.st === 'desync' ? 'fight' : 'prep'));   /* 방 만들어서 하면 어느 단계든 '커스텀', 매칭 대전이면 준비중/대전중 */
     if (mm.on) return 'mm';
     return (screenName === 'title' || screenName === 'home') ? 'home' : 'off';
   }
