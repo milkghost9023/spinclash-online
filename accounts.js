@@ -21,11 +21,11 @@ function cleanNick(s) {
   s = String(s == null ? '' : s).replace(/[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁦-⁩﻿]/g, '').replace(/\s+/g, ' ').trim();
   return Array.from(s).slice(0, 10).join('').trim();
 }
-/* 쿠폰으로 열리는 권한: rA=일반~전설 캐릭터·재능·스펠 전부 · rB=태고 전부. 코드는 환경변수 COUPON_CODES 에만 있다
- * 형식: 코드=권한,코드=권한 …  예) spinclash=rA,beta30=rB  (코드 앞에 no 를 붙이면 자동으로 반대: nospinclash = rA 회수. 권한 앞에 -를 붙인 코드도 회수용)
+/* 쿠폰으로 열리는 권한: rA=일반~전설 캐릭터·재능·스펠 전부 · rB=태고 전부 · rC=일반~초희귀 전부. 코드는 환경변수 COUPON_CODES 에만 있다
+ * 형식: 코드=권한,코드=권한 …  예) spinclash=rA,beta30=rB,login=rC  (코드 앞에 no 를 붙이면 자동으로 반대: nospinclash = rA 회수. 권한 앞에 -를 붙인 코드도 회수용)
  * cmd=제작자 권한(닉네임 "유령")은 쿠폰으로는 더 못 얻는다: 제작자 계정(OWNER_USERNAME)에만 자동으로 붙는다. 예전 r4·r5·r6·cmd 코드는 모두 무효 */
-const GRANTS = new Set(['rA', 'rB']);                  // 쿠폰으로 얻을 수 있는 권한
-const GRANTS_ALL = new Set(['rA', 'rB', 'cmd']);       // 계정에 저장될 수 있는 권한
+const GRANTS = new Set(['rA', 'rB', 'rC']);                  // 쿠폰으로 얻을 수 있는 권한
+const GRANTS_ALL = new Set(['rA', 'rB', 'rC', 'cmd']);       // 계정에 저장될 수 있는 권한
 function parseCoupons(str) {
   const m = new Map();
   String(str || '').split(',').forEach((part) => {

@@ -92,9 +92,19 @@ function specStatus(room, only) {
 /* 접속 중인 사람 수: 페이지를 열어 둔 연결(hi 를 보낸 연결)만 센다. 변할 때마다 0.6초 모아서 한 번에 알린다 */
 let countT = null, lastCount = -1;
 function onlineCount() { let n = 0; wss.clients.forEach((w) => { if (w._pres) n++; }); return n; }
+/* 제작자 전용 접속자 목록: [닉네임, 상태] 만 보낸다 (상태는 각 사람의 화면이 알려 준 값: home 홈 · mm 매칭 중 · prep 전투 준비중 · fight 전투중 · spec 관전중 · off 오프라인) */
+const PST_OK = new Set(['home', 'mm', 'prep', 'fight', 'spec', 'off']);
+function sendPlist(w) {
+  const l = []; wss.clients.forEach((c) => { if (c._pres && l.length < 300) l.push([c._pn || '손님', c._ps || 'home']); });
+  rawSend(w, { t: 'plist', l });
+}
 function schedCount() {
   if (countT) return;
-  countT = setTimeout(() => { countT = null; const n = onlineCount(); if (n === lastCount) return; lastCount = n; const o = JSON.stringify({ t: 'online', n }); wss.clients.forEach((w) => { if (w._pres && w.readyState === 1) w.send(o); }); }, 600);
+  countT = setTimeout(() => {
+    countT = null; const n = onlineCount();
+    if (n !== lastCount) { lastCount = n; const o = JSON.stringify({ t: 'online', n }); wss.clients.forEach((w) => { if (w._pres && w.readyState === 1) w.send(o); }); }
+    wss.clients.forEach((w) => { if (w._psub && w.readyState === 1) sendPlist(w); });   // 목록을 열어 둔 제작자에게만
+  }, 600);
 }
 function pwOk(ws, r, m) {
   if (!r.pw) return true;
@@ -235,6 +245,19 @@ wss.on('connection', (ws) => {
     switch (m.t) {
       case 'ping': return relay(ws, { t: 'pong', c: m.c });
       case 'hi': { if (!ws._pres) { ws._pres = true; rawSend(ws, { t: 'online', n: onlineCount() }); schedCount(); } const sv = serverVer(); if (sv && m.ver !== sv) rawSend(ws, { t: 'ver', v: sv }); return; }
+      case 'who': {   // 접속자 목록용 닉네임: 로그인했으면 계정 닉네임, 아니면 손님 닉네임(가입자 닉네임은 못 따라 씀)
+        const nw = Date.now(); if (nw - (ws._whoAt || 0) < 400) return; ws._whoAt = nw;
+        const fin = (u) => { ws._pn = u ? u.nick : nickOf(m.nick); schedCount(); };
+        if (typeof m.tk === 'string' && m.tk && accounts.enabled) { accounts.userFromToken(m.tk).then((u) => fin(u), () => fin(null)); } else fin(null);
+        return;
+      }
+      case 'st': { if (PST_OK.has(m.s) && ws._ps !== m.s) { ws._ps = m.s; schedCount(); } return; }
+      case 'plist': {   // 제작자만: 접속자 목록 구독 (토큰으로 서버가 제작자인지 다시 확인)
+        if (m.off) { ws._psub = false; return; }
+        if (!accounts.enabled || typeof m.tk !== 'string' || !m.tk) return;
+        accounts.userFromToken(m.tk).then((u) => { if (!u || !u.owner || ws.readyState !== 1) return; ws._psub = true; sendPlist(ws); }, () => {});
+        return;
+      }
       case 'create': {
         if (room) return;
         const code = newCode(); if (!code) return rawSend(ws, { t: 'err', m: '방을 만들 수 없어요' });

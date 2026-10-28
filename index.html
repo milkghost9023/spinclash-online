@@ -215,6 +215,13 @@ body.online .ctrl { display: none; }
 @keyframes selFlash { 0%, 100% { color: var(--muted); transform: none; } 50% { color: #1e8c46; transform: scale(1.06); } }
 .onl { position: absolute; left: 10px; top: 8px; font-size: 11px; font-weight: 700; color: var(--muted); opacity: 0.85; letter-spacing: 0.02em; pointer-events: none; }
 .onl[hidden] { display: none; }
+.onl.tap { pointer-events: auto; cursor: pointer; padding: 6px 8px; margin: -6px -8px; text-decoration: underline dotted; text-underline-offset: 3px; }
+.onlList { display: flex; flex-direction: column; gap: 6px; max-height: 55vh; overflow-y: auto; }
+.onlRow { display: flex; justify-content: space-between; gap: 10px; border: 2px solid var(--line); padding: 8px 10px; font-weight: 700; font-size: 14px; }
+.onlRow b { overflow-wrap: anywhere; }
+.onlRow i { font-style: normal; font-size: 12px; color: var(--muted); white-space: nowrap; align-self: center; }
+.onlRow.fight i, .onlRow.prep i { color: var(--p2); }
+.onlRow.mm i { color: var(--p1); }
 #clsSpReset { align-self: center; min-height: 36px; font-size: 13px; }
 #clsSpReset[hidden] { display: none; }
 #netModal .sheet { max-height: calc(100vh - 32px); overflow-y: auto; }
@@ -939,7 +946,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v593</span>
+      <span class="verTag">v594</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -1205,6 +1212,13 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
     <button type="button" class="bxOk tx" id="bxOk">확인</button>
   </div>
 </div>
+  <div class="modal" id="onlModal" hidden style="z-index:24">
+    <div class="sheet" role="dialog" aria-label="접속 중인 사람">
+      <h2 id="onlH">접속 중</h2>
+      <div class="onlList" id="onlList"></div>
+      <button class="btn" id="onlClose">닫기</button>
+    </div>
+  </div>
   <div class="modal" id="netModal" hidden style="z-index:22">
     <div class="sheet" role="dialog" aria-label="온라인 대전">
       <h2>온라인 대전</h2>
@@ -1597,15 +1611,15 @@ var DM = (function () {
   };
   var RAR = { halberd: 0, selene: 6, sisyphus: 6, boomerang: 1, archmage: 5, morrigan: 6, chronos: 6, snake: 6, chef: 5, lightning: 5, rusty: 1, cannon: 2, laser: 2, shuriken: 2, greatbow: 2, hammer: 1, whip: 1, handfan: 2, giant: 1, beast: 3, gumiho: 5, sulnyeo: 5, trumpet: 1, ash: 6, sword: 0, dummy: 0, dagger: 0, bow: 0, spear: 0, fire: 2, ice: 2, azure: 2, dark: 3, great: 0, robin: 3, angler: 3, vampire: 4, scythe: 4, dancer: 3, hyup: 3, ronin: 3, master: 4, katana: 5, torch: 5, holy: 5, tactician: 4, freak: 4, fighter: 1, dbaxe: 1, rapier: 2, pickaxe: 1, tycoon: 4, extg: 2, michael: 6, mace: 0, elf: 1, sniper: 1, witch: 5, guard: 3, silver: 2, black: 6, plague: 3, songwriter: 1, revolver: 4, thunder: 2, axe: 0, magician: 4, bounty: 4, paewang: 6 };
   var RAR_INFO = [{ n: '일반', c: '#8b94a1' }, { n: '희귀', c: '#2fb857' }, { n: '초희귀', c: '#3d8bff' }, { n: '영웅', c: '#a05cf0' }, { n: '신화', c: '#e8383d' }, { n: '전설', c: '#ffc21a' }, { n: '태고', c: '#3a2a5e' }];
-  /* 쿠폰: 로그인한 계정이 코드를 넣으면(서버가 코드를 확인) 등급 묶음이 계정에 저장돼서 어느 기기에서든 열린다. spinclash=rA(일반~전설) · beta30=rB(태고)
-     acct.me.g = 서버가 알려 준 열린 권한 ['rA'(일반~전설 전부),'rB'(태고),'cmd'] — 손님은 모두 잠김 */
+  /* 쿠폰: 로그인한 계정이 코드를 넣으면(서버가 코드를 확인) 등급 묶음이 계정에 저장돼서 어느 기기에서든 열린다. spinclash=rA(일반~전설) · beta30=rB(태고) · login=rC(일반~초희귀)
+     acct.me.g = 서버가 알려 준 열린 권한 ['rA'(일반~전설 전부),'rB'(태고),'rC'(일반~초희귀),'cmd'] — 손님은 모두 잠김 */
   var acct = { tk: '', me: null, mail: false, busy: false, view: 'out', tab: 'login', rst: '' };
   var accBoot = false;   // 저장된 로그인으로 /api/me 확인 중일 때는 잠긴 무기 선택을 건드리지 않는다
-  var GRANT_NAME = { rA: '일반~전설', rB: '태고' };
+  var GRANT_NAME = { rA: '일반~전설', rB: '태고', rC: '일반~초희귀' };
   function grantHas(g) { return !!(acct.me && acct.me.g && acct.me.g.indexOf(g) >= 0); }
-  function rarOpen(r) { return grantHas(r < 6 ? 'rA' : 'rB'); }
+  function rarOpen(r) { return grantHas(r < 6 ? 'rA' : 'rB') || (r <= 2 && grantHas('rC')); }   /* rC = login 쿠폰: 일반~초희귀 */
   /* 소유 체크: 시작은 검·단검·활뿐. 상자·토큰으로 얻거나, 서버 쿠폰(spinclash=일반~전설 · beta30=태고)으로 캐릭터·재능·스펠이 전부 열린다. 오프라인·온라인 선택 화면 모두 이걸 쓴다 */
-  function charGranted(t) { return grantHas((RAR[t] || 0) < 6 ? 'rA' : 'rB'); }
+  function charGranted(t) { return rarOpen(RAR[t] || 0); }
   function charOwned(t) { return !!eco.own[t] || charGranted(t); }
   function talOwned(t, i) { return charGranted(t) || (eco.tal[t + ':' + i] || 0) > 0; }
   function splOwned(t, k) { return k === 'none' || charGranted(t) || (eco.spl[t + ':' + k] || 0) > 0; }
@@ -16341,13 +16355,13 @@ var DM = (function () {
   $('#nickSet').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); nickApply(); } });
   function cpnRefresh(msg) {
     var m = $('#cpnMsg'); if (!m) return;
-    var op = ['rA', 'rB'].filter(grantHas);
+    var op = ['rA', 'rB', 'rC'].filter(function (g) { return grantHas(g) && !(g === 'rC' && grantHas('rA')); });
     m.textContent = msg || (!acct.me ? (window.SPIN_ACC ? '쿠폰은 로그인하면 쓸 수 있어요' : '쿠폰은 지금 쓸 수 없어요') : (op.length ? '열린 것: ' + op.map(function (g) { return GRANT_NAME[g]; }).join(' · ') + ' 캐릭터·재능·스펠' : '코드를 넣으면 캐릭터·재능·스펠이 열려요'));
     cmdTagSync();
   }
   /* nospinclash · nobeta30: 그 등급 묶음의 캐릭터·재능·스펠을 모두 없앤다 (기본 검·단검·활만 남음). 서버가 권한을 회수하고, 이 기기에 저장된 보유분도 지운다 */
   function cpnWipe(g) {
-    var lo = g === 'rB' ? 6 : 0, hi = g === 'rB' ? 6 : 5, keep = { sword: 1, dagger: 1, bow: 1 };
+    var lo = g === 'rB' ? 6 : 0, hi = g === 'rB' ? 6 : (g === 'rC' ? 2 : 5), keep = { sword: 1, dagger: 1, bow: 1 };
     colTypes().forEach(function (t) {
       var r = RAR[t] || 0; if (r < lo || r > hi || keep[t]) return;
       delete eco.own[t]; delete eco.seen[t];
@@ -16367,7 +16381,7 @@ var DM = (function () {
       if (j.me && acct.me) { acct.me = j.me; }
       var t;
       if (!j.ok) t = j.m || '코드를 확인하지 못했어요';
-      else if ((j.k === 'revoke' || j.k === 'norev') && (j.g === 'rA' || j.g === 'rB')) { cpnWipe(j.g); t = GRANT_NAME[j.g] + ' 캐릭터·재능·스펠을 모두 없앴어요 (검·단검·활만 남아요)'; }
+      else if ((j.k === 'revoke' || j.k === 'norev') && (j.g === 'rA' || j.g === 'rB' || j.g === 'rC')) { cpnWipe(j.g); t = GRANT_NAME[j.g] + ' 캐릭터·재능·스펠을 모두 없앴어요 (검·단검·활만 남아요)'; }
       else if (j.k === 'revoke') t = '제작자 권한을 해제했어요' + (j.me && acct.me && /^플레이어\d+$/.test(j.me.n) ? ' · 닉네임은 ' + j.me.n + ' 으로 바뀌었어요' : '');
       else if (j.k === 'norev') t = '해제할 제작자 권한이 없어요';
       else if (j.k === 'dup') t = '이미 적용된 코드예요';
@@ -17299,15 +17313,46 @@ var DM = (function () {
 
   /* 접속 인원: 페이지를 열어 둔 동안 가벼운 연결 하나를 유지하고 서버가 알려 주는 숫자를 메인 화면 구석에 보여 준다 */
   var pres = { ws: null, t: 0, ka: 0, delay: 3000, n: -1 };
-  function presUi() { var e = $('#onlTag'); if (!e || !pres) return; var on = pres.n >= 0 && shOwner(); e.hidden = !on; if (on) e.textContent = '🟢 접속 중 ' + pres.n + '명'; }   /* 접속자 수는 제작자 계정에만 보인다 */
+  /* 내 닉네임·지금 하는 일을 서버에 알린다 (제작자의 접속자 목록용): 바뀔 때만 보낸다 */
+  var PST = { home: '홈', mm: '매칭 중', prep: '전투 준비중', fight: '전투중', spec: '관전중', off: '오프라인' }, presSent = { k: '', s: '' }, onl = { open: false, list: [] };
+  function presStat() {
+    if (net.on) return net.spec ? 'spec' : (net.st === 'play' || net.st === 'after' || net.st === 'desync' ? 'fight' : 'prep');
+    if (mm.on) return 'mm';
+    return (screenName === 'title' || screenName === 'home') ? 'home' : 'off';
+  }
+  function presPush() {
+    var ws = pres.ws; if (!ws || ws.readyState !== 1) return;
+    var k = (acct.tk || '') + '|' + nickRead(), s = presStat();
+    try {
+      if (k !== presSent.k) { presSent.k = k; ws.send(JSON.stringify({ t: 'who', tk: acct.tk || '', nick: nickRead() })); }
+      if (s !== presSent.s) { presSent.s = s; ws.send(JSON.stringify({ t: 'st', s: s })); }
+    } catch (e) {}
+  }
+  setInterval(presPush, 1000);
+  function presList(off) { var ws = pres.ws; if (ws && ws.readyState === 1) { try { ws.send(JSON.stringify({ t: 'plist', tk: acct.tk || '', off: off ? 1 : 0 })); } catch (e) {} } }
+  function onlRender() {
+    var box = $('#onlList'); if (!box || $('#onlModal').hidden) return;
+    $('#onlH').textContent = '접속 중 ' + onl.list.length + '명';
+    box.textContent = '';
+    if (!onl.list.length) { var em = document.createElement('p'); em.className = 'netTxt'; em.textContent = '목록을 불러오는 중…'; box.appendChild(em); return; }
+    onl.list.forEach(function (r) {
+      var d = document.createElement('div'), k = String(r[1] || 'home'); d.className = 'onlRow ' + k;
+      var b = document.createElement('b'); b.textContent = nickClean(r[0]) || '손님'; var i = document.createElement('i'); i.textContent = PST[k] || '';
+      d.appendChild(b); d.appendChild(i); box.appendChild(d);
+    });
+  }
+  function onlClose() { onl.open = false; $('#onlModal').hidden = true; presList(true); }
+  $('#onlTag').addEventListener('click', function (e) { e.stopPropagation(); if (!shOwner()) return; audio(); onl.open = true; onl.list = []; $('#onlModal').hidden = false; onlRender(); presPush(); presList(false); });
+  $('#onlClose').addEventListener('click', onlClose);
+  function presUi() { var e = $('#onlTag'); if (!e || !pres) return; var on = pres.n >= 0 && shOwner(); e.hidden = !on; e.classList.toggle('tap', on); if (on) e.textContent = '🟢 접속 중 ' + pres.n + '명'; if (!on && !$('#onlModal').hidden) onlClose(); }   /* 접속자 수는 제작자 계정에만 보인다 */
   function presShow(n) { pres.n = n; presUi(); }
   function presRetry() { if (pres.t) return; pres.t = setTimeout(function () { pres.t = 0; if (!document.hidden) presOpen(); }, pres.delay); pres.delay = Math.min(30000, pres.delay * 2); }
   function presOpen() {
     if (!window.SPIN_ONLINE || pres.ws) return;
     var ws; try { ws = new WebSocket(netUrl()); } catch (e) { presRetry(); return; }
     pres.ws = ws;
-    ws.onopen = function () { pres.delay = 3000; try { ws.send(JSON.stringify({ t: 'hi', ver: VER })); } catch (e) {} pres.ka = setInterval(function () { try { if (ws.readyState === 1) ws.send(JSON.stringify({ t: 'ping', c: 0 })); } catch (e) {} }, 20000); };
-    ws.onmessage = function (ev) { var m; try { m = JSON.parse(ev.data); } catch (e) { return; } if (m && m.t === 'online') presShow(m.n | 0); else if (m && m.t === 'ver') verBarShow(m.v); };
+    ws.onopen = function () { pres.delay = 3000; presSent.k = ''; presSent.s = ''; try { ws.send(JSON.stringify({ t: 'hi', ver: VER })); } catch (e) {} presPush(); if (onl.open) presList(false); pres.ka = setInterval(function () { try { if (ws.readyState === 1) ws.send(JSON.stringify({ t: 'ping', c: 0 })); } catch (e) {} }, 20000); };
+    ws.onmessage = function (ev) { var m; try { m = JSON.parse(ev.data); } catch (e) { return; } if (m && m.t === 'online') presShow(m.n | 0); else if (m && m.t === 'ver') verBarShow(m.v); else if (m && m.t === 'plist' && Array.isArray(m.l)) { onl.list = m.l.slice(0, 300); onlRender(); } };
     ws.onclose = function () { if (pres.ka) { clearInterval(pres.ka); pres.ka = 0; } if (pres.ws === ws) pres.ws = null; presShow(-1); presRetry(); };
     ws.onerror = function () {};
   }
