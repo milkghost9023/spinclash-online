@@ -939,7 +939,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v585</span>
+      <span class="verTag">v588</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -17127,15 +17127,24 @@ var DM = (function () {
     mmStop(); netShow('menu');
   }
   function aiName(me) { var n; do { n = nickGuest(); } while (n === me); return n; }   /* AI도 계정 없는 사람처럼 '손님1234' 형식 */
-  /* AI 상대의 덱: 내 덱의 캐릭터와 같은 등급에서 무작위로 (겹치지 않게), 재능은 무작위, 스펠은 내 덱과 같은 개수만큼 무작위(덱 안에서 겹치지 않게) */
+  /* AI 상대의 덱: 내 덱의 같은 칸 캐릭터와 등급을 비교해서 정한다 (최대 전설, 태고는 안 나옴)
+     1/9 = 3칸 다 더 높음 · 1/9 = 2칸 더 높음 · 2/9 = 1칸 더 높음 · 나머지 5/9 = 더 높은 칸 없음
+     더 높은 칸은 +1등급(25%는 +2), 나머지 칸은 같은 등급이거나(65%) 낮은 등급(35%). 재능은 무작위, 스펠은 내 덱과 같은 개수만큼 무작위 */
+  var AI_MAXG = 5;
   function aiBotDeck(mine) {
-    var usedT = {}, usedS = {}, out = [];
-    mine.forEach(function (d) {
-      var g = RAR[d.type] || 0, pool = boxPool(g).filter(function (t) { return !usedT[t]; });
-      if (!pool.length) pool = boxPool(0).filter(function (t) { return !usedT[t]; });
+    var usedT = {}, usedS = {}, out = [], r = Math.random() * 9, want = r < 1 ? 3 : (r < 2 ? 2 : (r < 4 ? 1 : 0));
+    var cap = mine.map(function (d, i) { return i; }).filter(function (i) { return (RAR[mine[i].type] || 0) < AI_MAXG; });
+    for (var q = cap.length - 1; q > 0; q--) { var z = Math.floor(Math.random() * (q + 1)), tmp = cap[q]; cap[q] = cap[z]; cap[z] = tmp; }
+    var hi = {}; cap.slice(0, want).forEach(function (i) { hi[i] = 1; });
+    mine.forEach(function (d, i) {
+      var g0 = Math.min(AI_MAXG, RAR[d.type] || 0), g = g0;
+      if (hi[i]) g = Math.min(AI_MAXG, g0 + (Math.random() < 0.25 ? 2 : 1));
+      else if (g0 > 0 && Math.random() < 0.35) g = Math.max(0, g0 - (Math.random() < 0.25 ? 2 : 1));
+      var pool = [];
+      for (var k = g; k >= 0 && !pool.length; k--) pool = boxPool(k).filter(function (t) { return !usedT[t]; });   /* 그 등급에 남은 게 없으면 한 단계 아래에서 */
       var t = pool[Math.floor(Math.random() * pool.length)] || 'sword'; usedT[t] = 1;
       var sp = SPELL_KEYS.filter(function (k) { return k !== 'none' && !usedS[k] && !(k === 'stack' && !stackable(t)); }), n = Math.min(2, (d.spells || []).length), pick = [];
-      while (pick.length < n && sp.length) { var q = sp.splice(Math.floor(Math.random() * sp.length), 1)[0]; pick.push(q); usedS[q] = 1; }
+      while (pick.length < n && sp.length) { var q2 = sp.splice(Math.floor(Math.random() * sp.length), 1)[0]; pick.push(q2); usedS[q2] = 1; }
       out.push(netSane({ type: t, trait: Math.floor(Math.random() * (W[t].traits.length + 1)), dir: Math.floor(Math.random() * DIRS.length), spells: pick, col: 'blue' }));
     });
     return out;
@@ -17187,9 +17196,8 @@ var DM = (function () {
     var F = { readyState: 1,
       open: function () {
         later(function () {
-          emit({ t: 'created', code: 'AI', idx: 0, mode: 'classic', name: '매칭', tok: '', mm: 1 });
+          emit({ t: 'created', code: 'MATCH', idx: 0, mode: 'classic', name: '매칭', tok: '', mm: 1 });
           emit({ t: 'names', n: [S.me, ''], sc: 0 }); emit({ t: 'peer', n: 2 }); emit({ t: 'names', n: [S.me, S.bn], sc: 0 });
-          netNotify('상대를 못 찾아서 AI와 대결해요', false);
         }, 200);
       },
       send: function (raw) {
@@ -17199,7 +17207,7 @@ var DM = (function () {
           case 'in': if (S.state === 'play') emit({ t: 'in', p: 1, f: m.f, a: botA() }); return;
           case 'h': emit({ t: 'h', s: m.s, h: m.h }); return;
           case 'deck': if (S.state !== 'lobby' || !Array.isArray(m.deck) || m.deck.length !== 3) return; S.deck = clone(m.deck); if (Number.isInteger(m.arena) && m.arena >= 0 && m.arena < 64) S.arena = m.arena; if (typeof m.sd === 'boolean') S.sd = m.sd; return;
-          case 'ready': S.ready = !!m.v; if (S.ready) { later(function () { emit({ t: 'peerReady', v: true }); }, 400); later(startClassic, 1200); } return;
+          case 'ready': S.ready = !!m.v; if (S.ready) { var dl = 3000 + Math.random() * 10000; later(function () { if (S.ready) emit({ t: 'peerReady', v: true }); }, dl); later(startClassic, dl + 800);   /* 사람처럼 3~13초 뒤에 덱을 확정 */ } return;
           case 'pick': { var i = m.i; if (S.state !== 'cpick' || !Number.isInteger(i) || i < 0 || i > 2 || S.cl.used[0][i] || S.picks[0] !== null) return; S.picks[0] = i; if (S.picks[1] !== null) startFight(); return; }
           case 'over': {
             if (S.state !== 'play') return; S.state = 'after'; var cl = S.cl, w = m.w; if (w !== -1 && w !== 0 && w !== 1) w = -1;
