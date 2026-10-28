@@ -82,7 +82,30 @@ CREATE TABLE IF NOT EXISTS user_tokens (
   expires_at TIMESTAMPTZ NOT NULL
 );
 CREATE INDEX IF NOT EXISTS user_tokens_user_idx ON user_tokens (user_id, kind);
-ALTER TABLE users ADD COLUMN IF NOT EXISTS grants TEXT NOT NULL DEFAULT '';`;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS grants TEXT NOT NULL DEFAULT '';
+CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
+
+  /* 쿠폰 초기화: COUPON_RESET_ID 를 새 값으로 바꿔서 배포하면, 서버가 켜질 때 모든 계정의 쿠폰 권한(grants)을 한 번만 비운다.
+   * 제작자 권한을 잃은 일반 계정의 "유령" 닉네임도 쿠폰 해제 때처럼 '플레이어####' 로 바꾼다. 제작자 계정(OWNER_USERNAME)은 쿠폰이 아니라서 그대로.
+   * 끝까지 성공해야 기록을 남기므로, 도중에 실패하면 다음 시작 때 다시 한다. 게임 쪽(index.html)의 같은 이름 값도 같이 올릴 것 */
+  const COUPON_RESET_ID = 'c1';
+  async function couponResetOnce() {
+    const done = await q("SELECT v FROM app_meta WHERE k = 'coupon_reset'");
+    if (done.rows[0] && done.rows[0].v === COUPON_RESET_ID) return;
+    const r = await q("UPDATE users SET grants = '' WHERE grants <> '' RETURNING id");
+    const g = await q('SELECT id, nick FROM users WHERE is_owner = false');
+    let renamed = 0;
+    for (const row of g.rows) {
+      if (!isGhost(row.nick)) continue;
+      for (let i = 0; i < 20; i++) {
+        const nn = '플레이어' + (1000 + crypto.randomInt(9000));
+        try { await q('UPDATE users SET nick = $1, nick_key = $2 WHERE id = $3 RETURNING 1', [nn, normKey(nn), row.id]); nickKeys.delete(normKey(row.nick)); nickKeys.set(normKey(nn), 1); renamed++; break; }
+        catch (e) { if (!isUniq(e, 'nick')) throw e; }
+      }
+    }
+    await q("INSERT INTO app_meta (k, v) VALUES ('coupon_reset', $1) ON CONFLICT (k) DO UPDATE SET v = EXCLUDED.v", [COUPON_RESET_ID]);
+    console.log('[accounts] 쿠폰 초기화(' + COUPON_RESET_ID + '): 권한 비운 계정 ' + r.rowCount + '명 · 유령 닉네임 변경 ' + renamed + '명');
+  }
 
   A.init = async function init() {
     if (!env.DATABASE_URL) { console.log('[accounts] 꺼짐: DATABASE_URL 이 없어요 (손님 모드만 동작)'); return; }
@@ -96,6 +119,7 @@ ALTER TABLE users ADD COLUMN IF NOT EXISTS grants TEXT NOT NULL DEFAULT '';`;
         await q(SCHEMA);
         const r = await q('SELECT nick_key FROM users');
         r.rows.forEach((x) => nickKeys.set(x.nick_key, 1));
+        await couponResetOnce();
         A.enabled = true; A.state = 'ok';
       } catch (e) { lastErr = e; console.log('[accounts] DB 준비 실패 (' + (i + 1) + '/4):', e.message); await new Promise((r) => setTimeout(r, 3000)); }
     }

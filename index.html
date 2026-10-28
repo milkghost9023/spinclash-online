@@ -504,7 +504,14 @@ body.clsSel #hudBars { display: none; }
 #home .hcard .cb { flex: none; height: 20px; padding: 0 6px; display: flex; align-items: center; border-radius: 5px; background: linear-gradient(var(--hl2), var(--hl3)); border: 2px solid var(--ink); font: 900 10px 'Noto Sans KR', sans-serif; color: var(--hdk); }
 #home .hbarq { position: relative; height: 14px; border-radius: 3px; background: var(--ink); overflow: hidden; }
 #home .hbarq .tx { position: absolute; inset: 0; display: grid; place-items: center; font-size: 10px; -webkit-text-stroke: 2.4px var(--ink); color: var(--hmu); }
-#home .harena { position: relative; flex: none; width: 290px; max-width: 100%; padding: 7px; border-radius: 10px; background: linear-gradient(var(--hl1), var(--hl2)); border: 4px solid var(--ink); box-shadow: inset 0 2px 0 rgba(255,255,255,0.6), 0 4px 0 rgba(0,0,0,0.4); }
+#home .hmid { position: relative; flex: none; width: calc(100% + 16px); margin: 0 -8px; display: flex; justify-content: center; }
+#home .htop { position: relative; flex: none; width: 100%; }
+#home .hside { position: absolute; right: 0; top: calc(100% + 8px); z-index: 3; display: flex; flex-direction: column; gap: 6px; }
+#home .hsb { box-sizing: border-box; width: 34px; height: 34px; padding: 2px 0 1px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; border-radius: 7px; border: 2.5px solid var(--ink); background: linear-gradient(var(--hl1), var(--hl2)); color: var(--ink); box-shadow: inset 0 2px 0 rgba(255,255,255,0.7), 0 3px 0 rgba(0,0,0,0.4); }
+#home .hsb:active { transform: translateY(2px); box-shadow: inset 0 2px 0 rgba(255,255,255,0.7), 0 1px 0 rgba(0,0,0,0.4); }
+#home .hsb svg { width: 19px; height: 19px; flex: none; }
+#home .hsb span { font: 900 8px 'Noto Sans KR', sans-serif; line-height: 1; white-space: nowrap; }
+#home .harena { position: relative; flex: none; width: min(290px, calc(100% - 96px)); padding: 7px; border-radius: 10px; background: linear-gradient(var(--hl1), var(--hl2)); border: 4px solid var(--ink); box-shadow: inset 0 2px 0 rgba(255,255,255,0.6), 0 4px 0 rgba(0,0,0,0.4); }
 #home .harena i.rv { position: absolute; z-index: 2; width: 6px; height: 6px; border-radius: 50%; background: var(--hl3); border: 1.4px solid var(--ink); }
 #home .harena .arena { border: 3px solid var(--ink); border-radius: 3px; box-shadow: none; overflow: hidden; }
 #home .hbtns { flex: none; width: 100%; max-width: 330px; display: flex; flex-direction: column; gap: 8px; }
@@ -583,6 +590,7 @@ body.clsSel #hudBars { display: none; }
 @media (prefers-reduced-motion: reduce) { #boxOv .bxRays, #boxOv .bxIn { animation: none; } }
 #boxOv .bxChr { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
 #boxOv .bxChr[hidden] { display: none; }
+#boxOv.tkMode .bxBox { visibility: hidden; }
 #boxOv .bxStage.chrMode .bxTier, #boxOv .bxStage.chrMode .bxPips { visibility: hidden; }
 #boxOv .bxCBeam { position: absolute; left: 50%; top: 0; width: 150px; height: calc(40% + 90px); margin-left: -75px; background: radial-gradient(ellipse at 50% 100%, var(--bl) 0, var(--bc) 28%, transparent 68%); opacity: 0; transform-origin: 50% 100%; }
 #boxOv .bxCImg { position: absolute; left: 50%; top: 40%; width: 130px; height: 130px; margin: -65px 0 0 -65px; opacity: 0; will-change: transform; filter: drop-shadow(0 0 14px var(--bc)) drop-shadow(0 0 34px var(--bc)); }
@@ -623,72 +631,127 @@ body.clsSel #hudBars { display: none; }
 #invBody .invNote { margin-top: 10px; color: var(--muted); font-size: 12px; }
 #overBox { margin: 0 0 6px; font-weight: 900; }
 #home .hnav .dot { position: absolute; right: -4px; top: -4px; min-width: 16px; height: 16px; border-radius: 8px; background: #ef3a3a; border: 2px solid #fff; box-shadow: 0 0 0 1.5px var(--ink); }
-#home .hmain[hidden], #hmCol[hidden], #hmCol .cs[hidden] { display: none; }
+#home .hmain[hidden], #hmCol[hidden], #hmInv[hidden], :is(#hmCol, #hmInv) .cs[hidden] { display: none; }
+#hmInv { position: absolute; inset: 0; z-index: 30; }
+#hmInv .cs { justify-content: center; align-items: center; padding: 10px; }
+#hmInv .csp { width: 100%; max-width: 480px; height: 100%; max-height: none; border-bottom: 4px solid var(--ink); border-radius: 14px; animation: shPop 0.25s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
 #hmCol { position: relative; flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; background: var(--hbg); }
-#hmCol .chd { flex: none; padding: 10px max(12px, calc((100% - 480px) / 2 + 12px)) 8px; display: flex; flex-direction: column; gap: 6px; }
-#hmCol .chd .r1 { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-#hmCol .chd .ttl { font-size: 21px; }
-#hmCol .chd .cnt { font: 900 14px 'Noto Sans KR', sans-serif; color: var(--hmu); }
-#hmCol .chd .cnt b { color: #fff; }
-#hmCol .cbar { height: 12px; border: 2px solid var(--ink); border-radius: 6px; background: var(--hdeep); overflow: hidden; }
-#hmCol .cbar i { display: block; height: 100%; width: 0; background: linear-gradient(var(--hac2), var(--hac)); transition: width 0.3s; }
-#hmCol .ctabs { flex: none; display: flex; gap: 5px; padding: 0 max(10px, calc((100% - 480px) / 2 + 10px)) 8px; overflow-x: auto; scrollbar-width: none; }
-#hmCol .ctabs::-webkit-scrollbar { display: none; }
-#hmCol .ctabs button { flex: none; height: 32px; padding: 0 9px; display: flex; align-items: center; gap: 4px; border-radius: 7px; border: 2px solid var(--ink); background: linear-gradient(var(--hb1), var(--hb2)); color: var(--htx); font: 900 12px 'Noto Sans KR', sans-serif; box-shadow: inset 0 2px 0 rgba(255,255,255,0.18); }
-#hmCol .ctabs button::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--rc, var(--hl1)); border: 1.5px solid var(--ink); }
-#hmCol .ctabs button small { font: 800 10px 'Noto Sans KR', sans-serif; opacity: 0.75; }
-#hmCol .ctabs button[aria-pressed="true"] { background: linear-gradient(var(--hl1), var(--hl2)); color: var(--ink); box-shadow: inset 0 -4px 0 var(--rc, var(--hac)); }
-#hmCol .cgrid { flex: 1 1 0; min-height: 0; overflow-y: auto; padding: 6px max(10px, calc((100% - 480px) / 2 + 10px)) 14px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; align-content: start; }
-#hmCol .cc { position: relative; padding: 8px 4px 7px; display: flex; flex-direction: column; align-items: center; gap: 3px; border-radius: 9px; border: 3px solid var(--rc); background: linear-gradient(var(--hl1), var(--hl2)); color: var(--ink); box-shadow: inset 0 2px 0 rgba(255,255,255,0.7), 0 3px 0 rgba(0,0,0,0.4); min-width: 0; }
-#hmCol .cc:active { transform: translateY(2px); box-shadow: inset 0 2px 0 rgba(255,255,255,0.7), 0 1px 0 rgba(0,0,0,0.4); }
-#hmCol .cc img { width: 58px; height: 58px; display: block; }
-#hmCol .cc b { max-width: 100%; font: 900 12px 'Noto Sans KR', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#hmCol .cc .rp { padding: 1px 6px; border-radius: 5px; border: 2px solid var(--ink); background: var(--rc); color: #fff; font: 900 10px 'Noto Sans KR', sans-serif; text-shadow: 0 1px 0 rgba(0,0,0,0.55); }
-#hmCol .cc .nw { position: absolute; right: -6px; top: -8px; padding: 1px 5px; border-radius: 6px; border: 2px solid var(--ink); background: #ef3a3a; color: #fff; font: 900 10px 'Noto Sans KR', sans-serif; }
-#hmCol .cc.lock { background: linear-gradient(var(--hlock1), var(--hlock2)); border-color: color-mix(in srgb, var(--rc) 45%, var(--hpl)); box-shadow: inset 0 2px 0 rgba(255,255,255,0.06), 0 3px 0 rgba(0,0,0,0.4); }
-#hmCol .cc.lock img { filter: brightness(0) opacity(0.5); }
-#hmCol .cc.lock b { color: var(--hmu2); }
-#hmCol .cc.lock .rp { opacity: 0.55; }
-#hmCol .cc .cp { position: relative; width: 100%; height: 14px; border-radius: 7px; border: 2px solid var(--ink); background: var(--hdeep); overflow: hidden; }
-#hmCol .cc .cp i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--rc); opacity: 0.85; }
-#hmCol .cc .cp span { position: absolute; inset: 0; display: grid; place-items: center; font: 900 9px 'Noto Sans KR', sans-serif; color: #fff; text-shadow: 0 1px 0 #000; }
-#hmCol .cc.ok .cp span { color: #fff; }
-#hmCol .cs { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; justify-content: flex-end; background: rgba(5,9,20,0.62); }
-#hmCol .csp { align-self: center; width: 100%; max-width: 480px; max-height: 94%; display: flex; flex-direction: column; gap: 8px; padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px)); background: var(--hsheet); border: 4px solid var(--ink); border-bottom: 0; border-radius: 14px 14px 0 0; animation: csUp 0.22s ease-out both; }
+:is(#hmCol, #hmInv) .chd { flex: none; padding: 10px max(12px, calc((100% - 480px) / 2 + 12px)) 8px; display: flex; flex-direction: column; gap: 6px; }
+:is(#hmCol, #hmInv) .chd .r1 { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+:is(#hmCol, #hmInv) .chd .ttl { font-size: 21px; }
+:is(#hmCol, #hmInv) .chd .cnt { font: 900 14px 'Noto Sans KR', sans-serif; color: var(--hmu); }
+:is(#hmCol, #hmInv) .chd .cnt b { color: #fff; }
+:is(#hmCol, #hmInv) .cbar { height: 12px; border: 2px solid var(--ink); border-radius: 6px; background: var(--hdeep); overflow: hidden; }
+:is(#hmCol, #hmInv) .cbar i { display: block; height: 100%; width: 0; background: linear-gradient(var(--hac2), var(--hac)); transition: width 0.3s; }
+:is(#hmCol, #hmInv) .ctabs { flex: none; display: flex; gap: 5px; padding: 0 max(10px, calc((100% - 480px) / 2 + 10px)) 8px; overflow-x: auto; scrollbar-width: none; }
+:is(#hmCol, #hmInv) .ctabs::-webkit-scrollbar { display: none; }
+:is(#hmCol, #hmInv) .ctabs button { flex: none; height: 32px; padding: 0 9px; display: flex; align-items: center; gap: 4px; border-radius: 7px; border: 2px solid var(--ink); background: linear-gradient(var(--hb1), var(--hb2)); color: var(--htx); font: 900 12px 'Noto Sans KR', sans-serif; box-shadow: inset 0 2px 0 rgba(255,255,255,0.18); }
+:is(#hmCol, #hmInv) .ctabs button::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--rc, var(--hl1)); border: 1.5px solid var(--ink); }
+:is(#hmCol, #hmInv) .ctabs button small { font: 800 10px 'Noto Sans KR', sans-serif; opacity: 0.75; }
+:is(#hmCol, #hmInv) .ctabs button[aria-pressed="true"] { background: linear-gradient(var(--hl1), var(--hl2)); color: var(--ink); box-shadow: inset 0 -4px 0 var(--rc, var(--hac)); }
+:is(#hmCol, #hmInv) .cgrid { flex: 1 1 0; min-height: 0; overflow-y: auto; padding: 6px max(10px, calc((100% - 480px) / 2 + 10px)) 14px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; align-content: start; }
+:is(#hmCol, #hmInv) .cc { position: relative; padding: 8px 4px 7px; display: flex; flex-direction: column; align-items: center; gap: 3px; border-radius: 9px; border: 3px solid var(--rc); background: linear-gradient(var(--hl1), var(--hl2)); color: var(--ink); box-shadow: inset 0 2px 0 rgba(255,255,255,0.7), 0 3px 0 rgba(0,0,0,0.4); min-width: 0; }
+:is(#hmCol, #hmInv) .cc:active { transform: translateY(2px); box-shadow: inset 0 2px 0 rgba(255,255,255,0.7), 0 1px 0 rgba(0,0,0,0.4); }
+:is(#hmCol, #hmInv) .cc img { width: 58px; height: 58px; display: block; }
+:is(#hmCol, #hmInv) .cc b { max-width: 100%; font: 900 12px 'Noto Sans KR', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(#hmCol, #hmInv) .cc .rp { padding: 1px 6px; border-radius: 5px; border: 2px solid var(--ink); background: var(--rc); color: #fff; font: 900 10px 'Noto Sans KR', sans-serif; text-shadow: 0 1px 0 rgba(0,0,0,0.55); }
+:is(#hmCol, #hmInv) .cc .nw { position: absolute; right: -6px; top: -8px; padding: 1px 5px; border-radius: 6px; border: 2px solid var(--ink); background: #ef3a3a; color: #fff; font: 900 10px 'Noto Sans KR', sans-serif; }
+:is(#hmCol, #hmInv) .cc.lock { background: linear-gradient(var(--hlock1), var(--hlock2)); border-color: color-mix(in srgb, var(--rc) 45%, var(--hpl)); box-shadow: inset 0 2px 0 rgba(255,255,255,0.06), 0 3px 0 rgba(0,0,0,0.4); }
+:is(#hmCol, #hmInv) .cc.lock img { filter: brightness(0) opacity(0.5); }
+:is(#hmCol, #hmInv) .cc.lock b { color: var(--hmu2); }
+:is(#hmCol, #hmInv) .cc.lock .rp { opacity: 0.55; }
+:is(#hmCol, #hmInv) .cc .cp { position: relative; width: 100%; height: 14px; border-radius: 7px; border: 2px solid var(--ink); background: var(--hdeep); overflow: hidden; }
+:is(#hmCol, #hmInv) .cc .cp i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--rc); opacity: 0.85; }
+:is(#hmCol, #hmInv) .cc .cp span { position: absolute; inset: 0; display: grid; place-items: center; font: 900 9px 'Noto Sans KR', sans-serif; color: #fff; text-shadow: 0 1px 0 #000; }
+:is(#hmCol, #hmInv) .cc.ok .cp span { color: #fff; }
+:is(#hmCol, #hmInv) .cs { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; justify-content: flex-end; background: rgba(5,9,20,0.62); }
+:is(#hmCol, #hmInv) .csp { align-self: center; width: 100%; max-width: 480px; max-height: 94%; display: flex; flex-direction: column; gap: 8px; padding: 12px 12px calc(12px + env(safe-area-inset-bottom, 0px)); background: var(--hsheet); border: 4px solid var(--ink); border-bottom: 0; border-radius: 14px 14px 0 0; animation: csUp 0.22s ease-out both; }
 @keyframes csUp { from { transform: translateY(100%); } to { transform: none; } }
-#hmCol .csh { position: relative; flex: none; display: flex; align-items: center; gap: 12px; padding-right: 36px; }
-#hmCol .csh .im { flex: none; width: 76px; height: 76px; display: grid; place-items: center; border-radius: 12px; border: 3px solid var(--rc); background: radial-gradient(var(--hl1), var(--hmu)); box-shadow: 0 0 0 2px var(--ink), 0 0 14px color-mix(in srgb, var(--rc) 60%, transparent); }
-#hmCol .csh .im img { width: 66px; height: 66px; }
-#hmCol .csh.lock .im img { filter: brightness(0) opacity(0.5); }
-#hmCol .csh .nm { font-size: 22px; line-height: 1.1; }
-#hmCol .csh .st { display: flex; align-items: center; gap: 6px; margin-top: 4px; font: 800 12px 'Noto Sans KR', sans-serif; color: var(--hmu); }
-#hmCol .csh .st .rp { padding: 1px 6px; border-radius: 5px; border: 2px solid var(--ink); background: var(--rc); color: #fff; font: 900 11px 'Noto Sans KR', sans-serif; text-shadow: 0 1px 0 rgba(0,0,0,0.55); }
-#hmCol .csx { position: absolute; right: 0; top: 0; width: 32px; height: 32px; padding: 0; border-radius: 8px; border: 3px solid var(--ink); background: linear-gradient(var(--hb1), var(--hb2)); color: #fff; font-weight: 900; font-size: 15px; }
-#hmCol .csd { flex: none; margin: 0; font: 600 12.5px/1.5 'Noto Sans KR', sans-serif; color: var(--htx); }
-#hmCol .css { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
-#hmCol .css h4 { margin: 6px 0 2px; font: 900 13px 'Noto Sans KR', sans-serif; color: var(--hac2); }
-#hmCol .ctl { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 8px; text-align: left; border-radius: 9px; border: 3px solid var(--hbd); background: var(--hrow); }
-#hmCol .ctl.sel, #hmCol .csc.sel { border-color: var(--hac2); }
-#hmCol .ctl .tx2 { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
-#hmCol .ctl b { font: 900 13px 'Noto Sans KR', sans-serif; }
-#hmCol .ctl small { font: 600 11px/1.35 'Noto Sans KR', sans-serif; color: var(--hmu); }
-#hmCol .ctl em, #hmCol .csc em { flex: none; font-style: normal; font: 900 11px 'Noto Sans KR', sans-serif; padding: 2px 6px; border-radius: 5px; background: var(--hdeep); color: var(--hmu); }
-#hmCol .ctl.own em, #hmCol .csc.own em { background: #2fb857; color: #fff; }
-#hmCol .ctl.lock .hex, #hmCol .csc.lock .hex { filter: grayscale(1) opacity(0.55); }
-#hmCol .csg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-#hmCol .csc { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0 5px; border-radius: 9px; border: 3px solid var(--hbd); background: var(--hrow); min-width: 0; }
-#hmCol .csc b { max-width: 100%; font: 800 11px 'Noto Sans KR', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-#hmCol .csa { flex: none; display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 9px; background: var(--hdeep); border: 2px solid var(--hbd); }
-#hmCol .csa .at { flex: 1; min-width: 0; font: 700 12px/1.4 'Noto Sans KR', sans-serif; color: var(--htx); white-space: pre-line; }
-#hmCol .csa .at b { color: #fff; }
-#hmCol .csa button { flex: none; min-width: 92px; height: 42px; padding: 0 12px; border-radius: 8px; border: 3px solid var(--ink); background: linear-gradient(var(--hac2), var(--hac)); color: var(--ink); font: 900 13px 'Noto Sans KR', sans-serif; box-shadow: inset 0 2px 0 rgba(255,255,255,0.6), 0 3px 0 var(--ink); }
-#hmCol .csa button:active { transform: translateY(2px); box-shadow: none; }
-#hmCol .csa button:disabled { background: var(--hb1); color: var(--hmu2); box-shadow: none; transform: none; }
+:is(#hmCol, #hmInv) .csh { position: relative; flex: none; display: flex; align-items: center; gap: 12px; padding-right: 36px; }
+:is(#hmCol, #hmInv) .csh .im { flex: none; width: 76px; height: 76px; display: grid; place-items: center; border-radius: 12px; border: 3px solid var(--rc); background: radial-gradient(var(--hl1), var(--hmu)); box-shadow: 0 0 0 2px var(--ink), 0 0 14px color-mix(in srgb, var(--rc) 60%, transparent); }
+:is(#hmCol, #hmInv) .csh .im img { width: 66px; height: 66px; }
+:is(#hmCol, #hmInv) .csh.lock .im img { filter: brightness(0) opacity(0.5); }
+:is(#hmCol, #hmInv) .csh .nm { font-size: 22px; line-height: 1.1; }
+:is(#hmCol, #hmInv) .csh .st { display: flex; align-items: center; gap: 6px; margin-top: 4px; font: 800 12px 'Noto Sans KR', sans-serif; color: var(--hmu); }
+:is(#hmCol, #hmInv) .csh .st .rp { padding: 1px 6px; border-radius: 5px; border: 2px solid var(--ink); background: var(--rc); color: #fff; font: 900 11px 'Noto Sans KR', sans-serif; text-shadow: 0 1px 0 rgba(0,0,0,0.55); }
+:is(#hmCol, #hmInv) .csx { position: absolute; right: 0; top: 0; width: 32px; height: 32px; padding: 0; border-radius: 8px; border: 3px solid var(--ink); background: linear-gradient(var(--hb1), var(--hb2)); color: #fff; font-weight: 900; font-size: 15px; }
+:is(#hmCol, #hmInv) .csd { flex: none; margin: 0; font: 600 12.5px/1.5 'Noto Sans KR', sans-serif; color: var(--htx); }
+:is(#hmCol, #hmInv) .css { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+:is(#hmCol, #hmInv) .css h4 { margin: 6px 0 2px; font: 900 13px 'Noto Sans KR', sans-serif; color: var(--hac2); }
+:is(#hmCol, #hmInv) .ctl { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 8px; text-align: left; border-radius: 9px; border: 3px solid var(--hbd); background: var(--hrow); }
+:is(#hmCol, #hmInv) .ctl.sel, #hmCol .csc.sel { border-color: var(--hac2); }
+:is(#hmCol, #hmInv) .ctl .tx2 { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+:is(#hmCol, #hmInv) .ctl b { font: 900 13px 'Noto Sans KR', sans-serif; }
+:is(#hmCol, #hmInv) .ctl small { font: 600 11px/1.35 'Noto Sans KR', sans-serif; color: var(--hmu); }
+:is(#hmCol, #hmInv) .ctl em, #hmCol .csc em { flex: none; font-style: normal; font: 900 11px 'Noto Sans KR', sans-serif; padding: 2px 6px; border-radius: 5px; background: var(--hdeep); color: var(--hmu); }
+:is(#hmCol, #hmInv) .ctl.own em, #hmCol .csc.own em { background: #2fb857; color: #fff; }
+:is(#hmCol, #hmInv) .ctl.lock .hex, #hmCol .csc.lock .hex { filter: grayscale(1) opacity(0.55); }
+:is(#hmCol, #hmInv) .csg { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+:is(#hmCol, #hmInv) .csc { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0 5px; border-radius: 9px; border: 3px solid var(--hbd); background: var(--hrow); min-width: 0; }
+:is(#hmCol, #hmInv) .csc b { max-width: 100%; font: 800 11px 'Noto Sans KR', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(#hmCol, #hmInv) .csa { flex: none; display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 9px; background: var(--hdeep); border: 2px solid var(--hbd); }
+:is(#hmCol, #hmInv) .csa .at { flex: 1; min-width: 0; font: 700 12px/1.4 'Noto Sans KR', sans-serif; color: var(--htx); white-space: pre-line; }
+:is(#hmCol, #hmInv) .csa .at b { color: #fff; }
+:is(#hmCol, #hmInv) .csa button { flex: none; min-width: 92px; height: 42px; padding: 0 12px; border-radius: 8px; border: 3px solid var(--ink); background: linear-gradient(var(--hac2), var(--hac)); color: var(--ink); font: 900 13px 'Noto Sans KR', sans-serif; box-shadow: inset 0 2px 0 rgba(255,255,255,0.6), 0 3px 0 var(--ink); }
+:is(#hmCol, #hmInv) .csa button:active { transform: translateY(2px); box-shadow: none; }
+:is(#hmCol, #hmInv) .csa button:disabled { background: var(--hb1); color: var(--hmu2); box-shadow: none; transform: none; }
 @keyframes ccPop { 0% { transform: scale(0.6); } 60% { transform: scale(1.18); } 100% { transform: scale(1); } }
-#hmCol .csh .im.pop { animation: ccPop 0.45s ease-out both; }
+:is(#hmCol, #hmInv) .csh .im.pop { animation: ccPop 0.45s ease-out both; }
 .chips button.lk, .tbadges button.lk, .sbadges button.lk { position: relative; }
 .tbadges button.lk, .sbadges button.lk { opacity: 0.4; }
 .tbadges button.lk::after, .sbadges button.lk::after { content: '🔒'; position: absolute; right: 2px; top: 2px; font-size: 11px; }
+#hmShop[hidden], #hmShop .cs[hidden] { display: none; }
+#hmShop { position: relative; flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; background: var(--hbg); }
+#hmShop .chd { flex: none; padding: 10px max(12px, calc((100% - 480px) / 2 + 12px)) 8px; display: flex; flex-direction: column; gap: 6px; }
+#hmShop .chd .r1 { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+#hmShop .chd .ttl { font-size: 21px; }
+#hmShop .chd .cnt { font: 800 11px 'Noto Sans KR', sans-serif; color: var(--hmu); }
+#hmShop .shbody { flex: 1 1 0; min-height: 0; overflow-y: auto; padding: 2px max(10px, calc((100% - 480px) / 2 + 10px)) 16px; display: flex; flex-direction: column; gap: 10px; }
+#hmShop h4 { margin: 6px 0 0; font: 900 13px 'Noto Sans KR', sans-serif; color: var(--hac2); }
+#hmShop .shp { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; border: 3px solid var(--hbd); background: var(--hrow); }
+#hmShop .shp.on { border-color: var(--hac); }
+#hmShop .shp svg { flex: none; width: 40px; height: 40px; }
+#hmShop .shp .tt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+#hmShop .shp b { font: 900 14px 'Noto Sans KR', sans-serif; }
+#hmShop .shp small { font: 600 11px/1.45 'Noto Sans KR', sans-serif; color: var(--htx); white-space: pre-line; }
+#hmShop .shp small.pr { color: var(--hmu); }
+#hmShop .shg { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+#hmShop .shk { display: flex; flex-direction: column; gap: 4px; padding: 10px; border-radius: 10px; border: 3px solid var(--hbd); background: var(--hrow); min-width: 0; }
+#hmShop .shk b { font: 900 14px 'Noto Sans KR', sans-serif; }
+#hmShop .shk small { flex: 1; font: 600 11px/1.45 'Noto Sans KR', sans-serif; color: var(--htx); white-space: pre-line; }
+#hmShop button.by, #hmShop .shok { flex: none; min-width: 78px; height: 38px; padding: 0 10px; border-radius: 8px; border: 3px solid var(--ink); background: linear-gradient(var(--hac2), var(--hac)); color: var(--ink); font: 900 13px 'Noto Sans KR', sans-serif; box-shadow: inset 0 2px 0 rgba(255,255,255,0.6), 0 3px 0 var(--ink); }
+#hmShop button.by:active, #hmShop .shok:active { transform: translateY(2px); box-shadow: none; }
+#hmShop button.by:disabled { background: var(--hb1); color: var(--hmu2); box-shadow: none; transform: none; }
+#hmShop .shdbg { align-self: center; margin-top: 4px; padding: 6px 12px; border-radius: 7px; border: 2px solid var(--hbd); background: transparent; color: var(--hmu); font: 700 11px 'Noto Sans KR', sans-serif; }
+#hmShop .cs { position: absolute; inset: 0; z-index: 5; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 16px; background: rgba(5,9,20,0.66); }
+#hmShop .csp { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 10px; padding: 14px; background: var(--hsheet); border: 4px solid var(--ink); border-radius: 14px; animation: shPop 0.25s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+@keyframes shPop { from { transform: scale(0.8); opacity: 0; } to { transform: none; opacity: 1; } }
+#hmShop .shl { display: flex; flex-direction: column; gap: 6px; }
+#hmShop .shr { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 9px; border: 3px solid var(--rc, #3a4a7a); background: var(--hrow); }
+#hmShop .shr img { width: 44px; height: 44px; flex: none; }
+#hmShop .shr b { display: block; font: 900 13px 'Noto Sans KR', sans-serif; }
+#hmShop .shr small { font: 600 11px 'Noto Sans KR', sans-serif; color: var(--hmu); }
+:is(#hmCol, #hmInv) .chd .r1 .ttl { margin-right: auto; }
+:is(#hmCol, #hmInv) .tkBtn { height: 28px; padding: 0 10px; border-radius: 7px; border: 2px solid var(--ink); background: linear-gradient(var(--hac2), var(--hac)); color: var(--ink); font: 900 12px 'Noto Sans KR', sans-serif; box-shadow: inset 0 2px 0 rgba(255,255,255,0.6), 0 2px 0 var(--ink); align-self: center; }
+:is(#hmCol, #hmInv) .tkBtn.z { background: linear-gradient(var(--hb1), var(--hb2)); color: var(--hmu); box-shadow: none; }
+:is(#hmCol, #hmInv) .tkBtn:active { transform: translateY(2px); box-shadow: none; }
+:is(#hmCol, #hmInv) .tkr { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 9px; border: 3px solid var(--rc); background: var(--hrow); }
+:is(#hmCol, #hmInv) .tkr img { flex: none; width: 40px; height: 40px; }
+:is(#hmCol, #hmInv) .tkr .tt { flex: 1; min-width: 0; font: 900 13px 'Noto Sans KR', sans-serif; }
+:is(#hmCol, #hmInv) .tkr .tt small { display: block; margin-top: 1px; font: 700 11px 'Noto Sans KR', sans-serif; color: var(--hmu); }
+:is(#hmCol, #hmInv) .tkr button { flex: none; min-width: 64px; height: 36px; padding: 0 10px; border-radius: 8px; border: 3px solid var(--ink); background: linear-gradient(var(--hac2), var(--hac)); color: var(--ink); font: 900 12px 'Noto Sans KR', sans-serif; box-shadow: inset 0 2px 0 rgba(255,255,255,0.6), 0 3px 0 var(--ink); }
+:is(#hmCol, #hmInv) .tkr button:disabled { background: var(--hb1); color: var(--hmu2); box-shadow: none; }
+:is(#hmCol, #hmInv) .tkn { padding: 14px 4px; text-align: center; font: 700 12px/1.5 'Noto Sans KR', sans-serif; color: var(--hmu); }
+:is(#hmCol, #hmInv) .tkg { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+:is(#hmCol, #hmInv) .tkc { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 2px 6px; border-radius: 9px; border: 3px solid var(--rc, var(--hbd)); background: var(--hrow); color: #fff; min-width: 0; }
+:is(#hmCol, #hmInv) .tkc img { width: 46px; height: 46px; }
+:is(#hmCol, #hmInv) .tkc b { max-width: 100%; font: 900 12px 'Noto Sans KR', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+:is(#hmCol, #hmInv) .tkc small { font: 700 10px 'Noto Sans KR', sans-serif; color: var(--hmu); }
+:is(#hmCol, #hmInv) .tkc.sel, #hmCol .ctl.sel { border-color: var(--hac2); box-shadow: 0 0 0 2px var(--hac2); }
+:is(#hmCol, #hmInv) .tkc.has small { color: #ffd23a; }
+:is(#hmCol, #hmInv) .ctl.own { opacity: 0.55; }
+:is(#hmCol, #hmInv) .tkh { display: flex; align-items: center; gap: 8px; margin-top: 4px; font: 900 13px 'Noto Sans KR', sans-serif; }
+:is(#hmCol, #hmInv) .tkh img { width: 30px; height: 30px; }
 #home .hnav button:not(.cur):active { transform: translateY(2px); }
 @media (max-width: 359px) { .players { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .bar i { transition: none; } .btn:active { transform: none; } .overlay h2 { animation: none; } }
@@ -733,7 +796,7 @@ body.clsSel #hudBars { display: none; }
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v547</span>
+      <span class="verTag">v557</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -799,12 +862,17 @@ body.clsSel #hudBars { display: none; }
       <button type="button" class="hgear" id="hmGear" aria-label="설정">⚙</button>
     </header>
     <main class="hmain">
+      <div class="htop">
       <div class="hcards">
         <button type="button" class="hcard" id="hmBoxCard" data-soon="상자"><svg width="30" height="27" viewBox="0 0 40 36" aria-hidden="true"><defs><linearGradient id="cbw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c98c52"/><stop offset="1" stop-color="#8a5630"/></linearGradient><linearGradient id="cbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe46a"/><stop offset="1" stop-color="#e09a00"/></linearGradient></defs><ellipse cx="20" cy="33" rx="16" ry="2.4" fill="#000" opacity=".25"/><path d="M4 16a16 11 0 0 1 32 0v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" fill="url(#cbw)" stroke="#0a1020" stroke-width="3" stroke-linejoin="round"/><path d="M4 18h32" stroke="#0a1020" stroke-width="3"/><path d="M4 24h32" stroke="#5e3a1c" stroke-width="1.2" opacity=".7"/><path d="M11 7.4V31M29 7.4V31" stroke="#0a1020" stroke-width="6"/><path d="M11 7.4V31M29 7.4V31" stroke="url(#cbg)" stroke-width="3.2"/><rect x="16" y="14" width="8" height="10" rx="2" fill="url(#cbg)" stroke="#0a1020" stroke-width="2.6"/><circle cx="20" cy="18.4" r="1.5" fill="#0a1020"/><path d="M20 19v3" stroke="#0a1020" stroke-width="1.6" stroke-linecap="round"/><path d="M7.5 12.5a13 8 0 0 1 6-4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" fill="none" opacity=".6"/></svg><span class="ct"><b>상자</b><span class="cs" id="hmBoxCs">오늘 0/10판</span></span><span class="cb" id="hmBoxCb">없음</span></button>
         <button type="button" class="hcard" data-soon="퀘스트"><svg width="26" height="28" viewBox="0 0 34 38" aria-hidden="true"><defs><linearGradient id="cqp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6d8"/><stop offset="1" stop-color="#ecd49a"/></linearGradient></defs><path d="M8 4h19a2 2 0 0 1 2 2v26a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V5z" fill="url(#cqp)" stroke="#0a1020" stroke-width="3" stroke-linejoin="round"/><path d="M4 7a3 3 0 0 1 6 0v1H4z" fill="#c9a25f" stroke="#0a1020" stroke-width="2.4" stroke-linejoin="round"/><path d="M12.5 12.5l2 2 3.6-4" fill="none" stroke="#2fb857" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 13h5" stroke="#8b6a3a" stroke-width="2.2" stroke-linecap="round"/><path d="M12.5 21.5l2 2 3.6-4" fill="none" stroke="#2fb857" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/><path d="M20 22h5" stroke="#8b6a3a" stroke-width="2.2" stroke-linecap="round"/><path d="M12.5 29h6" stroke="#8b6a3a" stroke-width="2.2" stroke-linecap="round" opacity=".6"/></svg><span class="ct"><b>오늘의 퀘스트</b><span class="hbarq"><span class="tx">준비 중</span></span></span></button>
       </div>
-      <div class="harena" id="hmSlot">
+      <div class="hside"><button type="button" class="hsb" data-soon="메일함"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 8.5h25a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-25a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2z" fill="#fff6dc" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M2.500 10l13.500 9.500L29.500 10" fill="none" stroke="#0a1020" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M2.800 24.500l9-8M29.200 24.500l-9-8" stroke="#c9a25f" stroke-width="1.6" stroke-linecap="round"/><circle cx="25" cy="8.500" r="0" fill="none"/></svg><span>메일함</span></button><button type="button" class="hsb" data-soon="보관함"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 11a7 7 0 0 1 14 0" fill="none" stroke="#0a1020" stroke-width="5" stroke-linecap="round"/><path d="M9 11a7 7 0 0 1 14 0" fill="none" stroke="#c98c52" stroke-width="2" stroke-linecap="round"/><path d="M5 13.5a3 3 0 0 1 3-3h16a3 3 0 0 1 3 3V27a2.5 2.5 0 0 1-2.5 2.5h-17A2.5 2.5 0 0 1 5 27z" fill="#e0a05a" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M5 17h22" stroke="#0a1020" stroke-width="2.4"/><rect x="12.5" y="14.5" width="7" height="6" rx="1.4" fill="#ffd23a" stroke="#0a1020" stroke-width="2"/><path d="M8 12.5h5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".7"/></svg><span>보관함</span></button><button type="button" class="hsb" data-soon="소셜"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="21.5" cy="11" r="5" fill="#ffb36b" stroke="#0a1020" stroke-width="2.4"/><path d="M12.5 27a9 8 0 0 1 18 0z" fill="#ff7a4a" stroke="#0a1020" stroke-width="2.4" stroke-linejoin="round"/><circle cx="11" cy="12.5" r="5.4" fill="#ffd0a0" stroke="#0a1020" stroke-width="2.4"/><path d="M1.5 29a9.5 8.5 0 0 1 19 0z" fill="#3d8bff" stroke="#0a1020" stroke-width="2.4" stroke-linejoin="round"/><path d="M8 10.5a4 3 0 0 1 4-1.8" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity=".8"/></svg><span>소셜</span></button><button type="button" class="hsb" data-soon="길드"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2.5l11 3.4v9.4c0 7-4.6 11.4-11 14.2C9.6 26.700 5 22.300 5 15.300V5.900z" fill="#8a5cf0" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M16 5.500l8 2.500v7.200c0 5.300-3.300 8.700-8 11z" fill="#a98bff"/><path d="M16 9.500l2.100 4.300 4.700.7-3.400 3.300.8 4.700-4.200-2.200-4.200 2.200.8-4.700-3.400-3.300 4.700-.7z" fill="#ffd23a" stroke="#0a1020" stroke-width="1.6" stroke-linejoin="round"/></svg><span>길드</span></button></div>
+      </div>
+      <div class="hmid">
+        <div class="harena" id="hmSlot">
         <i class="rv" style="left:2px;top:2px"></i><i class="rv" style="right:2px;top:2px"></i><i class="rv" style="left:2px;bottom:2px"></i><i class="rv" style="right:2px;bottom:2px"></i>
+      </div>
       </div>
       <div class="hbtns">
         <button type="button" class="hon tx" id="hmOnline"><span>온라인 대전</span></button>
@@ -824,6 +892,26 @@ body.clsSel #hudBars { display: none; }
         </div>
       </div>
     </section>
+    <section id="hmShop" hidden aria-label="상점">
+      <div class="chd"><div class="r1"><span class="tx ttl">상점</span><span class="cnt">임시 · 결제 없이 바로 받아요</span></div></div>
+      <div class="shbody" id="shBody"></div>
+      <div class="cs" id="shRes" hidden>
+        <div class="csp" role="dialog" aria-label="받은 것">
+          <div class="tx nm" id="shResT" style="font-size:22px;text-align:center">받았어요!</div>
+          <div class="shl" id="shResL"></div>
+          <button type="button" class="shok" id="shResOk">확인</button>
+        </div>
+      </div>
+    </section>
+    <div id="hmInv" hidden>
+      <div class="cs" id="tkOv" hidden>
+        <div class="csp" role="dialog" aria-label="선택권">
+          <div class="csh"><div class="tx nm" id="tkT">선택권</div><button type="button" class="csx" id="tkX" aria-label="닫기">✕</button></div>
+          <div class="css" id="tkBody"></div>
+          <div class="csa" id="tkAct" hidden><div class="at" id="tkAt"></div><button type="button" id="tkGo">받기</button></div>
+        </div>
+      </div>
+    </div>
     <nav class="hnav" aria-label="주요 메뉴">
       <button type="button" data-hn="shop"><svg width="46" height="42" viewBox="0 0 56 50" aria-hidden="true"><defs>
 <linearGradient id="nsa" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f2c48a"/><stop offset="1" stop-color="#b9824a"/></linearGradient><linearGradient id="nsb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6a55"/><stop offset="1" stop-color="#d32f2f"/></linearGradient><linearGradient id="nsc" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6ff"/><stop offset="1" stop-color="#5aa8e6"/></linearGradient><linearGradient id="nsd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9a6a3e"/><stop offset="1" stop-color="#6b4423"/></linearGradient></defs>
@@ -15101,15 +15189,19 @@ var DM = (function () {
   var screenName = 'title', modalPaused = false;
   var homeTypes = function () { var a = Object.keys(W).filter(function (k) { return !isLocked(k); }); a.sort(function (x, y) { return (RAR[x] || 0) - (RAR[y] || 0); }); return a; };
   /* ---------- 상자·보관함 (기획 총정리 5장 수치) ---------- */
-  var ECO_KEY = 'spinclash.eco1', ECO_CAP = 10;   /* 무과금 하루 10판 · 라이트 15 · 스핀 패스 20은 패스 작업 때 */
+  var ECO_KEY = 'spinclash.eco1';   /* 무과금 하루 10판 · 라이트 15 · 스핀 패스 20은 패스 작업 때 */
+  function ecoCap() { return [10, 15, 20][eco.pass || 0]; }   /* 무과금 10 · 라이트 15 · 스핀 패스 20(판당 상자 2개) */
+  function boxDist() { return eco.pass === 2 ? [40, 30, 20, 7, 3] : BOX_DIST; }
   var BOX_DIST = [50, 28, 15, 5, 2];                 /* 상자 등급 분포: 희귀 초희귀 영웅 신화 전설 (스핀 패스는 40/30/20/7/3) */
   var BOX_COIN = [100, 200, 400, 800, 1500];
   var BOX_ITEMS = [[55, 15, 18, 12, 0, 0, 0], [43, 14, 18, 15, 7, 3, 0], [30, 15, 17, 16, 14, 0, 8], [15, 14, 15, 14, 13, 14, 15], [3, 12, 15, 13, 14, 20, 23]];   /* 코인 · 토큰3(아래) · 토큰2(해당) · 토큰1(위) · 스펠 · 재능 · 캐릭터 */
   var BOX_CHAR = [null, null, { 1: 55, 2: 40, 3: 5 }, { 1: 15, 2: 45, 3: 35, 4: 5 }, { 2: 20, 3: 45, 4: 28, 5: 7 }];
   var BOX_TS = [null, { 0: 35, 1: 50, 2: 15 }, { 1: 30, 2: 45, 3: 25 }, { 2: 25, 3: 45, 4: 30 }, { 3: 30, 4: 45, 5: 25 }];
   var eco = ecoLoad(), ecoGot = false;
+  /* 쿠폰 초기화: 이 값이 바뀔 때마다 이 기기의 쿠폰 사용 기록(test 쿠폰 · 예전 쿠폰 목록)을 한 번 지운다. 서버(accounts.js)의 COUPON_RESET_ID 와 같이 올린다 */
+  (function () { var RID = 'c1'; try { if (localStorage.getItem('spinclash.rst') !== RID) { eco.test = false; localStorage.removeItem('spinclash.cpn'); localStorage.setItem(ECO_KEY, JSON.stringify(eco)); localStorage.setItem('spinclash.rst', RID); } } catch (e) {} })();
   function ecoLoad() {
-    var d = { coin: 0, tok: {}, own: { sword: 1, dagger: 1, bow: 1 }, tal: {}, spl: {}, day: '', played: 0, box: [], test: false, seen: { sword: 1, dagger: 1, bow: 1 } };
+    var d = { coin: 0, tok: {}, own: { sword: 1, dagger: 1, bow: 1 }, tal: {}, spl: {}, day: '', played: 0, box: [], tk: {}, pass: 0, pk: {}, login: '', test: false, seen: { sword: 1, dagger: 1, bow: 1 } };
     try { var j = JSON.parse(localStorage.getItem(ECO_KEY) || 'null'); if (j && typeof j === 'object') for (var k in d) if (j[k] != null) d[k] = j[k]; } catch (e) {}
     return d;
   }
@@ -15156,17 +15248,18 @@ var DM = (function () {
   var ECO_TEST_FILL = 10;   /* 테스트본: 상자를 항상 10개로 채워 둔다. 출시 때는 0으로 */
   function ecoUi() {
     ecoRoll();
-    if (ECO_TEST_FILL) { var fl = false; while (eco.box.length < ECO_TEST_FILL) { eco.box.push(wpick(BOX_DIST)); fl = true; } if (fl) ecoSave(); }
+    if (ECO_TEST_FILL) { var fl = false; while (eco.box.length < ECO_TEST_FILL) { eco.box.push(wpick(boxDist())); fl = true; } if (fl) ecoSave(); }
     var c = $('#hmCoin'); if (c) c.textContent = eco.coin.toLocaleString();
-    var cs = $('#hmBoxCs'); if (cs) cs.textContent = '오늘 ' + eco.played + '/' + ECO_CAP + '판';
+    var cs = $('#hmBoxCs'); if (cs) cs.textContent = '오늘 ' + eco.played + '/' + ecoCap() + (eco.pass === 2 ? '개' : '판');
     var cb = $('#hmBoxCb'); if (cb) cb.textContent = eco.box.length ? '열기 ' + eco.box.length : '없음';
     var ob = $('#overBoxBtn'); if (ob && !ob.hidden) { ob.textContent = '상자 열기 (' + eco.box.length + ')'; ob.hidden = !eco.box.length; }
   }
   function ecoMatchDone() {
     if (ecoGot || (net.on && net.spec)) return; ecoGot = true; ecoRoll();
     var b = $('#overBox'), bb = $('#overBoxBtn');
-    if (eco.played >= ECO_CAP) b.textContent = '오늘 상자는 다 받았어요 (' + ECO_CAP + '/' + ECO_CAP + ')';
-    else { eco.played++; eco.box.push(wpick(BOX_DIST)); ecoSave(); b.textContent = '상자 +1 · 오늘 ' + eco.played + '/' + ECO_CAP + '판'; }
+    var cap = ecoCap(), per = eco.pass === 2 ? 2 : 1, got = Math.min(per, cap - eco.played);
+    if (got <= 0) b.textContent = '오늘 상자는 다 받았어요 (' + cap + '/' + cap + ')';
+    else { for (var gi = 0; gi < got; gi++) { eco.played++; eco.box.push(wpick(boxDist())); } ecoSave(); b.textContent = '상자 +' + got + ' · 오늘 ' + eco.played + '/' + cap + (eco.pass === 2 ? '개' : '판'); }
     b.hidden = false; bb.hidden = !eco.box.length; ecoUi();
   }
   function shade(hex, f) { var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; function m(v) { return Math.max(0, Math.min(255, Math.round(v * (1 + f)))); } return 'rgb(' + m(r) + ',' + m(g) + ',' + m(b) + ')'; }
@@ -15333,24 +15426,28 @@ var DM = (function () {
     ui(function (c, tm) { var n = [523, 659, 784, 1047, 1319, 1568]; for (var i = 0; i < 2 + t; i++) { tone(c, tm + i * 0.07, 'triangle', n[i], n[i], 0.2, 0.12); tone(c, tm + i * 0.07, 'square', n[i] / 2, n[i] / 2, 0.16, 0.05); } });
     try { if (navigator.vibrate) navigator.vibrate(t >= 3 ? [60, 40, 90] : 50); } catch (e) {}
   }
-  function boxClose() { bxClear(); chrReset(); boxPause = false; $('#boxOv').hidden = true; bx.done = false; ecoUi(); }
+  function boxClose() { if (bx.tkt) { tkEnd(); return; } bxClear(); chrReset(); boxPause = false; $('#boxOv').hidden = true; bx.done = false; ecoUi(); }
   /* ---------- 컬렉션 탭 ---------- */
   var TOK_COST = { chr: 30, tal: 15, spl: 5 };   /* 토큰 교환: 캐릭터 30 · 재능 15 · 스펠 5 (기획 총정리) */
   var col = { rt: 'all', t: null, item: null, ico: {} };
   function colTypes() { return Object.keys(W).filter(function (k) { return k !== 'dummy'; }); }
   function colIcon(t) { if (!col.ico[t]) { try { col.ico[t] = makeIcon(t); } catch (e) { col.ico[t] = ''; } } return col.ico[t]; }
   function colTok(t) { return eco.tok[t] || 0; }
-  function colShow(on) {
-    var c = $('#hmCol'); if (!c) return;
-    if (c.hidden === !on) return;
-    c.hidden = !on; $('#home .hmain').hidden = !!on; boxPause = !!on;
-    document.querySelectorAll('#home .hnav button').forEach(function (b) { var cur = b.dataset.hn === (on ? 'col' : 'play'); b.classList.toggle('cur', cur); if (cur) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
-    if (!on) $('#colSheet').hidden = true;
-    if (on) { col.rt = 'all'; colRender(); $('#colGrid').scrollTop = 0; }
+  var homeTabCur = 'play';
+  function homeTab(name) {
+    if (homeTabCur === name) return;
+    homeTabCur = name;
+    $('#home .hmain').hidden = name !== 'play'; $('#hmCol').hidden = name !== 'col'; $('#hmShop').hidden = name !== 'shop';
+    boxPause = name !== 'play';
+    document.querySelectorAll('#home .hnav button').forEach(function (b) { var cur = b.dataset.hn === name; b.classList.toggle('cur', cur); if (cur) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); });
+    $('#colSheet').hidden = true; $('#shRes').hidden = true; if (!$('#hmInv').hidden) tkClose();
+    if (name === 'col') { col.rt = 'all'; colRender(); $('#colGrid').scrollTop = 0; }
+    if (name === 'shop') { shopRender(); $('#shBody').scrollTop = 0; }
   }
+  function colShow(on) { homeTab(on ? 'col' : 'play'); }
   function colRender() {
     var all = colTypes(), own = all.filter(charOwned).length;
-    $('#colCnt').textContent = own + ' / ' + all.length; $('#colBar').style.width = (own / all.length * 100) + '%';
+    tkHead(); $('#colCnt').textContent = own + ' / ' + all.length; $('#colBar').style.width = (own / all.length * 100) + '%';
     var tabs = '<button type="button" data-rt="all" aria-pressed="' + (col.rt === 'all') + '">전체 <small>' + own + '/' + all.length + '</small></button>';
     RAR_INFO.forEach(function (r, ri) {
       var l = all.filter(function (k) { return RAR[k] === ri; }); if (!l.length) return;
@@ -15427,6 +15524,160 @@ var DM = (function () {
     if (z === hz) return; hz = z; $('#home').style.setProperty('--hz', String(z)); resize();
   }
   window.addEventListener('resize', homeZoom); window.addEventListener('orientationchange', homeZoom); homeZoom();
+  /* ---------- 선택권 (기획 8장: 등급별 캐릭터·재능·스펠 선택권) ---------- */
+  var TK_KIND = { chr: '캐릭터', tal: '재능', spl: '스펠' };
+  var tk = { mode: 'list', kind: '', g: 0, t: null, i: null, s: null };
+  function tkN(kind, g) { return (eco.tk && eco.tk[kind + g]) || 0; }
+  function tkAdd(kind, g, n) { eco.tk = eco.tk || {}; eco.tk[kind + g] = Math.max(0, tkN(kind, g) + n); }
+  function tkTotal() { var n = 0; for (var k in (eco.tk || {})) n += eco.tk[k] || 0; return n; }
+  function tkImg(kind, g) {
+    var c = RAR_INFO[g].c, glyph = kind === 'chr' ? '<circle cx="20" cy="16" r="4.2" fill="#fff" stroke="#0a1020" stroke-width="1.6"/><path d="M12.5 29a7.5 7 0 0 1 15 0z" fill="#fff" stroke="#0a1020" stroke-width="1.6" stroke-linejoin="round"/>' : kind === 'tal' ? '<path d="M20 11l7.5 4.3v8.6L20 28.2l-7.5-4.3v-8.6z" fill="#fff" stroke="#0a1020" stroke-width="1.6" stroke-linejoin="round"/>' : '<path d="M20 10.5l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6-4.5-4.2 6.1-.8z" fill="#fff" stroke="#0a1020" stroke-width="1.6" stroke-linejoin="round"/>';
+    return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path d="M4 8h32a2 2 0 0 1 2 2v5a5 5 0 0 0 0 10v5a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-5a5 5 0 0 0 0-10v-5a2 2 0 0 1 2-2z" fill="' + c + '" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/>' + glyph + '</svg>');
+  }
+  function tkName(kind, g) { return RAR_INFO[g].n + ' ' + TK_KIND[kind] + ' 선택권'; }
+  function tkHead() {}
+  function tkOpen() { tk.mode = 'list'; $('#hmInv').hidden = false; $('#tkOv').hidden = false; boxPause = true; tkRender(); }
+  function tkClose() { if (bx.tkt) tkEnd(); $('#tkOv').hidden = true; $('#hmInv').hidden = true; boxPause = homeTabCur !== 'play'; }
+  function tkSetAct(txt, label, on) { $('#tkAct').hidden = !txt; $('#tkAt').innerHTML = txt || ''; var b = $('#tkGo'); b.textContent = label; b.disabled = !on; }
+  function tkUsable(kind, g) {   /* 지금 이 선택권으로 고를 수 있는 게 있는지 */
+    if (kind === 'chr') return boxPool(g).length > 0;
+    var ch = boxPool(g).filter(charOwned); if (!ch.length) return false;
+    return ch.some(function (t) { return tkOpts(kind, t).length > 0; });
+  }
+  function tkOpts(kind, t) {
+    if (kind === 'tal') return W[t].traits.map(function (tr, i) { return i; }).filter(function (i) { return !talOwned(t, i); });
+    return SPELL_KEYS.filter(function (k) { return k !== 'none' && !(k === 'stack' && !stackable(t)) && !splOwned(t, k); });
+  }
+  function tkRender() {
+    var body = $('#tkBody'), h = '', g = tk.g, kind = tk.kind;
+    if (tk.mode === 'list') {
+      $('#tkT').textContent = '보관함'; tkSetAct('', '', false);
+      var any = false;
+      ['chr', 'tal', 'spl'].forEach(function (k) { for (var gg = 0; gg <= 6; gg++) { var n = tkN(k, gg); if (n <= 0) continue; any = true;
+        h += '<div class="tkr" style="--rc:' + RAR_INFO[gg].c + '"><img src="' + tkImg(k, gg) + '" alt=""><div class="tt">' + tkName(k, gg) + '<small>×' + n + (tkUsable(k, gg) ? '' : ' · 지금은 고를 게 없어요') + '</small></div><button type="button" data-use="' + k + ':' + gg + '"' + (tkUsable(k, gg) ? '' : ' disabled') + '>사용</button></div>'; } });
+      body.innerHTML = '<h4>선택권</h4>' + (any ? h : '<div class="tkn">선택권이 없어요<br>상점 패키지나 퀘스트에서 얻을 수 있어요</div>');
+      return;
+    }
+    if (tk.mode === 'res') return;
+    $('#tkT').textContent = tkName(kind, g);
+    if (kind === 'chr') {
+      var pool = boxPool(g).sort(function (a, b) { return W[a].name < W[b].name ? -1 : 1; });
+      body.innerHTML = '<div class="tkg">' + pool.map(function (t) { var own = !!eco.own[t] || charGranted(t); return '<button type="button" class="tkc' + (own ? ' has' : '') + (tk.t === t ? ' sel' : '') + '" data-pt="' + t + '" style="--rc:' + RAR_INFO[g].c + '"><img src="' + colIcon(t) + '" alt=""><b>' + W[t].name + '</b><small>' + (own ? '보유 · 토큰 20' : '새 캐릭터') + '</small></button>'; }).join('') + '</div>';
+      tkSetAct(tk.t ? '<b>' + W[tk.t].name + '</b>\n' + ((eco.own[tk.t] || charGranted(tk.t)) ? '이미 있어서 토큰 20개로 바뀌어요' : '새 캐릭터로 얻어요') : '받을 캐릭터를 골라요', '받기', !!tk.t);
+    } else if (kind === 'tal') {
+      var chs = boxPool(g).filter(function (t) { return charOwned(t) && W[t].traits.length; });
+      body.innerHTML = chs.length ? chs.map(function (t) {
+        return '<div class="tkh"><img src="' + colIcon(t) + '" alt="">' + W[t].name + '</div>' + W[t].traits.map(function (tr, i) { var has = talOwned(t, i), sel = tk.t === t && tk.i === i;
+          return '<button type="button" class="ctl ' + (has ? 'own' : 'lock') + (sel ? ' sel' : '') + '" data-pt="' + t + '" data-pi="' + i + '"' + (has ? ' disabled' : '') + '>' + hexIcon(t, i + 1, true) + '<span class="tx2"><b>' + tr.name + '</b><small>' + tr.desc + '</small></span><em>' + (has ? '보유' : '받기') + '</em></button>'; }).join('');
+      }).join('') : '<div class="tkn">' + RAR_INFO[g].n + ' 등급 보유 캐릭터가 없어요<br>캐릭터를 먼저 얻어요</div>';
+      tkSetAct(tk.t != null && tk.i != null ? '<b>' + W[tk.t].name + ' · ' + W[tk.t].traits[tk.i].name + '</b>\n' + W[tk.t].traits[tk.i].desc : '받을 재능을 골라요', '받기', tk.t != null && tk.i != null);
+    } else {
+      var cs = boxPool(g).filter(charOwned);
+      if (cs.length && (!tk.t || cs.indexOf(tk.t) < 0)) { tk.t = cs[0]; tk.s = null; }
+      h = cs.length ? '<div class="tkg">' + cs.map(function (t) { return '<button type="button" class="tkc' + (tk.t === t ? ' sel' : '') + '" data-pc="' + t + '" style="--rc:' + RAR_INFO[g].c + '"><img src="' + colIcon(t) + '" alt=""><b>' + W[t].name + '</b></button>'; }).join('') + '</div>' : '<div class="tkn">' + RAR_INFO[g].n + ' 등급 보유 캐릭터가 없어요<br>캐릭터를 먼저 얻어요</div>';
+      if (tk.t) h += '<div class="csg" style="margin-top:6px">' + SPELL_KEYS.filter(function (k) { return k !== 'none' && !(k === 'stack' && !stackable(tk.t)); }).map(function (k) { var has = splOwned(tk.t, k);
+        return '<button type="button" class="csc ' + (has ? 'own' : 'lock') + (tk.s === k ? ' sel' : '') + '" data-ps="' + k + '"' + (has ? ' disabled style="opacity:.5"' : '') + '>' + spHex(k, true) + '<b>' + SPELL[k].n + '</b><em>' + (has ? '보유' : '받기') + '</em></button>'; }).join('') + '</div>';
+      body.innerHTML = h;
+      tkSetAct(tk.t && tk.s ? '<b>' + W[tk.t].name + ' · ' + SPELL[tk.s].n + '</b>\n' + SPELL[tk.s].d : '캐릭터와 스펠을 골라요', '받기', !!(tk.t && tk.s));
+    }
+  }
+  function tkConfirm() {
+    var it, g = tk.g, kind = tk.kind;
+    if (tkN(kind, g) <= 0) return;
+    if (kind === 'chr' && tk.t) it = { k: 'chr', t: tk.t };
+    else if (kind === 'tal' && tk.t != null && tk.i != null) it = { k: 'tal', t: tk.t, i: tk.i };
+    else if (kind === 'spl' && tk.t && tk.s) it = { k: 'spl', t: tk.t, s: tk.s };
+    else return;
+    boxApply(it); if (it.k === 'chr') eco.seen[it.t] = 1; tkAdd(kind, g, -1); ecoSave(); uiConfirm(); sync();
+    tk.mode = 'res'; colRender(); tkHead(); tkReveal(it);
+  }
+  /* 선택권으로 얻을 때도 상자와 같은 획득 연출(boxChrShow)을 쓴다 */
+  function tkReveal(it) {
+    var ov = $('#boxOv');
+    bxClear(); chrReset(); bx.tkt = true; bx.done = true; bx.lock = true;
+    ov.classList.add('tkMode'); ov.hidden = false; $('#bxStage').hidden = false; $('#bxRes').hidden = true; $('#bxBox').classList.remove('open');
+    boxChrShow(it); $('#bxChrOk').textContent = '확인';
+  }
+  function tkEnd() {
+    var ov = $('#boxOv'); bxClear(); chrReset(); ov.classList.remove('tkMode'); ov.hidden = true;
+    bx.tkt = false; bx.done = false; bx.lock = false;
+    if (!$('#hmInv').hidden) { tk.mode = 'list'; tkRender(); tkHead(); }
+  }
+  $('#hmInv').addEventListener('click', function (e) { if (e.target === this) { uiBack(); tkClose(); } });
+  $('#tkX').addEventListener('click', function () { uiBack(); tkClose(); });
+  $('#tkOv').addEventListener('click', function (e) { if (e.target === this) { uiBack(); tkClose(); } });
+  $('#tkBody').addEventListener('click', function (e) {
+    var b;
+    if ((b = e.target.closest('[data-use]'))) { var p = b.dataset.use.split(':'); uiTick(); tk.mode = 'pick'; tk.kind = p[0]; tk.g = +p[1]; tk.t = null; tk.i = null; tk.s = null; tkRender(); return; }
+    if ((b = e.target.closest('[data-pt]')) && !b.disabled) { uiTick(); tk.t = b.dataset.pt; tk.i = b.dataset.pi != null ? +b.dataset.pi : null; tkRender(); return; }
+    if ((b = e.target.closest('[data-pc]'))) { uiTick(); tk.t = b.dataset.pc; tk.s = null; tkRender(); return; }
+    if ((b = e.target.closest('[data-ps]')) && !b.disabled) { uiTick(); tk.s = b.dataset.ps; tkRender(); }
+  });
+  $('#tkGo').addEventListener('click', function () {
+    if (tk.mode === 'res') { uiBack(); tk.mode = 'list'; tkRender(); return; }
+    tkConfirm();
+  });
+  /* ---------- 임시 상점 (결제 없음 · 누르면 바로 받는다) ---------- */
+  var SH_PASS = [null,
+    { n: '스핀 라이트 패스', p: 9900, desc: '상자 하루 15판 · 일일 로그인 보상 일반·희귀 토큰 ×5\n퀘스트 +3개(준비 중)', c: '#33c8f0' },
+    { n: '스핀 패스', p: 19800, desc: '라이트 혜택 포함 · 상자 하루 20개(판당 2개)\n일일 로그인 보상 영웅 토큰 ×5 · 상자 등급 분포 상승', c: '#ffc61a' }];
+  var SH_PK = [
+    { n: '입문', p: 1900, g: 1 }, { n: '초보', p: 3900, g: 2 }, { n: '중급', p: 9900, g: 3 },
+    { n: '상급', p: 19900, g: 4 }, { n: '고인물', p: 39900, g: 5 }, { n: '썩은물', p: 69900, g: 5, taigo: true }];
+  function shWon(n) { return n.toLocaleString() + '원'; }
+  function shPassSvg(c) { return '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 9h30a2 2 0 0 1 2 2v5a4 4 0 0 0 0 8v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5a4 4 0 0 0 0-8v-5a2 2 0 0 1 2-2z" fill="' + c + '" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M20 12.5l2.4 5 5.4.7-3.9 3.8.9 5.4-4.8-2.6-4.8 2.6.9-5.4-3.9-3.8 5.4-.7z" fill="#fff" stroke="#0a1020" stroke-width="1.6" stroke-linejoin="round"/></svg>'; }
+  function shRender() {
+    var h = '<h4>패스</h4>';
+    [1, 2].forEach(function (lv) {
+      var P = SH_PASS[lv], own = eco.pass >= lv, price = lv === 2 && eco.pass === 1 ? 9900 : P.p;
+      h += '<div class="shp' + (own ? ' on' : '') + '">' + shPassSvg(P.c) + '<div class="tt"><b>' + P.n + '</b><small>' + P.desc + '</small><small class="pr">' + shWon(price) + (lv === 2 && eco.pass === 1 ? ' (라이트 보유 할인)' : '') + '</small></div><button type="button" class="by" data-by="pass' + lv + '"' + (own ? ' disabled' : '') + '>' + (own ? (eco.pass > lv ? '포함됨' : '이용 중') : '받기') + '</button></div>';
+    });
+    if (eco.pass > 0) {
+      var done = eco.login === ecoDay();
+      h += '<div class="shp"><div class="tt"><b>일일 로그인 보상</b><small>' + (eco.pass === 2 ? '무작위 영웅 토큰 ×5' : '무작위 일반·희귀 캐릭터 토큰 ×5') + '</small></div><button type="button" class="by" data-by="login"' + (done ? ' disabled' : '') + '>' + (done ? '받음' : '받기') + '</button></div>';
+    }
+    h += '<h4>패키지 <span style="font-weight:700;color:var(--hmu);font-size:11px">1회 한정 · 구성은 임시</span></h4><div class="shg">';
+    SH_PK.forEach(function (k, i) {
+      var got = !!eco.pk[i], ri = RAR_INFO[k.g];
+      h += '<div class="shk" style="border-color:' + (got ? 'var(--hbd)' : ri.c) + '"><b>' + k.n + '</b><small>' + ri.n + ' 캐릭터·재능·스펠 선택권\n' + ri.n + ' 토큰 ×20' + (k.taigo ? '\n태고 토큰 ×5' : '') + '</small><small class="pr">' + shWon(k.p) + '</small><button type="button" class="by" data-by="pk' + i + '"' + (got ? ' disabled' : '') + '>' + (got ? '구매 완료' : '받기') + '</button></div>';
+    });
+    h += '</div><button type="button" class="shdbg" data-by="tkall">테스트: 선택권 전부 +1 (일반~전설, 3종)</button><button type="button" class="shdbg" data-by="reset">테스트: 구매 기록 초기화</button>';
+    $('#shBody').innerHTML = h;
+  }
+  function shpick(g, skip) { var a = boxPool(g).filter(function (k) { return k !== skip; }); return a.length ? a[Math.floor(Math.random() * a.length)] : pickChar(g); }
+  function shShow(title, items) {
+    $('#shResT').textContent = title;
+    $('#shResL').innerHTML = items.map(function (it) {
+      var tx = it.k === 'tkt' ? { img: tkImg(it.kind, it.g), name: tkName(it.kind, it.g), sub: '컬렉션 > 선택권에서 써요' } : boxText(it), c = it.k === 'coin' ? RAR_INFO[0].c : RAR_INFO[it.k === 'tkt' ? it.g : (RAR[it.t] || 0)].c;
+      return '<div class="shr" style="--rc:' + c + '">' + (tx.img ? '<img src="' + tx.img + '" alt="">' : '') + '<span><b>' + tx.name + '</b><small>' + tx.sub + '</small></span></div>';
+    }).join('');
+    $('#shRes').hidden = false;
+  }
+  function shBuy(id) {
+    var items = [], title = '받았어요!';
+    if (id === 'tkall') { ['chr', 'tal', 'spl'].forEach(function (kd) { for (var g = 0; g <= 5; g++) tkAdd(kd, g, 1); }); ecoSave(); netNotify('선택권 18장을 받았어요 · 컬렉션에서 써요'); return; }
+    if (id === 'reset') { eco.pk = {}; eco.pass = 0; eco.login = ''; eco.tk = {}; ecoSave(); ecoUi(); shRender(); netNotify('구매 기록을 초기화했어요'); return; }
+    if (id === 'pass1' || id === 'pass2') {
+      var lv = +id.slice(4); if (eco.pass >= lv) return; eco.pass = lv; ecoSave(); ecoUi(); uiConfirm(); shRender();
+      shShow(SH_PASS[lv].n + ' 시작!', []);
+      $('#shResL').innerHTML = '<div class="shr" style="--rc:' + SH_PASS[lv].c + '">' + shPassSvg(SH_PASS[lv].c).replace('<svg', '<svg width="44" height="44"') + '<span><b>' + SH_PASS[lv].n + '</b><small>상자 하루 ' + ecoCap() + (lv === 2 ? '개' : '판') + ' · 일일 로그인 보상 받을 수 있어요</small></span></div>';
+      return;
+    }
+    if (id === 'login') {
+      if (!eco.pass || eco.login === ecoDay()) return;
+      var t = eco.pass === 2 ? pickChar(3) : pickChar(Math.random() < 0.5 ? 0 : 1);
+      items.push({ k: 'tok', t: t, n: 5 }); eco.login = ecoDay(); title = '로그인 보상!';
+    } else if (id.indexOf('pk') === 0) {
+      var i = +id.slice(2), K = SH_PK[i]; if (eco.pk[i]) return; eco.pk[i] = 1; title = K.n + ' 패키지!';
+      ['chr', 'tal', 'spl'].forEach(function (kd) { items.push({ k: 'tkt', kind: kd, g: K.g }); });
+      items.push({ k: 'tok', t: shpick(K.g), n: 20 });
+      if (K.taigo) items.push({ k: 'tok', t: pickChar(6), n: 5 });
+    } else return;
+    items.forEach(function (it) { if (it.k === 'tkt') tkAdd(it.kind, it.g, 1); else boxApply(it); }); ecoSave(); ecoUi(); uiConfirm(); shRender(); shShow(title, items);
+  }
+  function shopRender() { shRender(); }
+  $('#shBody').addEventListener('click', function (e) { var b = e.target.closest('[data-by]'); if (!b || b.disabled) return; shBuy(b.dataset.by); });
+  $('#shResOk').addEventListener('click', function () { uiBack(); $('#shRes').hidden = true; });
   function homeSync() { $('#hmNick').textContent = (acct && acct.me) ? acct.me.n : nick; ecoUi(); }
   function arenaTo(home) {
     var ar = $('#arena'), host = home ? $('#hmSlot') : setupEl.parentNode;
@@ -15507,7 +15758,7 @@ var DM = (function () {
     if (c === 'test' || c === 'notest') {   /* 테스트 쿠폰(기기에만 저장): 일반~영웅 캐릭터와 그 재능·스펠이 전부 열린다 */
       eco.test = c === 'test'; ecoSave(); inp.value = '';
       cpnRefresh(eco.test ? '테스트 쿠폰 적용! 일반~영웅이 모두 열렸어요' : '테스트 쿠폰을 해제했어요');
-      sync(); if (typeof colRender === 'function' && !$('#hmCol').hidden) colRender(); return;
+      sync(); if (typeof colRender === 'function' && homeTabCur === 'col') colRender(); return;
     }
     if (!acct.me) { cpnRefresh(window.SPIN_ACC ? '쿠폰은 로그인하면 쓸 수 있어요' : '쿠폰은 지금 쓸 수 없어요'); return; }
     if (acct.busy) return;
@@ -16259,12 +16510,13 @@ var DM = (function () {
   $('#hmOnline').addEventListener('click', function () { audio(); if (window.SPIN_ONLINE) netShow('menu'); else netNotify('온라인 대전은 서버 주소로 접속했을 때만 돼요'); });
   $('#hmOffline').addEventListener('click', function () { audio(); showScreen('select'); });
   $('#hmGear').addEventListener('click', openSettings);
-  document.querySelectorAll('#home .hnav button').forEach(function (b) { b.addEventListener('click', function () { audio(); if (b.dataset.hn === 'col') { if (!$('#hmCol').hidden) return; uiTick(); colShow(true); } else if (b.dataset.hn === 'play') { if ($('#hmCol').hidden) return; uiTick(); colShow(false); } else netNotify('준비 중이에요'); }); });
+  document.querySelectorAll('#home .hnav button').forEach(function (b) { b.addEventListener('click', function () { audio(); if (b.dataset.hn === 'col' || b.dataset.hn === 'shop' || b.dataset.hn === 'play') { if (homeTabCur === b.dataset.hn) return; uiTick(); homeTab(b.dataset.hn); } else netNotify('준비 중이에요'); }); });
+  document.querySelectorAll('#home .hsb').forEach(function (b) { b.addEventListener('click', function () { audio(); if (b.dataset.soon === '보관함') { uiTick(); tkOpen(); } else netNotify(b.dataset.soon + '은(는) 준비 중이에요'); }); });
   document.querySelectorAll('#home .hcard').forEach(function (b) { b.addEventListener('click', function () { if (b.id === 'hmBoxCard') { audio(); boxOpen(); } else netNotify(b.dataset.soon + '은(는) 준비 중이에요'); }); });
   $('#overBoxBtn').addEventListener('click', function () { audio(); boxOpen(); });
   $('#boxOv').addEventListener('pointerdown', function (e) { if (e.target.closest('#bxClose,#bxOk,#bxChrOk') || $('#bxStage').hidden) return; boxTap(); });
   $('#bxClose').addEventListener('click', function () { uiBack(); boxClose(); });
-  function boxNext() { try { if (eco.box.length) { uiConfirm(); boxOpen(); } else { uiBack(); boxClose(); } } catch (e) { try { boxClose(); } catch (e2) {} } }
+  function boxNext() { if (bx.tkt) { uiBack(); tkEnd(); return; } try { if (eco.box.length) { uiConfirm(); boxOpen(); } else { uiBack(); boxClose(); } } catch (e) { try { boxClose(); } catch (e2) {} } }
   $('#bxChrOk').addEventListener('click', boxNext);
   $('#bxOk').addEventListener('click', boxNext);
   window.__eco = { force: ecoForce, get: function () { return eco; }, roll: boxRoll, push: function (t) { eco.box.push(t); ecoSave(); ecoUi(); }, done: ecoMatchDone, reset: function () { ecoGot = false; } };

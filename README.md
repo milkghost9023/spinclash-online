@@ -29,4 +29,5 @@ Node 서버를 돌릴 수 있는 곳(예: Render)에 이 폴더를 올리고
 - `BASE_URL` : 메일 속 링크 주소 (예: https://spinclash-online.onrender.com). 비우면 접속 주소를 그대로 쓴다.
 - `COUPON_CODES` : 쿠폰 코드표. 코드는 서버에서만 확인하고 코드표는 저장소에 두지 않는다. 형식 `코드=권한,코드=권한` (권한: `r4` 신화 · `r5` 전설 · `r6` 태고 등급 열기, `cmd` 제작자 권한, 앞에 `-` 를 붙이면 그 권한을 빼앗는 코드). 예: `abc123=r4,def456=r5,ghi789=r6`. 비우면 쿠폰 기능이 꺼진다. 쿠폰은 로그인한 계정에만 적용되고 계정(DB)에 저장된다.
 - 메일(비밀번호 재설정용, 선택): `MAIL_PROVIDER`=`brevo`|`resend`, `BREVO_API_KEY` 또는 `RESEND_API_KEY`, `MAIL_FROM`(보내는 주소), `MAIL_FROM_NAME`. Render 무료 서버는 SMTP 포트(25/465/587)가 막혀 있어서 HTTP API 방식만 쓴다.
+- 쿠폰 전체 초기화: `accounts.js` 의 `COUPON_RESET_ID` 와 `index.html` 의 `RID` 를 같은 새 값으로 바꿔 배포하면, 서버가 켜질 때 모든 계정의 쿠폰 권한을 한 번만 비우고(제작자 계정은 그대로, 일반 계정의 "유령" 닉네임은 `플레이어####` 로 변경) 각 기기의 `test` 쿠폰 기록도 처음 열 때 한 번 지운다.
 - 테스트용: `REG_PER_HOUR`(IP당 시간당 가입 수, 기본 5), `MAIL_FILE`(메일 대신 파일에 기록)
