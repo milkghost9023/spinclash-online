@@ -939,7 +939,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v584</span>
+      <span class="verTag">v585</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -1221,7 +1221,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
         <label class="fld"><span>비밀번호</span><input class="txt" id="rmPw" maxlength="8" autocomplete="off" spellcheck="false" placeholder="선택 · 비우면 누구나" aria-label="방 비밀번호"></label>
         <div class="row2"><span>관전 허용</span><button type="button" class="tog" id="rmSpec" aria-pressed="true">켬</button></div>
         <button class="btn primary" id="netCreate">방 만들기</button></div>
-      <div class="netBox" id="netMm" hidden><p class="netTxt" id="mmTxt">상대를 찾는 중…</p><p class="netCode" id="mmSec">13</p><p class="netTxt">13초 안에 상대가 없으면 AI와 클래식 대전을 해요</p></div>
+      <div class="netBox" id="netMm" hidden><p class="netTxt" id="mmTxt">상대를 찾는 중…</p><p class="netCode" id="mmSec">0</p></div>
       <div class="netBox" id="netList" hidden><div class="rmList" id="rmList"></div><button class="btn" id="rmRefresh">새로고침</button></div>
       <div class="netBox" id="netPw" hidden><p class="netTxt">비밀번호를 입력해요</p><input class="txt" id="pwIn" maxlength="8" autocomplete="off" spellcheck="false" aria-label="비밀번호"><button class="btn primary" id="pwOk">확인</button></div>
       <div class="netBox" id="netWait" hidden><p class="netTxt" id="netWaitName"></p><p class="netTxt">친구에게 이 코드를 알려줘요</p><p class="netCode" id="netCode"></p><p class="netTxt">상대를 기다리는 중…</p></div>
@@ -17103,18 +17103,17 @@ var DM = (function () {
     }
   }
   $('#spLeave').addEventListener('click', netLeave);
-  /* ═══════ 매칭: 13초 동안 상대를 찾고, 못 찾으면 이 기기 안에서 AI와 클래식 대전 ═══════ */
-  var MM_MS = 13000, AI_PICK_MS = 45000;
-  var mm = { on: false, t: 0, tick: 0, t0: 0, ack: 0 };
+  /* ═══════ 매칭: 13~17초 동안 상대를 찾고, 못 찾으면 이 기기 안에서 AI와 클래식 대전 ═══════ */
+  var MM_MIN = 13000, MM_MAX = 17000, AI_PICK_MS = 45000;
+  var mm = { on: false, t: 0, tick: 0, t0: 0, ack: 0, ms: 0 };
   function mmStop() { mm.on = false; if (mm.t) clearTimeout(mm.t); if (mm.tick) clearInterval(mm.tick); if (mm.ack) clearTimeout(mm.ack); mm.t = mm.tick = mm.ack = 0; }
   function mmUi() {
-    var left = Math.max(0, Math.ceil((MM_MS - (Date.now() - mm.t0)) / 1000));
-    $('#mmSec').textContent = left; if (left <= 0) $('#mmTxt').textContent = 'AI 상대를 준비하는 중…';
+    $('#mmSec').textContent = Math.floor((Date.now() - mm.t0) / 1000);   /* 0초부터 올라가는 경과 시간 */
   }
   function mmStart() {
     mmStop(); var nk = nickRead(); net.mmRoom = false;
     netShow('mm'); mm.on = true; mm.t0 = Date.now(); $('#mmTxt').textContent = '상대를 찾는 중…'; mmUi();
-    mm.tick = setInterval(mmUi, 250); mm.t = setTimeout(mmTimeout, MM_MS);
+    mm.ms = MM_MIN + Math.floor(Math.random() * (MM_MAX - MM_MIN + 1)); mm.tick = setInterval(mmUi, 250); mm.t = setTimeout(mmTimeout, mm.ms);   /* 13~17초 사이 무작위로 AI 연결 */
     netConnect(function () { netSend({ t: 'mm', tk: acct.tk, ver: VER, nick: nk }); });
   }
   function mmTimeout() {
