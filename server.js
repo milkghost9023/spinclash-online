@@ -45,6 +45,7 @@ const server = http.createServer((req, res) => {
 });
 
 const rooms = new Map();
+const mmQ = [];   // 매칭 대기열: { ws, nick, uid, at }
 const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 16 * 1024 });
 
 function newCode() {
@@ -115,6 +116,21 @@ function validDeck(d) {
     for (const k of sp) { if (typeof k !== 'string' || k.length > 24 || spells.has(k)) return false; spells.add(k); }
   }
   return true;
+}
+/* 매칭: 대기열에서 앞의 두 명을 짝지어 클래식 방을 만든다. 첫 번째가 방장(created), 두 번째가 참가자(joined)로 받는다 */
+function mmTry() {
+  for (let i = mmQ.length - 1; i >= 0; i--) if (!mmQ[i].ws || mmQ[i].ws.readyState !== 1) mmQ.splice(i, 1);
+  while (mmQ.length >= 2) {
+    const a = mmQ.shift(), b = mmQ.shift(), code = newCode();
+    if (!code || rooms.size >= MAX_ROOMS) { [a, b].forEach((q) => { q.ws._mm = null; rawSend(q.ws, { t: 'err', m: '지금은 매칭할 수 없어요. 잠시 뒤에 다시 해 주세요' }); }); continue; }
+    const mk = (q) => ({ ws: q.ws, nick: q.nick, uid: q.uid, tok: crypto.randomBytes(12).toString('hex'), sel: null, ready: false, rtt: 60 });
+    const r = { code, mode: 'classic', name: '매칭', pw: '', hidden: true, spec: false, specs: [], lastStart: null, log: [], lastIn: [-1, -1], cl: null, players: [mk(a), mk(b)], arena: 0, pickT: null, lastCres: null, state: 'lobby', round: 0, over: [false, false], rematch: [false, false], hs: [{}, {}] };
+    rooms.set(code, r);
+    a.ws._room = r; a.ws._idx = 0; a.ws._mm = null; b.ws._room = r; b.ws._idx = 1; b.ws._mm = null;
+    rawSend(a.ws, { t: 'created', code, idx: 0, mode: 'classic', name: r.name, tok: r.players[0].tok, mm: 1 });
+    rawSend(b.ws, { t: 'joined', code, idx: 1, mode: 'classic', name: r.name, tok: r.players[1].tok, mm: 1 });
+    rawSend(a.ws, { t: 'peer', n: 2 }); sendNames(r); specStatus(r);
+  }
 }
 function startClassic(room) {
   const [a, b] = room.players;
@@ -202,7 +218,7 @@ wss.on('connection', (ws) => {
     let m; try { m = JSON.parse(data.toString()); } catch (e) { return; }
     if (!m || typeof m.t !== 'string') return;
     /* 로그인한 사람이면 방 만들기·참가·관전 때 세션 토큰으로 계정을 확인한다 (닉네임은 계정 것이 우선) */
-    if (m._u === undefined && typeof m.tk === 'string' && m.tk && (m.t === 'create' || m.t === 'join' || m.t === 'spec') && accounts.enabled && !ws._room) {
+    if (m._u === undefined && typeof m.tk === 'string' && m.tk && (m.t === 'create' || m.t === 'join' || m.t === 'spec' || m.t === 'mm') && accounts.enabled && !ws._room) {
       if (ws._authing) return; ws._authing = true;
       accounts.userFromToken(m.tk).then((u) => {
         ws._authing = false; if (ws.readyState !== 1) return;
@@ -244,6 +260,20 @@ wss.on('connection', (ws) => {
         if (r.players[0] && r.players[0].ready) rawSend(ws, { t: 'peerReady', v: true });   // 방장이 미리 준비해 뒀다면 바로 알려 준다
         return;
       }
+      case 'mm': {   // 매칭: 대기열에 들어가 두 명이 모이면 클래식 방을 자동으로 연다 (방 목록에는 안 보이고 관전도 안 된다)
+        if (room || ws._mm) return;
+        if (!verOk(ws, m)) return;
+        ws._mm = { ws, nick: m._u ? m._u.nick : nickOf(m.nick), uid: m._u ? m._u.id : 0, at: Date.now() };
+        mmQ.push(ws._mm); rawSend(ws, { t: 'mmq' });
+        mmTry();
+        return;
+      }
+      case 'mmx': {   // 매칭 취소: 아직 대기열에 있었으면 ok:true (AI 대전으로 넘어가도 된다), 이미 짝이 지어졌으면 ok:false (방 메시지가 먼저 도착해 있다)
+        const i = mmQ.findIndex((q) => q.ws === ws);
+        if (i >= 0) { mmQ.splice(i, 1); ws._mm = null; rawSend(ws, { t: 'mmx', ok: true }); }
+        else rawSend(ws, { t: 'mmx', ok: false });
+        return;
+      }
       case 'spec': {   // 관전: 두 사람의 입력을 똑같이 받아서 같은 계산을 한다 (조작·채팅 불가)
         if (room) return;
         const code = String(m.code || '').toUpperCase().trim(); const r = rooms.get(code);
@@ -274,7 +304,7 @@ wss.on('connection', (ws) => {
       }
       case 'list': {
         const out = [];
-        rooms.forEach((r) => { const np = r.players.filter(Boolean).length; if (!np) return; const h = r.players[0] || r.players[1]; out.push({ c: r.code, nm: r.name, md: r.mode, h: h.nick, np, st: r.state, lk: !!r.pw, sp: r.spec, sc: r.specs.length }); });
+        rooms.forEach((r) => { const np = r.players.filter(Boolean).length; if (!np || r.hidden) return; const h = r.players[0] || r.players[1]; out.push({ c: r.code, nm: r.name, md: r.mode, h: h.nick, np, st: r.state, lk: !!r.pw, sp: r.spec, sc: r.specs.length }); });
         out.sort((x, y) => (x.np - y.np) || (x.c < y.c ? -1 : 1));
         return rawSend(ws, { t: 'rooms', l: out.slice(0, 40) });
       }
@@ -370,6 +400,7 @@ wss.on('connection', (ws) => {
   ws.on('close', () => {
     if (ws._iq && ws._iq.length) { const q = ws._iq; ws._iq = []; q.forEach((e) => handle(e.data)); }   // (지연 시뮬레이션용) 닫히기 전에 도착한 메시지를 먼저 처리
     if (ws._pres) schedCount();
+    if (ws._mm) { const qi = mmQ.indexOf(ws._mm); if (qi >= 0) mmQ.splice(qi, 1); ws._mm = null; }
     const room = ws._room; if (!room) return;
     if (ws._idx === -2) { room.specs = room.specs.filter((w) => w !== ws); sendNames(room); return; }
     const idx = ws._idx, p = room.players[idx];
