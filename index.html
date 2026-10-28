@@ -939,7 +939,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v590</span>
+      <span class="verTag">v593</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -15455,6 +15455,7 @@ var DM = (function () {
     return d;
   }
   function ecoSave() { try { localStorage.setItem(ECO_KEY, JSON.stringify(eco)); } catch (e) {} }
+  var TR_FF = 15;   /* 상대가 경기 도중 포기해서 이긴 경우 */
   var TR_WIN = 30;   /* 베타: 매칭 클래식에서 최종 승리하면 트로피 +30, 져도 감점 없음 */
   function trUi() { var e = $('#hmTr'); if (e) e.textContent = String(Math.max(0, eco.tr | 0)); }
   trUi();
@@ -15523,7 +15524,7 @@ var DM = (function () {
     if (typeof dotSync === 'function') dotSync();
     var cs = $('#hmBoxCs'); if (cs) cs.textContent = '오늘 ' + eco.played + '/' + ecoCap() + (eco.pass === 2 ? '개' : '판');
     var cb = $('#hmBoxCb'); if (cb) cb.textContent = eco.box.length ? '열기 ' + eco.box.length : '없음';
-    var ob = $('#overBoxBtn'); if (ob && !ob.hidden) { ob.textContent = '상자 열기 (' + eco.box.length + ')'; ob.hidden = !eco.box.length; }
+    var ob = $('#overBoxBtn'); if (ob && !ob.hidden) { ob.textContent = '상자 열기 (' + eco.box.length + ')'; ob.hidden = !eco.box.length || (net.on && net.mmRoom); }
   }
   function ecoMatchDone() {
     if (ecoGot || (net.on && net.spec)) return; ecoGot = true; ecoRoll();
@@ -15531,7 +15532,7 @@ var DM = (function () {
     var cap = ecoCap(), per = eco.pass === 2 ? 2 : 1, got = Math.min(per, cap - eco.played);
     if (got <= 0) b.textContent = '오늘 상자는 다 받았어요 (' + cap + '/' + cap + ')';
     else { for (var gi = 0; gi < got; gi++) { eco.played++; eco.box.push(wpick(boxDist())); } ecoSave(); b.textContent = '상자 +' + got + ' · 오늘 ' + eco.played + '/' + cap + (eco.pass === 2 ? '개' : '판'); }
-    b.hidden = false; bb.hidden = !eco.box.length; ecoUi();
+    b.hidden = false; bb.hidden = !eco.box.length || (net.on && net.mmRoom); ecoUi();
   }
   /* ═══════ 레드닷(빨간 점) ═══════
      홈 아래 5개 탭 + 세로줄 7개 버튼. 자동 조건(보스전 등)이거나 설정의 테스트 스위치가 켜져 있으면 뜬다 */
@@ -16528,7 +16529,7 @@ var DM = (function () {
   $('#homeBtn').addEventListener('click', function () { if (net.on) { netLeave(); return; } if (bossRun) { bossLeave(bossRun.mode === 'end', bossRun.mode === 'end' ? '' : '보스전을 포기했어요'); return; } showScreen('home'); });
   $('#startBtn').addEventListener('click', function () { if (net.on) netReadyToggle(); else if (bossRun) bossFight(); else start(); });
   $('#again').addEventListener('click', function () { if (net.on) netRematch(); else if (bossRun) bossAgain(); else start(); });
-  $('#resel').addEventListener('click', function () { if (net.on) netBack(); else if (bossRun) bossLeave(bossRun.mode === 'end', bossRun.mode === 'end' ? '' : '보스전을 포기했어요'); else showScreen('select'); });
+  $('#resel').addEventListener('click', function () { if (net.on && net.mmRoom) { if (net.cl && net.cl.end) netLeave(); else netForfeitTap($('#resel'), '경기 포기'); } else if (net.on) netBack(); else if (bossRun) bossLeave(bossRun.mode === 'end', bossRun.mode === 'end' ? '' : '보스전을 포기했어요'); else showScreen('select'); });
   $('#backBtn').addEventListener('click', function () { showScreen('select'); });
   [0, 1].forEach(function (i) {
     [0, 1].forEach(function (j) { $('#sp' + i + '_' + j).addEventListener('pointerdown', function (e) { e.preventDefault(); if (net.on) { if (i === net.me && net.st === 'play') net.pend.push(j); return; } castSpell(i, j); }); });
@@ -16624,7 +16625,7 @@ var DM = (function () {
   window.addEventListener('online', netRcNow);
   function netReset() {
     if (net.rc) { if (net.rc.tm) clearTimeout(net.rc.tm); net.rc = null; }
-    net.tok = ''; net.pgAt = 0; net.replay = false; net.rs = null; net.haveMe = -1; rcHide();
+    net.tok = ''; net.fgAt = 0; net.pgAt = 0; net.replay = false; net.rs = null; net.haveMe = -1; rcHide();
     netTimers(false);
     if (net.ws) { var w = net.ws; net.ws = null; try { w.close(); } catch (e) {} }
     if (net.backup) { sel = net.backup.sel; arenaSel = net.backup.arena; fxOn = net.backup.fx; sdOn = net.backup.sd; net.backup = null; }
@@ -16638,6 +16639,12 @@ var DM = (function () {
     $('#overSub').style.opacity = ''; sync();
   }
   function netLeave() { netSend({ t: 'leave' }); netReset(); netModal.hidden = true; showScreen('home'); }
+  /* 경기 포기: 실수로 누르지 않게 3초 안에 한 번 더 눌러야 나간다 */
+  function netForfeitTap(btn, base) {
+    if (net.fgAt && Date.now() - net.fgAt < 3000) { net.fgAt = 0; netLeave(); return; }
+    net.fgAt = Date.now(); btn.textContent = '정말 포기할까요?';
+    setTimeout(function () { net.fgAt = 0; if (net.on && net.mmRoom && btn.textContent === '정말 포기할까요?') btn.textContent = base; }, 3000);
+  }
   function netLost() {
     if (mm.on && !net.on) { aiStart(); return; }   /* 매칭 중에 서버가 안 되면 바로 AI 대전으로 */
     var was = net.on; netReset();
@@ -16815,7 +16822,7 @@ var DM = (function () {
     if (net.st !== 'after') return;
     var a = $('#again'), c = net.mode === 'classic' && net.cl;
     if (!c) { a.hidden = false; a.disabled = false; a.textContent = net.rematch ? '재대결 취소' : (net.peerRematch ? '재대결 수락' : '재대결'); return; }
-    $('#resel').textContent = c.end ? '덱 다시 짜기' : '나가기';
+    $('#resel').textContent = net.mmRoom ? (c.end ? '홈으로' : '경기 포기') : (c.end ? '덱 다시 짜기' : '나가기');   /* 매칭 대전: 승패가 갈리면 홈으로, 그 전엔 경기 포기 */
     if (c.bad) { a.hidden = true; return; }
     if (!c.got) { a.hidden = false; a.disabled = true; a.textContent = '결과 확인 중…'; return; }
     var mine = c.wins[net.me], theirs = c.wins[1 - net.me];
@@ -16850,6 +16857,10 @@ var DM = (function () {
   function netPeerLeft() {
     net.pgAt = 0; rcRefresh();
     net.peerHere = false; net.peerReady = false; net.ready = false; net.sentType = null;
+    if (net.mmRoom && net.mode === 'classic' && net.cl) {   /* 매칭 대전: 승패가 이미 갈렸으면 그대로 두고, 경기 도중이면 상대가 포기한 것이니 홈으로 */
+      if (net.cl.end) return;
+      netReset(); netModal.hidden = true; showScreen('home'); eco.tr = (eco.tr | 0) + TR_FF; ecoSave(); trUi(); netNotify('상대가 경기를 포기했어요 · 트로피 +' + TR_FF, true); return;   /* 포기승은 트로피 절반 */
+    }
     if (net.st === 'play' || net.st === 'after' || net.st === 'desync' || net.st === 'cpick') netToSelect(); else netSelUI();
   }
   /* ═══════ 클래식 (beta): 덱 3개 · 상대 덱 공개 · 몰래 선택 · 한 번 쓴 캐릭터는 재사용 불가 · 3판 2선승 ═══════ */
@@ -16899,7 +16910,7 @@ var DM = (function () {
       var d = c.decks[foc.who === 'me' ? me : op][foc.k], w = W[d.type], tr = d.trait ? w.traits[d.trait - 1] : null;
       info.textContent = (foc.who === 'me' ? '내 ' : '상대 ') + w.name + ' (' + RAR_INFO[RAR[d.type]].n + ')\n' + w.desc + '\n재능: ' + (tr ? tr.name + ' — ' + tr.desc : '없음') + '\n스펠: ' + (d.spells.length ? d.spells.map(function (x) { return clsSpellDesc(x, d.type); }).join(' / ') : '없음');
     } else info.textContent = '카드를 누르면 자세한 설명이 나와요. 내 카드는 누르면 이번 판 후보가 돼요.';
-    var lk = $('#clsLock'); lk.disabled = c.my < 0 || c.locked; lk.textContent = c.locked ? '선택 완료' : '이 캐릭터로 확정';
+    var cl2 = $('#clsLeave'); if (cl2 && !net.fgAt) cl2.textContent = net.mmRoom ? '경기 포기' : '방에서 나가기'; var lk = $('#clsLock'); lk.disabled = c.my < 0 || c.locked; lk.textContent = c.locked ? '선택 완료' : '이 캐릭터로 확정';
   }
   function clsShow() { var c = net.cl; c.my = -1; c.locked = false; c.peerPicked = false; c.focus = null; showScreen('cls'); clsRender(); }
   function netClsStart(m) {
@@ -16975,7 +16986,7 @@ var DM = (function () {
     clsRender();
   });
   $('#clsLock').addEventListener('click', function () { var c = net.cl; if (!c || net.rc || net.st !== 'cpick' || c.locked || c.my < 0 || c.used[net.me][c.my]) return; c.locked = true; netSend({ t: 'pick', i: c.my }); clsRender(); });
-  $('#clsLeave').addEventListener('click', function () { netLeave(); });
+  $('#clsLeave').addEventListener('click', function () { if (net.mmRoom) netForfeitTap($('#clsLeave'), '경기 포기'); else netLeave(); });
   /* 이벤트 연결 */
   if (window.SPIN_ONLINE) { document.body.classList.add('hasOnline'); $('#verTxt').textContent = '한 기기 2인 대전 · 온라인 대전'; }
   function roomClean(x) { return Array.from(String(x == null ? '' : x).replace(/[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁦-⁩﻿]/g, '').replace(/\s+/g, ' ').trim()).slice(0, 16).join(''); }
@@ -17165,6 +17176,8 @@ var DM = (function () {
     S.bn = aiName(S.me);
     function later(fn, ms) { var t = setTimeout(function () { var i = S.tm.indexOf(t); if (i >= 0) S.tm.splice(i, 1); if (!S.dead) fn(); }, ms); S.tm.push(t); return t; }
     function emit(m) { if (!S.dead) netOnMsg(m); }
+    S.botReady = false; S.tmBot = 0; S.early = Math.random() < 0.5;   /* 절반은 내가 확정하기 전부터 혼자 3~13초 뒤에 확정(내가 더 늦으면 AI가 먼저), 절반은 내가 확정한 뒤 3~13초 */
+    function botConfirm() { S.tmBot = 0; if (S.botReady || S.state !== 'lobby') return; S.botReady = true; emit({ t: 'peerReady', v: true }); if (S.ready) later(startClassic, 700 + Math.random() * 800); }
     function free(i) { return [0, 1, 2].filter(function (k) { return !S.cl.used[i][k]; }); }
     function armPick() {
       if (S.pickT) clearTimeout(S.pickT);
@@ -17208,6 +17221,7 @@ var DM = (function () {
         later(function () {
           emit({ t: 'created', code: 'MATCH', idx: 0, mode: 'classic', name: '매칭', tok: '', mm: 1 });
           emit({ t: 'names', n: [S.me, ''], sc: 0 }); emit({ t: 'peer', n: 2 }); emit({ t: 'names', n: [S.me, S.bn], sc: 0 });
+          if (S.early) S.tmBot = later(botConfirm, 3000 + Math.random() * 10000);
         }, 200);
       },
       send: function (raw) {
@@ -17217,7 +17231,7 @@ var DM = (function () {
           case 'in': if (S.state === 'play') emit({ t: 'in', p: 1, f: m.f, a: botA() }); return;
           case 'h': emit({ t: 'h', s: m.s, h: m.h }); return;
           case 'deck': if (S.state !== 'lobby' || !Array.isArray(m.deck) || m.deck.length !== 3) return; S.deck = clone(m.deck); if (Number.isInteger(m.arena) && m.arena >= 0 && m.arena < 64) S.arena = m.arena; if (typeof m.sd === 'boolean') S.sd = m.sd; return;
-          case 'ready': S.ready = !!m.v; if (S.ready) { var dl = 3000 + Math.random() * 10000; later(function () { if (S.ready) emit({ t: 'peerReady', v: true }); }, dl); later(startClassic, dl + 800);   /* 사람처럼 3~13초 뒤에 덱을 확정 */ } return;
+          case 'ready': S.ready = !!m.v; if (S.ready) { if (S.botReady) later(startClassic, 700 + Math.random() * 800); else if (!S.early && !S.tmBot) S.tmBot = later(botConfirm, 3000 + Math.random() * 10000); } return;   /* 내가 확정한 뒤 3~13초 */
           case 'pick': { var i = m.i; if (S.state !== 'cpick' || !Number.isInteger(i) || i < 0 || i > 2 || S.cl.used[0][i] || S.picks[0] !== null) return; S.picks[0] = i; if (S.picks[1] !== null) startFight(); return; }
           case 'over': {
             if (S.state !== 'play') return; S.state = 'after'; var cl = S.cl, w = m.w; if (w !== -1 && w !== 0 && w !== 1) w = -1;
@@ -17230,7 +17244,7 @@ var DM = (function () {
             return;
           }
           case 'rematch': S.rematch = !!m.v; if (m.v) later(function () { if (!S.rematch || S.state !== 'after') return; emit({ t: 'peerRematch', v: true }); later(function () { if (S.rematch && S.state === 'after') classicNext(); }, 300); }, 500); return;
-          case 'back': S.state = 'lobby'; S.cl = null; S.ready = false; S.rematch = false; if (S.pickT) { clearTimeout(S.pickT); S.pickT = 0; } return;
+          case 'back': S.state = 'lobby'; S.cl = null; S.ready = false; S.botReady = false; S.tmBot = 0; S.early = Math.random() < 0.5; if (S.early) S.tmBot = later(botConfirm, 3000 + Math.random() * 10000); S.rematch = false; if (S.pickT) { clearTimeout(S.pickT); S.pickT = 0; } return;
           case 'leave': F.close(); return;
         }
       },
