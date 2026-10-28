@@ -507,10 +507,14 @@ body.clsSel #hudBars { display: none; }
 #home .hmid { position: relative; flex: none; width: calc(100% + 16px); margin: 0 -8px; display: flex; justify-content: center; }
 #home .htop { position: relative; flex: none; width: 100%; }
 #home .hside { position: absolute; right: 0; top: calc(100% + 8px); z-index: 3; display: flex; flex-direction: column; gap: 6px; }
-#home .hsb { box-sizing: border-box; width: 34px; height: 34px; padding: 2px 0 1px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; border-radius: 7px; border: 2.5px solid var(--ink); background: linear-gradient(var(--hl1), var(--hl2)); color: var(--ink); box-shadow: inset 0 2px 0 rgba(255,255,255,0.7), 0 3px 0 rgba(0,0,0,0.4); }
-#home .hsb:active { transform: translateY(2px); box-shadow: inset 0 2px 0 rgba(255,255,255,0.7), 0 1px 0 rgba(0,0,0,0.4); }
-#home .hsb svg { width: 19px; height: 19px; flex: none; }
-#home .hsb span { font: 900 8px 'Noto Sans KR', sans-serif; line-height: 1; white-space: nowrap; }
+#home .hside.l { right: auto; left: 0; }
+#home .hsb { box-sizing: border-box; position: relative; width: 40px; height: 40px; padding: 0; display: flex; align-items: flex-start; justify-content: center; border: 0; background: none; color: #fff; -webkit-tap-highlight-color: transparent; }
+#home .hsb:active { transform: scale(0.92); }
+#home .hsb[data-soon="진보스전"] svg { filter: drop-shadow(0 0 2px rgba(190,150,255,0.85)) drop-shadow(0 2px 1px rgba(0,0,0,0.45)); }
+#home .hsb img { width: 36px; height: 36px; flex: none; margin: -1px 0 0; filter: drop-shadow(0 2px 1px rgba(0,0,0,0.45)); }
+#home .hsb svg { width: 34px; height: 34px; flex: none; margin-top: 0; filter: drop-shadow(0 2px 1px rgba(0,0,0,0.45)); }
+#home .hsb span { position: absolute; left: -2px; right: -2px; bottom: -1px; text-align: center; font: 900 8.5px 'Noto Sans KR', sans-serif; line-height: 1; white-space: nowrap; color: #fff; text-shadow: 0 0 2px #0a1020, 0 1px 1px #0a1020, 0 0 4px #0a1020, 0 0 4px #0a1020; }
+#home .hsb[data-soon="진보스전"] span { font-size: 7.5px; letter-spacing: -0.05em; }
 #home .harena { position: relative; flex: none; width: min(290px, calc(100% - 96px)); padding: 7px; border-radius: 10px; background: linear-gradient(var(--hl1), var(--hl2)); border: 4px solid var(--ink); box-shadow: inset 0 2px 0 rgba(255,255,255,0.6), 0 4px 0 rgba(0,0,0,0.4); }
 #home .harena i.rv { position: absolute; z-index: 2; width: 6px; height: 6px; border-radius: 50%; background: var(--hl3); border: 1.4px solid var(--ink); }
 #home .harena .arena { border: 3px solid var(--ink); border-radius: 3px; box-shadow: none; overflow: hidden; }
@@ -529,6 +533,7 @@ body.clsSel #hudBars { display: none; }
 #boxOv { position: fixed; inset: 0; z-index: 32; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; background: radial-gradient(circle at 50% 42%, #2a3b6e 0, #10192f 72%); --bc: #2fb857; --bd: #1c7a37; user-select: none; -webkit-user-select: none; }
 #boxOv[hidden] { display: none; }
 #boxOv .tx { font-family: 'Black Han Sans', 'Noto Sans KR', sans-serif; font-weight: 400; color: #fff; -webkit-text-stroke: 5px #0a1020; paint-order: stroke fill; letter-spacing: 0.02em; }
+#boxOv .bxClose.skip { width: auto; padding: 0 14px; font: 900 14px 'Noto Sans KR', sans-serif; }
 #boxOv .bxClose { position: absolute; right: 14px; top: calc(14px + env(safe-area-inset-top, 0px)); width: 40px; height: 40px; border-radius: 8px; border: 3px solid #0a1020; background: linear-gradient(#46598a, #34446e); color: #fff; font-size: 18px; box-shadow: inset 0 2px 0 rgba(255,255,255,0.2), 0 2px 0 #0a1020; }
 #boxOv .bxStage, #boxOv .bxRes { display: flex; flex-direction: column; align-items: center; }
 #boxOv .bxTier { font-size: 32px; text-shadow: 0 0 18px var(--bc); }
@@ -633,6 +638,109 @@ body.clsSel #hudBars { display: none; }
 #home .hnav .dot { position: absolute; right: -4px; top: -4px; min-width: 16px; height: 16px; border-radius: 8px; background: #ef3a3a; border: 2px solid #fff; box-shadow: 0 0 0 1.5px var(--ink); }
 #home .hmain[hidden], #hmCol[hidden], #hmInv[hidden], :is(#hmCol, #hmInv) .cs[hidden] { display: none; }
 #hmInv { position: absolute; inset: 0; z-index: 30; }
+body.boss .players { grid-template-columns: minmax(0, 1fr); }
+body.boss .pcard.p2, body.boss #backBtn { display: none; }
+body.boss .chips button.us::after { content: '사용'; }
+/* 레드닷(빨간 점): 새 소식·못 받은 보상이 있는 버튼 모서리에 */
+#home .rdot { position: absolute; z-index: 4; width: 11px; height: 11px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ff8a7a, #ef3a3a 60%, #c01f1f); border: 2px solid #fff; box-shadow: 0 0 0 1.5px var(--ink), 0 0 6px rgba(255, 70, 70, 0.7); pointer-events: none; animation: rdPop 0.3s cubic-bezier(0.2, 1.8, 0.4, 1) both, rdBeat 1.8s ease-in-out 0.3s infinite; }
+#home .rdot[hidden] { display: none; }
+#home .hnav .rdot { right: calc(50% - 30px); top: 9px; }
+#home .hsb .rdot { right: 0; top: 0; }
+@keyframes rdPop { from { transform: scale(0); } }
+@keyframes rdBeat { 0%, 70%, 100% { transform: scale(1); } 80% { transform: scale(1.22); } 90% { transform: scale(0.95); } }
+#settings .sheet { max-height: calc(100dvh - 32px); overflow-y: auto; }
+#dotGrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+#dotGrid .tog { min-width: 0; padding: 0 4px; font-size: 12px; }
+/* 홈 공지 배너: 제작자가 쓰고 모두가 읽는다. 길면 전광판처럼 흘러간다 */
+#home .hnews { flex: none; position: relative; width: calc(100% - 20px); max-width: 460px; height: 30px; margin: 8px auto 0; padding: 0 8px; display: flex; align-items: center; gap: 6px; border: 3px solid var(--ink); border-radius: 8px; background: linear-gradient(var(--hb1), var(--hb2)); box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.18), 0 2px 0 rgba(0, 0, 0, 0.35); color: #fff; font: 800 12.5px 'Noto Sans KR', sans-serif; overflow: hidden; -webkit-tap-highlight-color: transparent; }
+#home .hnews[hidden] { display: none; }
+#home .hnews.own { cursor: pointer; }
+#home .hnews.own:active { transform: translateY(1px); }
+#home .hnews svg { flex: none; width: 18px; height: 18px; }
+#home .hnews .nv { flex: 1 1 0; min-width: 0; height: 100%; display: flex; align-items: center; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8px, #000 calc(100% - 8px), transparent); mask-image: linear-gradient(90deg, transparent, #000 8px, #000 calc(100% - 8px), transparent); }
+#home .hnews .nt { display: inline-block; white-space: nowrap; will-change: transform; }
+#home .hnews .nt.mq { animation: nwsMq var(--dur, 12s) linear infinite; }
+@keyframes nwsMq { from { transform: translateX(var(--from, 100%)); } to { transform: translateX(var(--to, -100%)); } }
+#home .hnews .ed { flex: none; font-size: 12px; opacity: 0.8; }
+#home .hnews.empty .nt { opacity: 0.55; font-weight: 700; }
+#newsModal textarea { width: 100%; min-height: 96px; padding: 8px 10px; resize: none; border: 3px solid var(--line); border-radius: 4px; background: var(--card); color: var(--ink); font: 600 15px/1.45 'Noto Sans KR', sans-serif; }
+#newsModal .btn { min-height: 44px; font-size: 16px; }
+#newsModal .cnt { font: 700 12px 'Noto Sans KR', sans-serif; color: var(--muted); }
+#newsModal .hint { margin: 0; font-size: 13px; color: var(--muted); }
+#bossBar { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; padding: 8px 10px; border: 3px solid var(--ink); border-radius: 12px; background: #dff3ff; color: var(--ink); }
+#bossBar[hidden] { display: none; }
+#bossBar img { flex: none; width: 46px; height: 46px; }
+#bossBar b { display: block; font-size: 15px; }
+#bossBar small { display: block; margin-top: 2px; font-size: 12px; font-weight: 700; opacity: 0.8; }
+#bossOv[hidden] { display: none; }
+#bsGo:disabled { opacity: 0.5; }
+#bsBody .csd b { color: #fff; }
+/* 주간 보스전: 패널 · 등장 연출 · 전투 분위기 */
+#bossOv .csp { position: relative; overflow: hidden; background: radial-gradient(120% 55% at 50% 0%, #21528f 0%, #112a52 46%, #0b1630 100%); animation: bsIn 0.55s cubic-bezier(0.2, 1.3, 0.4, 1) both; }
+#bossOv .csp::before { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: radial-gradient(60% 34% at 50% 8%, rgba(150, 222, 255, 0.32), transparent 72%); animation: bsBreath 3.2s ease-in-out infinite; }
+#bossOv .csp > .csh, #bossOv .csp > .css, #bossOv .csp > .csa { position: relative; z-index: 1; }
+@keyframes bsIn { 0% { transform: scale(0.86) translateY(26px); opacity: 0; filter: brightness(2.4); } 55% { filter: brightness(1.5); } 100% { transform: none; opacity: 1; filter: none; } }
+@keyframes bsBreath { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+#bsSnow { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+#bsSnow i { position: absolute; top: -12px; border-radius: 50%; background: #dff3ff; opacity: 0; animation: bsFall linear infinite; }
+@keyframes bsFall { 0% { transform: translate(0, -12px); opacity: 0; } 12% { opacity: 0.5; } 100% { transform: translate(var(--dx), 105vh); opacity: 0; } }
+#bossOv .csh .im { position: relative; animation: bsPulse 2.2s ease-in-out infinite; }
+#bossOv .csh .im::before { content: ''; position: absolute; inset: -6px; border-radius: 18px; border: 2px dashed rgba(170, 228, 255, 0.65); animation: bsSpin 10s linear infinite; pointer-events: none; }
+#bossOv .csh .im img { animation: bsFloat 3s ease-in-out infinite; }
+@keyframes bsPulse { 0%, 100% { box-shadow: 0 0 0 2px var(--ink), 0 0 10px rgba(130, 215, 255, 0.45); } 50% { box-shadow: 0 0 0 2px var(--ink), 0 0 24px rgba(160, 232, 255, 0.95); } }
+@keyframes bsSpin { to { transform: rotate(360deg); } }
+@keyframes bsFloat { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-3px) rotate(2deg); } }
+#bossOv .bsTr { display: flex; align-items: center; gap: 8px; }
+#bossOv .bsTag { display: inline-block; margin-right: 6px; padding: 0 6px; border-radius: 4px; border: 2px solid var(--ink); background: #e5322d; color: #fff; font: 900 10px/16px 'Noto Sans KR', sans-serif; letter-spacing: 0.12em; transform: skewX(-8deg); animation: bsTag 1.3s ease-in-out infinite; }
+@keyframes bsTag { 0%, 100% { filter: brightness(1); } 50% { filter: brightness(1.45); } }
+#bsI { flex: none; width: 22px; height: 22px; padding: 0; border-radius: 50%; border: 2px solid var(--ink); background: linear-gradient(#b9ecff, #5cbcf0); color: var(--ink); font: italic 900 13px/18px 'Noto Serif KR', Georgia, serif; text-align: center; }
+#bsI:active { transform: translateY(1px); }
+#bsBody .bsSt { animation: bsRow 0.4s cubic-bezier(0.2, 1.2, 0.4, 1) both; animation-delay: calc(0.22s + var(--i) * 0.09s); }
+@keyframes bsRow { from { opacity: 0; transform: translateX(-20px); } }
+#bsBody .bsSt .bsN { flex: none; width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; border: 2px solid var(--ink); background: var(--c); color: #fff; font: 900 13px 'Noto Sans KR', sans-serif; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.55); }
+#bsBody .bsSt em { color: #fff; background: var(--c); }
+#bsGo:not(:disabled) { animation: bsGlow 1.6s ease-in-out infinite; }
+@keyframes bsGlow { 0%, 100% { filter: drop-shadow(0 0 0 rgba(127, 216, 255, 0)); } 50% { filter: drop-shadow(0 0 9px rgba(127, 216, 255, 0.95)); } }
+#bsInfo { position: absolute; inset: 0; z-index: 4; display: flex; align-items: center; justify-content: center; padding: 12px; background: rgba(4, 8, 20, 0.82); }
+#bsInfo[hidden] { display: none; }
+#bsInfo .bsIb { width: 100%; max-height: 100%; overflow: hidden; display: flex; flex-direction: column; gap: 8px; padding: 14px; border: 3px solid var(--ink); border-radius: 12px; background: #13294d; animation: shPop 0.22s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+#bsInfo .bsIt { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 9px; padding-right: 2px; }
+#bsInfo .bsIt > * { flex: none; }
+#bsInfo .bsIt h5 { margin: 4px 0 0; font: 900 13px 'Noto Sans KR', sans-serif; color: #7fd8ff; }
+#bsInfo .bsIt p { margin: 0; font: 600 13px/1.55 'Noto Sans KR', sans-serif; color: var(--htx); }
+#bsInfo .bsIt b { color: #fff; }
+#bsIok { flex: none; align-self: center; min-width: 120px; height: 40px; border-radius: 8px; border: 3px solid var(--ink); background: linear-gradient(var(--hac2), var(--hac)); color: #0a1020; -webkit-text-stroke: 0; text-shadow: none; font: 900 14px 'Noto Sans KR', sans-serif; }
+#bossVig { position: fixed; inset: 0; z-index: 6; pointer-events: none; opacity: 0; transition: opacity 0.6s; background: radial-gradient(ellipse at center, transparent 52%, rgba(70, 150, 255, 0.34) 100%); }
+body.bossBt #bossVig { opacity: 1; animation: bsBreath 2.6s ease-in-out infinite; }
+body.boss #fill1 { background: linear-gradient(90deg, #9be6ff, #3d8cff); }
+body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; letter-spacing: 0.06em; }
+#bossIntro { position: fixed; inset: 0; z-index: 34; overflow: hidden; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at 50% 46%, rgba(30, 80, 150, 0.62), rgba(3, 6, 16, 0.94) 72%); --ac: #5cbcf0; animation: biBg 0.25s both, biShake var(--d) both; }
+#bossIntro[hidden] { display: none; }
+@keyframes biBg { from { opacity: 0; } }
+@keyframes biShake { 0%, 35% { transform: none; } 37% { transform: translate(-9px, 6px); } 39% { transform: translate(8px, -7px); } 41% { transform: translate(-6px, -4px); } 43% { transform: translate(5px, 4px); } 46%, 100% { transform: none; } }
+#bossIntro .bi-flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; animation: biFlash var(--d) both; }
+@keyframes biFlash { 0%, 35% { opacity: 0; } 38% { opacity: 0.9; } 58%, 100% { opacity: 0; } }
+#bossIntro .bi-tape { position: absolute; left: -5%; right: -5%; height: 46px; display: flex; align-items: center; overflow: hidden; background: repeating-linear-gradient(-45deg, #ffd23a 0 14px, #111 14px 28px); border-top: 3px solid #111; border-bottom: 3px solid #111; }
+#bossIntro .bi-tape.t { top: 17%; transform: rotate(-4deg); animation: biTapeL var(--d) both; }
+#bossIntro .bi-tape.b { bottom: 17%; transform: rotate(-4deg); animation: biTapeR var(--d) both; }
+@keyframes biTapeL { 0% { transform: translateX(-110%) rotate(-4deg); } 14% { transform: rotate(-4deg); } 86% { transform: rotate(-4deg); opacity: 1; } 100% { transform: translateX(10%) rotate(-4deg); opacity: 0; } }
+@keyframes biTapeR { 0% { transform: translateX(110%) rotate(-4deg); } 14% { transform: rotate(-4deg); } 86% { transform: rotate(-4deg); opacity: 1; } 100% { transform: translateX(-10%) rotate(-4deg); opacity: 0; } }
+#bossIntro .bi-tape span { flex: none; margin: 0 0 0 0; padding: 2px 10px; background: #111; color: #ffd23a; font: 900 22px/32px 'Black Han Sans', 'Noto Sans KR', sans-serif; letter-spacing: 0.16em; white-space: nowrap; animation: biScroll 1.4s linear infinite; }
+@keyframes biScroll { from { transform: translateX(0); } to { transform: translateX(-120px); } }
+#bossIntro .bi-main { position: relative; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; padding: 0 16px; }
+#bossIntro .bi-img { width: 148px; height: 148px; filter: drop-shadow(0 0 18px var(--ac)) drop-shadow(0 0 40px var(--ac)); animation: biSlam var(--d) both; }
+@keyframes biSlam { 0%, 35% { opacity: 0; transform: scale(3.4); } 39% { opacity: 1; transform: scale(0.88); } 45% { transform: scale(1.07); } 52%, 100% { transform: scale(1); } }
+#bossIntro .bi-nm { font: 400 46px/1.1 'Black Han Sans', 'Noto Sans KR', sans-serif; color: #fff; -webkit-text-stroke: 7px #0a1020; paint-order: stroke fill; text-shadow: 0 0 24px var(--ac); animation: biNm var(--d) both; }
+@keyframes biNm { 0%, 40% { opacity: 0; letter-spacing: -0.12em; transform: scaleY(1.5); } 52% { opacity: 1; letter-spacing: 0.28em; transform: none; } 100% { opacity: 1; letter-spacing: 0.2em; } }
+#bossIntro .bi-sub { padding: 3px 14px; border: 2px solid #0a1020; border-radius: 6px; background: var(--ac); color: #0a1020; font: 900 15px 'Noto Sans KR', sans-serif; animation: biSub var(--d) both; }
+@keyframes biSub { 0%, 52% { opacity: 0; transform: translateY(10px); } 62%, 100% { opacity: 1; transform: none; } }
+#bossIntro .bi-hint { font: 800 12px 'Noto Sans KR', sans-serif; color: #fff; opacity: 0.8; animation: biSub var(--d) both; }
+#bossIntro.rd .bi-tape { display: none; }
+#bossIntro.rd .bi-img { width: 104px; height: 104px; }
+#bossIntro.rd .bi-nm { font-size: 38px; }
+#bossFx { position: fixed; inset: 0; z-index: 31; pointer-events: none; overflow: hidden; }
+#bossFx i { position: absolute; left: 50%; top: 40%; width: 8px; height: 13px; border-radius: 2px; animation: bfx 1.5s cubic-bezier(0.15, 0.75, 0.4, 1) forwards; }
+@keyframes bfx { 0% { transform: translate(0, 0) rotate(0); opacity: 1; } 75% { opacity: 1; } 100% { transform: translate(var(--dx), var(--dy)) rotate(var(--r)); opacity: 0; } }
 #hmInv .cs { justify-content: center; align-items: center; padding: 10px; }
 #hmInv .csp { width: 100%; max-width: 480px; height: 100%; max-height: none; border-bottom: 4px solid var(--ink); border-radius: 14px; animation: shPop 0.25s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
 #hmCol { position: relative; flex: 1 1 0; min-height: 0; display: flex; flex-direction: column; background: var(--hbg); }
@@ -711,6 +819,8 @@ body.clsSel #hudBars { display: none; }
 #hmShop .shp { display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 10px; border: 3px solid var(--hbd); background: var(--hrow); }
 #hmShop .shp.on { border-color: var(--hac); }
 #hmShop .shp svg { flex: none; width: 40px; height: 40px; }
+#hmShop button.by.dia { margin-top: 2px; }
+#hmShop .shp > img { flex: none; width: 60px; height: 42px; object-fit: contain; }
 #hmShop .shp .tt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
 #hmShop .shp b { font: 900 14px 'Noto Sans KR', sans-serif; }
 #hmShop .shp small { font: 600 11px/1.45 'Noto Sans KR', sans-serif; color: var(--htx); white-space: pre-line; }
@@ -728,7 +838,10 @@ body.clsSel #hudBars { display: none; }
 @keyframes shPop { from { transform: scale(0.8); opacity: 0; } to { transform: none; opacity: 1; } }
 #hmShop .shl { display: flex; flex-direction: column; gap: 6px; }
 #hmShop .shr { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: 9px; border: 3px solid var(--rc, #3a4a7a); background: var(--hrow); }
-#hmShop .shr img { width: 44px; height: 44px; flex: none; }
+#hmShop .shr.in { animation: shrIn 0.5s ease-out both; }
+#hmShop .shr:not(.in) { opacity: 0; }
+@keyframes shrIn { 0% { opacity: 0; transform: scale(0.55); filter: brightness(3.2); } 22% { opacity: 1; transform: scale(1.1); filter: brightness(2.6); } 38% { opacity: 0.25; transform: scale(1.04); filter: brightness(3); } 55% { opacity: 1; transform: scale(1.03); filter: brightness(2); } 100% { opacity: 1; transform: scale(1); filter: brightness(1); } }
+#hmShop .shr img { width: 64px; height: 44px; flex: none; object-fit: contain; }
 #hmShop .shr b { display: block; font: 900 13px 'Noto Sans KR', sans-serif; }
 #hmShop .shr small { font: 600 11px 'Noto Sans KR', sans-serif; color: var(--hmu); }
 :is(#hmCol, #hmInv) .chd .r1 .ttl { margin-right: auto; }
@@ -736,7 +849,7 @@ body.clsSel #hudBars { display: none; }
 :is(#hmCol, #hmInv) .tkBtn.z { background: linear-gradient(var(--hb1), var(--hb2)); color: var(--hmu); box-shadow: none; }
 :is(#hmCol, #hmInv) .tkBtn:active { transform: translateY(2px); box-shadow: none; }
 :is(#hmCol, #hmInv) .tkr { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 9px; border: 3px solid var(--rc); background: var(--hrow); }
-:is(#hmCol, #hmInv) .tkr img { flex: none; width: 40px; height: 40px; }
+:is(#hmCol, #hmInv) .tkr img { flex: none; width: 64px; height: 43px; }
 :is(#hmCol, #hmInv) .tkr .tt { flex: 1; min-width: 0; font: 900 13px 'Noto Sans KR', sans-serif; }
 :is(#hmCol, #hmInv) .tkr .tt small { display: block; margin-top: 1px; font: 700 11px 'Noto Sans KR', sans-serif; color: var(--hmu); }
 :is(#hmCol, #hmInv) .tkr button { flex: none; min-width: 64px; height: 36px; padding: 0 10px; border-radius: 8px; border: 3px solid var(--ink); background: linear-gradient(var(--hac2), var(--hac)); color: var(--ink); font: 900 12px 'Noto Sans KR', sans-serif; box-shadow: inset 0 2px 0 rgba(255,255,255,0.6), 0 3px 0 var(--ink); }
@@ -758,6 +871,7 @@ body.clsSel #hudBars { display: none; }
 </style>
 
 <div class="app" id="app">
+  <div id="bossVig" aria-hidden="true"></div><div id="bossFx" aria-hidden="true"></div><div id="bossIntro" hidden></div>
   <div id="toast" hidden role="status" aria-live="polite"></div>
   <div id="rcBar" hidden role="status"></div>
   <button id="verBar" hidden type="button">새 버전이 나왔어요 · 눌러서 새로고침</button>
@@ -796,7 +910,7 @@ body.clsSel #hudBars { display: none; }
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v557</span>
+      <span class="verTag">v582</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -804,6 +918,7 @@ body.clsSel #hudBars { display: none; }
   <section id="setup" hidden>
     <div class="deckTabs" id="deckTabs" hidden role="group" aria-label="내 덱 (3캐릭터)"></div>
     <button class="btn" id="clsSpReset" hidden>스펠 전체 초기화</button>
+    <div id="bossBar" hidden></div>
     <div class="players" id="players"></div>
     <span class="lbl" id="arLbl">경기장</span>
     <div class="arenas" id="arenas" role="group" aria-label="경기장"></div>
@@ -858,16 +973,17 @@ body.clsSel #hudBars { display: none; }
       <button type="button" class="hav" id="hmAv" aria-label="프로필"><svg width="32" height="32" viewBox="0 0 120 120" aria-hidden="true"><g transform="rotate(-38 60 60)"><path d="M60 4L68 24L65 64H55L52 24Z" fill="#fff" stroke="#0a1020" stroke-width="6" stroke-linejoin="round"/></g><circle cx="60" cy="60" r="36" fill="#9aa6bb" stroke="#0a1020" stroke-width="7"/><circle cx="60" cy="60" r="15" fill="#f6c915" stroke="#0a1020" stroke-width="6"/></svg></button>
       <div class="hnm"><b class="tx" id="hmNick">손님</b><span class="htr"><svg viewBox="0 0 32 32" aria-hidden="true"><defs><linearGradient id="trg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffe98a"/><stop offset=".5" stop-color="#ffc61a"/><stop offset="1" stop-color="#e08e00"/></linearGradient><linearGradient id="trb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a7fb0"/><stop offset="1" stop-color="#34446e"/></linearGradient></defs><path d="M9 7H4v3.5c0 3.6 2.6 6 6 6.4M23 7h5v3.5c0 3.6-2.6 6-6 6.4" fill="none" stroke="#0a1020" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M9 7H4v3.5c0 3.6 2.6 6 6 6.4M23 7h5v3.5c0 3.6-2.6 6-6 6.4" fill="none" stroke="#f0a800" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.5 3h17v10.5a8.5 8.5 0 0 1-17 0z" fill="url(#trg)" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M13 20.5h6l1.4 4.5h-8.8z" fill="#e08e00" stroke="#0a1020" stroke-width="2.4" stroke-linejoin="round"/><rect x="8" y="25" width="16" height="4.6" rx="1.6" fill="url(#trb)" stroke="#0a1020" stroke-width="2.4"/><path d="M16 7l1.7 3.5 3.8.5-2.8 2.6.7 3.8-3.4-1.9-3.4 1.9.7-3.8-2.8-2.6 3.8-.5z" fill="#fff4b8" stroke="#b8780a" stroke-width="1.1" stroke-linejoin="round"/><path d="M10.5 5.5v7c0 1.3.4 2.4 1 3.3" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" opacity=".75"/></svg><span class="tx" id="hmTr">0</span></span></div>
       <div class="hchip"><svg viewBox="0 0 30 30" aria-hidden="true"><defs><linearGradient id="cog" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff08a"/><stop offset=".55" stop-color="#ffc61a"/><stop offset="1" stop-color="#e08e00"/></linearGradient></defs><circle cx="15" cy="16" r="13" fill="#a86a00"/><circle cx="15" cy="15" r="13" fill="url(#cog)" stroke="#0a1020" stroke-width="2.8"/><circle cx="15" cy="15" r="9.2" fill="#f6b300" stroke="#b8780a" stroke-width="1.8"/><path d="M15 8.6l1.9 4 4.3.5-3.2 2.9.9 4.3-3.9-2.2-3.9 2.2.9-4.3-3.2-2.9 4.3-.5z" fill="#fff4b8" stroke="#b8780a" stroke-width="1" stroke-linejoin="round"/><path d="M6.4 10.5A9.6 9.6 0 0 1 11 6" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".85"/></svg><span class="tx" id="hmCoin">0</span></div>
-      <div class="hchip"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M8 5h14l7 8.5L15 28 1 13.5z" fill="#0a1020" stroke="#0a1020" stroke-width="3" stroke-linejoin="round" transform="translate(0 1)"/><path d="M8 5h14l7 8.5L15 28 1 13.5z" fill="#35b8f2" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M1 13.5L8 5l3.5 8.5z" fill="#9fe6ff"/><path d="M8 5h14l-3.5 8.5h-7z" fill="#d6f6ff"/><path d="M22 5l7 8.5h-10.5z" fill="#62cdfa"/><path d="M1 13.5h10.5L15 28z" fill="#2a9ae0"/><path d="M11.5 13.5h7L15 28z" fill="#4fc0f6"/><path d="M18.5 13.5H29L15 28z" fill="#1b78c8"/><path d="M8 5l3.5 8.5L15 28 18.5 13.5 22 5M1 13.5h28" fill="none" stroke="#0a1020" stroke-width="1.3" stroke-linejoin="round" opacity=".55"/><path d="M8 5h14l7 8.5L15 28 1 13.5z" fill="none" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M10.5 8.5l-2 3" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg><span class="tx">0</span></div>
+      <div class="hchip"><svg viewBox="0 0 30 30" aria-hidden="true"><path d="M8 5h14l7 8.5L15 28 1 13.5z" fill="#0a1020" stroke="#0a1020" stroke-width="3" stroke-linejoin="round" transform="translate(0 1)"/><path d="M8 5h14l7 8.5L15 28 1 13.5z" fill="#35b8f2" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M1 13.5L8 5l3.5 8.5z" fill="#9fe6ff"/><path d="M8 5h14l-3.5 8.5h-7z" fill="#d6f6ff"/><path d="M22 5l7 8.5h-10.5z" fill="#62cdfa"/><path d="M1 13.5h10.5L15 28z" fill="#2a9ae0"/><path d="M11.5 13.5h7L15 28z" fill="#4fc0f6"/><path d="M18.5 13.5H29L15 28z" fill="#1b78c8"/><path d="M8 5l3.5 8.5L15 28 18.5 13.5 22 5M1 13.5h28" fill="none" stroke="#0a1020" stroke-width="1.3" stroke-linejoin="round" opacity=".55"/><path d="M8 5h14l7 8.5L15 28 1 13.5z" fill="none" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M10.5 8.5l-2 3" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg><span class="tx" id="hmGem">0</span></div>
       <button type="button" class="hgear" id="hmGear" aria-label="설정">⚙</button>
     </header>
+    <div class="hnews" id="hmNews" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9v6h4l6 4V5L7 9z" fill="#ffd23a" stroke="#0a1020" stroke-width="2" stroke-linejoin="round"/><path d="M16.5 8.5c1.4 1 1.4 6 0 7" fill="none" stroke="#ffd23a" stroke-width="2" stroke-linecap="round"/></svg><div class="nv"><span class="nt" id="hmNewsT"></span></div><span class="ed" id="hmNewsEd" hidden>✎</span></div>
     <main class="hmain">
       <div class="htop">
       <div class="hcards">
         <button type="button" class="hcard" id="hmBoxCard" data-soon="상자"><svg width="30" height="27" viewBox="0 0 40 36" aria-hidden="true"><defs><linearGradient id="cbw" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c98c52"/><stop offset="1" stop-color="#8a5630"/></linearGradient><linearGradient id="cbg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe46a"/><stop offset="1" stop-color="#e09a00"/></linearGradient></defs><ellipse cx="20" cy="33" rx="16" ry="2.4" fill="#000" opacity=".25"/><path d="M4 16a16 11 0 0 1 32 0v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z" fill="url(#cbw)" stroke="#0a1020" stroke-width="3" stroke-linejoin="round"/><path d="M4 18h32" stroke="#0a1020" stroke-width="3"/><path d="M4 24h32" stroke="#5e3a1c" stroke-width="1.2" opacity=".7"/><path d="M11 7.4V31M29 7.4V31" stroke="#0a1020" stroke-width="6"/><path d="M11 7.4V31M29 7.4V31" stroke="url(#cbg)" stroke-width="3.2"/><rect x="16" y="14" width="8" height="10" rx="2" fill="url(#cbg)" stroke="#0a1020" stroke-width="2.6"/><circle cx="20" cy="18.4" r="1.5" fill="#0a1020"/><path d="M20 19v3" stroke="#0a1020" stroke-width="1.6" stroke-linecap="round"/><path d="M7.5 12.5a13 8 0 0 1 6-4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" fill="none" opacity=".6"/></svg><span class="ct"><b>상자</b><span class="cs" id="hmBoxCs">오늘 0/10판</span></span><span class="cb" id="hmBoxCb">없음</span></button>
         <button type="button" class="hcard" data-soon="퀘스트"><svg width="26" height="28" viewBox="0 0 34 38" aria-hidden="true"><defs><linearGradient id="cqp" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6d8"/><stop offset="1" stop-color="#ecd49a"/></linearGradient></defs><path d="M8 4h19a2 2 0 0 1 2 2v26a3 3 0 0 1-3 3H10a3 3 0 0 1-3-3V5z" fill="url(#cqp)" stroke="#0a1020" stroke-width="3" stroke-linejoin="round"/><path d="M4 7a3 3 0 0 1 6 0v1H4z" fill="#c9a25f" stroke="#0a1020" stroke-width="2.4" stroke-linejoin="round"/><path d="M12.5 12.5l2 2 3.6-4" fill="none" stroke="#2fb857" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M20 13h5" stroke="#8b6a3a" stroke-width="2.2" stroke-linecap="round"/><path d="M12.5 21.5l2 2 3.6-4" fill="none" stroke="#2fb857" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" opacity=".35"/><path d="M20 22h5" stroke="#8b6a3a" stroke-width="2.2" stroke-linecap="round"/><path d="M12.5 29h6" stroke="#8b6a3a" stroke-width="2.2" stroke-linecap="round" opacity=".6"/></svg><span class="ct"><b>오늘의 퀘스트</b><span class="hbarq"><span class="tx">준비 중</span></span></span></button>
       </div>
-      <div class="hside"><button type="button" class="hsb" data-soon="메일함"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 8.5h25a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-25a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2z" fill="#fff6dc" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M2.500 10l13.500 9.500L29.500 10" fill="none" stroke="#0a1020" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M2.800 24.500l9-8M29.200 24.500l-9-8" stroke="#c9a25f" stroke-width="1.6" stroke-linecap="round"/><circle cx="25" cy="8.500" r="0" fill="none"/></svg><span>메일함</span></button><button type="button" class="hsb" data-soon="보관함"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M9 11a7 7 0 0 1 14 0" fill="none" stroke="#0a1020" stroke-width="5" stroke-linecap="round"/><path d="M9 11a7 7 0 0 1 14 0" fill="none" stroke="#c98c52" stroke-width="2" stroke-linecap="round"/><path d="M5 13.5a3 3 0 0 1 3-3h16a3 3 0 0 1 3 3V27a2.5 2.5 0 0 1-2.5 2.5h-17A2.5 2.5 0 0 1 5 27z" fill="#e0a05a" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M5 17h22" stroke="#0a1020" stroke-width="2.4"/><rect x="12.5" y="14.5" width="7" height="6" rx="1.4" fill="#ffd23a" stroke="#0a1020" stroke-width="2"/><path d="M8 12.5h5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".7"/></svg><span>보관함</span></button><button type="button" class="hsb" data-soon="소셜"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="21.5" cy="11" r="5" fill="#ffb36b" stroke="#0a1020" stroke-width="2.4"/><path d="M12.5 27a9 8 0 0 1 18 0z" fill="#ff7a4a" stroke="#0a1020" stroke-width="2.4" stroke-linejoin="round"/><circle cx="11" cy="12.5" r="5.4" fill="#ffd0a0" stroke="#0a1020" stroke-width="2.4"/><path d="M1.5 29a9.5 8.5 0 0 1 19 0z" fill="#3d8bff" stroke="#0a1020" stroke-width="2.4" stroke-linejoin="round"/><path d="M8 10.5a4 3 0 0 1 4-1.8" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity=".8"/></svg><span>소셜</span></button><button type="button" class="hsb" data-soon="길드"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2.5l11 3.4v9.4c0 7-4.6 11.4-11 14.2C9.6 26.700 5 22.300 5 15.300V5.900z" fill="#8a5cf0" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M16 5.500l8 2.500v7.200c0 5.300-3.300 8.700-8 11z" fill="#a98bff"/><path d="M16 9.500l2.100 4.300 4.700.7-3.400 3.300.8 4.700-4.200-2.200-4.200 2.200.8-4.700-3.400-3.300 4.700-.7z" fill="#ffd23a" stroke="#0a1020" stroke-width="1.6" stroke-linejoin="round"/></svg><span>길드</span></button></div>
+      <div class="hside l"><button type="button" class="hsb" data-soon="진보스전"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 22.500l22 7M27 22.500l-22 7" stroke="#0a1020" stroke-width="5" stroke-linecap="round"/><path d="M5 22.500l22 7M27 22.500l-22 7" stroke="#b9b09c" stroke-width="2.400" stroke-linecap="round"/><path d="M6.500 13.500a9.500 9.500 0 0 1 19 0v4.500a3 3 0 0 1-3 3v3h-13v-3a3 3 0 0 1-3-3z" fill="#b9b09c" stroke="#0a1020" stroke-width="2.400" stroke-linejoin="round"/><ellipse cx="11.800" cy="14.200" rx="3" ry="3.400" fill="#0a0612"/><ellipse cx="20.200" cy="14.200" rx="3" ry="3.400" fill="#0a0612"/><circle cx="11.800" cy="15.200" r="1.200" fill="#b57bff"/><circle cx="20.200" cy="15.200" r="1.200" fill="#b57bff"/><path d="M16 17.500l-1.600 2.800h3.200z" fill="#0a0612"/><path d="M12.800 21.500v2.500M16 21.500v2.500M19.200 21.500v2.500" stroke="#0a1020" stroke-width="1.300" stroke-linecap="round"/><path d="M17.800 4.500l-1.800 4.200 2.800 2.400-2.200 3.600" fill="none" stroke="#14101a" stroke-width="1.700" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.200 10.500l2.800 2-1.200 3.200" fill="none" stroke="#14101a" stroke-width="1.400" stroke-linecap="round" stroke-linejoin="round"/></svg><span>진보스전</span></button><button type="button" class="hsb" data-soon="보스전"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 22.500l22 7M27 22.500l-22 7" stroke="#0a1020" stroke-width="5" stroke-linecap="round"/><path d="M5 22.500l22 7M27 22.500l-22 7" stroke="#efe6cf" stroke-width="2.400" stroke-linecap="round"/><path d="M6.500 13.500a9.500 9.500 0 0 1 19 0v4.500a3 3 0 0 1-3 3v3h-13v-3a3 3 0 0 1-3-3z" fill="#f3ecd9" stroke="#0a1020" stroke-width="2.400" stroke-linejoin="round"/><ellipse cx="11.800" cy="14.200" rx="3" ry="3.400" fill="#0a1020"/><ellipse cx="20.200" cy="14.200" rx="3" ry="3.400" fill="#0a1020"/><circle cx="11.800" cy="15.200" r="1.100" fill="#ff4a3a"/><circle cx="20.200" cy="15.200" r="1.100" fill="#ff4a3a"/><path d="M16 17.500l-1.600 2.800h3.200z" fill="#0a1020"/><path d="M12.800 21.500v2.500M16 21.500v2.500M19.200 21.500v2.500" stroke="#0a1020" stroke-width="1.300" stroke-linecap="round"/><path d="M9.500 8.500a8 8 0 0 1 4-2.200" fill="none" stroke="#fff" stroke-width="1.500" stroke-linecap="round" opacity=".85"/></svg><span>보스전</span></button><button type="button" class="hsb" data-soon="승부장"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 3.500a12.500 12.500 0 0 0 0 25z" fill="#e8504a"/><path d="M16 3.500a12.500 12.500 0 0 1 0 25z" fill="#3d8bf0"/><circle cx="16" cy="16" r="12.500" fill="none" stroke="#0a1020" stroke-width="2.6"/><text x="16" y="20.500" text-anchor="middle" font-size="11" font-weight="900" font-family="Noto Sans KR, sans-serif" fill="#fff" stroke="#0a1020" stroke-width="2.600" paint-order="stroke" stroke-linejoin="round">VS</text></svg><span>승부장</span></button></div><div class="hside"><button type="button" class="hsb" data-soon="메일함"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3.5 8.5h25a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2h-25a2 2 0 0 1-2-2v-13a2 2 0 0 1 2-2z" fill="#fff6dc" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M2.500 10l13.500 9.500L29.500 10" fill="none" stroke="#0a1020" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/><path d="M2.800 24.500l9-8M29.200 24.500l-9-8" stroke="#c9a25f" stroke-width="1.6" stroke-linecap="round"/><circle cx="25" cy="8.500" r="0" fill="none"/></svg><span>메일함</span></button><button type="button" class="hsb" data-soon="보관함"><svg viewBox="0 6 32 25" aria-hidden="true"><path d="M5 13.5a3 3 0 0 1 3-3h16a3 3 0 0 1 3 3V27a2.5 2.5 0 0 1-2.5 2.5h-17A2.5 2.5 0 0 1 5 27z" fill="#e0a05a" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M5 17h22" stroke="#0a1020" stroke-width="2.4"/><rect x="12.5" y="14.5" width="7" height="6" rx="1.4" fill="#ffd23a" stroke="#0a1020" stroke-width="2"/><path d="M8 12.5h5" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".7"/></svg><span>보관함</span></button><button type="button" class="hsb" data-soon="소셜"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="21.5" cy="11" r="5" fill="#ffb36b" stroke="#0a1020" stroke-width="2.4"/><path d="M12.5 25.5a9 8 0 0 1 18 0z" fill="#ff7a4a" stroke="#0a1020" stroke-width="2.4" stroke-linejoin="round"/><circle cx="11" cy="12.5" r="5.4" fill="#ffd0a0" stroke="#0a1020" stroke-width="2.4"/><path d="M1.5 28a9.5 8.5 0 0 1 19 0z" fill="#3d8bff" stroke="#0a1020" stroke-width="2.4" stroke-linejoin="round"/><path d="M8 10.5a4 3 0 0 1 4-1.8" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" opacity=".8"/></svg><span>소셜</span></button><button type="button" class="hsb" data-soon="길드"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 2.5l11 3.4v9.4c0 7-4.6 11.4-11 14.2C9.6 26.700 5 22.300 5 15.300V5.900z" fill="#8a5cf0" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M16 5.500l8 2.500v7.200c0 5.300-3.300 8.700-8 11z" fill="#a98bff"/><path d="M16 9.500l2.100 4.300 4.700.7-3.400 3.300.8 4.700-4.200-2.200-4.200 2.200.8-4.700-3.400-3.300 4.700-.7z" fill="#ffd23a" stroke="#0a1020" stroke-width="1.6" stroke-linejoin="round"/></svg><span>길드</span></button></div>
       </div>
       <div class="hmid">
         <div class="harena" id="hmSlot">
@@ -911,6 +1027,15 @@ body.clsSel #hudBars { display: none; }
           <div class="csa" id="tkAct" hidden><div class="at" id="tkAt"></div><button type="button" id="tkGo">받기</button></div>
         </div>
       </div>
+    <div class="cs" id="bossOv" hidden>
+      <div class="csp" role="dialog" aria-label="주간 보스전">
+        <div id="bsSnow" aria-hidden="true"></div>
+        <div class="csh" id="bsHd"><div class="im"><img id="bsImg" alt=""></div><div><div class="bsTr"><div class="tx nm">주간 보스전</div><button type="button" id="bsI" aria-label="보스전 설명">i</button></div><div class="st"><span class="bsTag">BOSS</span><span class="rp" id="bsRp"></span><span id="bsLeft"></span></div></div><button type="button" class="csx" id="bsX" aria-label="닫기">✕</button></div>
+        <div class="css" id="bsBody"></div>
+        <div class="csa"><div class="at" id="bsAt"></div><button type="button" id="bsGo">도전하기</button></div>
+        <div id="bsInfo" hidden><div class="bsIb"><div class="tx nm" style="font-size:20px">주간 보스전이란?</div><div class="bsIt" id="bsIt"></div><button type="button" id="bsIok">확인</button></div></div>
+      </div>
+    </div>
     </div>
     <nav class="hnav" aria-label="주요 메뉴">
       <button type="button" data-hn="shop"><svg width="46" height="42" viewBox="0 0 56 50" aria-hidden="true"><defs>
@@ -1083,11 +1208,24 @@ body.clsSel #hudBars { display: none; }
       <div class="row" id="accRow2" hidden><span class="nm">계정<small id="accInfo2"></small></span><button type="button" class="tog" id="accBtn2">열기</button></div>
       <div class="row"><span class="nm">닉네임<small id="nickMsg">온라인에서 상대·관전자에게 보여요</small><small class="cmdTag" id="cmdTag2" hidden>✦ 제작자 권한 · 닉네임 "유령" 사용 가능</small></span>
         <span class="cpn"><input id="nickSet" type="text" maxlength="10" autocomplete="off" spellcheck="false" placeholder="닉네임" aria-label="닉네임"><button type="button" class="tog" id="nickBtn">저장</button></span></div>
-      <div class="row"><span class="nm">쿠폰<small id="cpnMsg">코드를 넣으면 새 무기가 열려요</small></span>
+      <div class="row"><span class="nm">쿠폰<small id="cpnMsg">코드를 넣으면 캐릭터·재능·스펠이 열려요</small></span>
         <span class="cpn"><input id="cpnIn" type="text" maxlength="24" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" placeholder="코드" aria-label="쿠폰 코드"><button type="button" class="tog" id="cpnBtn">적용</button></span></div>
       <div class="row"><span class="nm">도움말<small>상태이상 · 버프 설명</small></span>
         <button type="button" class="tog" id="helpBtn">보기</button></div>
+      <div class="row"><span class="nm">빨간 점 테스트<small>눌러서 해당 버튼에 레드닷을 켜고 꺼요</small></span>
+        <button type="button" class="tog" id="dotAll">전부 켜기</button></div>
+      <div id="dotGrid"></div>
       <button class="btn primary" id="closeSet">닫기</button>
+    </div>
+  </div>
+  <div class="modal" id="newsModal" hidden style="z-index:24">
+    <div class="sheet" role="dialog" aria-label="공지 쓰기">
+      <h2>공지 쓰기</h2>
+      <p class="hint">홈 화면 맨 위 배너에 모든 유저에게 보여요. 길면 옆으로 흘러가요. 비워서 올리면 배너가 사라져요.</p>
+      <textarea id="newsIn" maxlength="200" rows="4" placeholder="공지 내용 (최대 200자)" aria-label="공지 내용"></textarea>
+      <div class="row"><span class="cnt" id="newsCnt">0/200</span></div>
+      <div class="row"><button type="button" class="btn" id="newsDel">지우기</button><button type="button" class="btn primary" id="newsSave">올리기</button></div>
+      <button type="button" class="btn" id="newsX">닫기</button>
     </div>
   </div>
   <div class="modal" id="helpModal" hidden style="z-index:21">
@@ -1421,15 +1559,15 @@ var DM = (function () {
   };
   var RAR = { halberd: 0, selene: 6, sisyphus: 6, boomerang: 1, archmage: 5, morrigan: 6, chronos: 6, snake: 6, chef: 5, lightning: 5, rusty: 1, cannon: 2, laser: 2, shuriken: 2, greatbow: 2, hammer: 1, whip: 1, handfan: 2, giant: 1, beast: 3, gumiho: 5, sulnyeo: 5, trumpet: 1, ash: 6, sword: 0, dummy: 0, dagger: 0, bow: 0, spear: 0, fire: 2, ice: 2, azure: 2, dark: 3, great: 0, robin: 3, angler: 3, vampire: 4, scythe: 4, dancer: 3, hyup: 3, ronin: 3, master: 4, katana: 5, torch: 5, holy: 5, tactician: 4, freak: 4, fighter: 1, dbaxe: 1, rapier: 2, pickaxe: 1, tycoon: 4, extg: 2, michael: 6, mace: 0, elf: 1, sniper: 1, witch: 5, guard: 3, silver: 2, black: 6, plague: 3, songwriter: 1, revolver: 4, thunder: 2, axe: 0, magician: 4, bounty: 4, paewang: 6 };
   var RAR_INFO = [{ n: '일반', c: '#8b94a1' }, { n: '희귀', c: '#2fb857' }, { n: '초희귀', c: '#3d8bff' }, { n: '영웅', c: '#a05cf0' }, { n: '신화', c: '#e8383d' }, { n: '전설', c: '#ffc21a' }, { n: '태고', c: '#3a2a5e' }];
-  /* 쿠폰: 기본은 일반~영웅(등급 0~3). 로그인한 계정이 코드를 넣으면(서버가 코드를 확인) 신화·전설·태고 등급이 계정에 저장돼서 어느 기기에서든 열린다.
-     acct.me.g = 서버가 알려 준 열린 권한 ['r4','r5','r6','cmd'] — 손님은 모두 잠김 */
+  /* 쿠폰: 로그인한 계정이 코드를 넣으면(서버가 코드를 확인) 등급 묶음이 계정에 저장돼서 어느 기기에서든 열린다. spinclash=rA(일반~전설) · beta30=rB(태고)
+     acct.me.g = 서버가 알려 준 열린 권한 ['rA'(일반~전설 전부),'rB'(태고),'cmd'] — 손님은 모두 잠김 */
   var acct = { tk: '', me: null, mail: false, busy: false, view: 'out', tab: 'login', rst: '' };
   var accBoot = false;   // 저장된 로그인으로 /api/me 확인 중일 때는 잠긴 무기 선택을 건드리지 않는다
-  var GRANT_NAME = { r4: '신화', r5: '전설', r6: '태고' };
+  var GRANT_NAME = { rA: '일반~전설', rB: '태고' };
   function grantHas(g) { return !!(acct.me && acct.me.g && acct.me.g.indexOf(g) >= 0); }
-  function rarOpen(r) { return r < 4 || grantHas('r' + r); }
-  /* 소유 체크: 시작은 검·단검·활뿐. 상자·토큰으로 얻거나, 쿠폰(test: 일반~영웅 / 서버 쿠폰: 신화·전설·태고)으로 열린다. 오프라인·온라인 선택 화면 모두 이걸 쓴다 */
-  function charGranted(t) { var r = RAR[t]; return r < 4 ? !!eco.test : grantHas('r' + r); }
+  function rarOpen(r) { return grantHas(r < 6 ? 'rA' : 'rB'); }
+  /* 소유 체크: 시작은 검·단검·활뿐. 상자·토큰으로 얻거나, 서버 쿠폰(spinclash=일반~전설 · beta30=태고)으로 캐릭터·재능·스펠이 전부 열린다. 오프라인·온라인 선택 화면 모두 이걸 쓴다 */
+  function charGranted(t) { return grantHas((RAR[t] || 0) < 6 ? 'rA' : 'rB'); }
   function charOwned(t) { return !!eco.own[t] || charGranted(t); }
   function talOwned(t, i) { return charGranted(t) || (eco.tal[t + ':' + i] || 0) > 0; }
   function splOwned(t, k) { return k === 'none' || charGranted(t) || (eco.spl[t + ':' + k] || 0) > 0; }
@@ -1621,7 +1759,7 @@ var DM = (function () {
   }
   function snd(fn) { if (!soundOn || demo) return; var c = audio(); if (!c) return; var sr = Math.random; Math.random = FXR; try { fn(c, c.currentTime); } catch (e) { if (window.__sndErr) window.__sndErr.push(String(e)); } finally { Math.random = sr; } }
   /* UI 효과음: 데모 화면(무음)에서도 울리도록 snd를 거치지 않음 */
-  function ui(fn) { if (!soundOn) return; var c = audio(); if (!c) return; try { fn(c, c.currentTime); } catch (e) {} }
+  function ui(fn) { if (!soundOn) return; var c = audio(); if (!c) return; try { fn(c, c.currentTime); } catch (e) { if (window.__sndErr) window.__sndErr.push(String(e)); } }
   function uiTick(p) { ui(function (c, t) { var f = 640 * (p || 1) * (1 + (Math.random() - 0.5) * 0.04); tone(c, t, 'square', f, f * 1.5, 0.06, 0.07); tone(c, t, 'triangle', f * 2, f * 2, 0.05, 0.05); noise(c, t, 0.02, 0.05, 5000); }); }
   function uiPing() { ui(function (c, t) { tone(c, t, 'sine', 880, 880, 0.14, 0.13); tone(c, t + 0.11, 'sine', 1320, 1320, 0.22, 0.13); tone(c, t + 0.11, 'triangle', 660, 660, 0.22, 0.08); }); }
   function uiBack() { ui(function (c, t) { tone(c, t, 'square', 600, 380, 0.09, 0.07); tone(c, t + 0.05, 'triangle', 420, 280, 0.1, 0.07); }); }
@@ -1679,6 +1817,78 @@ var DM = (function () {
     try { g.gain.cancelScheduledValues(c.currentTime); g.gain.setValueAtTime(Math.max(0.0001, g.gain.value), c.currentTime); g.gain.linearRampToValueAtTime(0.0001, c.currentTime + 0.6); } catch (e) {}
     setTimeout(function () { try { g.disconnect(); } catch (e) {} }, 900);
   }
+  /* ── 보스전 소리: 전투 BGM(직접 합성) + 등장·승리·격파·패배 효과음 ── */
+  var bbg = { on: false, timer: null, next: 0, step: 0, gain: null, six: 0.1 };
+  var BB_BPM = [150, 160, 172];   /* 판이 올라갈수록 빨라진다 */
+  var BB_ROOT = [82.41, 82.41, 65.41, 73.42, 82.41, 82.41, 65.41, 61.74];
+  var BB_CH = [[164.81, 196, 246.94], [164.81, 196, 246.94], [130.81, 164.81, 196], [146.83, 185, 220], [164.81, 196, 246.94], [164.81, 196, 246.94], [130.81, 164.81, 196], [123.47, 155.56, 185]];
+  var BB_MEL = [[0, 659.25, 4], [4, 783.99, 2], [6, 739.99, 2], [8, 659.25, 4], [12, 587.33, 4], [16, 659.25, 4], [20, 783.99, 2], [22, 987.77, 2], [24, 880, 6], [30, 783.99, 2],
+    [32, 783.99, 4], [36, 659.25, 2], [38, 523.25, 2], [40, 659.25, 4], [44, 783.99, 4], [48, 739.99, 4], [52, 587.33, 2], [54, 739.99, 2], [56, 880, 8],
+    [64, 987.77, 4], [68, 880, 2], [70, 783.99, 2], [72, 880, 4], [76, 987.77, 4], [80, 1174.66, 4], [84, 987.77, 2], [86, 880, 2], [88, 783.99, 6], [94, 739.99, 2],
+    [96, 783.99, 4], [100, 880, 4], [104, 1046.5, 4], [108, 987.77, 4], [112, 987.77, 4], [116, 932.33, 2], [118, 987.77, 2], [120, 1174.66, 8]];
+  function bbNote(c, type, f, t, dur, gain, lp) {
+    var o = c.createOscillator(), g = c.createGain(), fl = c.createBiquadFilter();
+    o.type = type; o.frequency.value = f; fl.type = 'lowpass'; fl.frequency.value = lp || 4000;
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(gain, t + 0.012); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(fl); fl.connect(g); g.connect(bbg.gain); o.start(t); o.stop(t + dur + 0.05);
+  }
+  function bbDrum(c, t, kind) {
+    var o, g;
+    if (kind === 'k' || kind === 't' || kind === 'm') {
+      o = c.createOscillator(); g = c.createGain(); o.type = 'sine';
+      var f0 = kind === 't' ? 118 : kind === 'm' ? 210 : 165, f1 = kind === 't' ? 36 : kind === 'm' ? 95 : 44, d = kind === 't' ? 0.42 : kind === 'm' ? 0.16 : 0.16, v = kind === 't' ? 0.6 : kind === 'm' ? 0.3 : 0.5;
+      o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f1, t + d * 0.8);
+      g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.0001, t + d); o.connect(g); g.connect(bbg.gain); o.start(t); o.stop(t + d + 0.05);
+    } else noise(c, t, kind === 's' ? 0.14 : 0.03, kind === 's' ? 0.2 : 0.05, kind === 's' ? 1400 : 7500, bbg.gain);
+  }
+  function bbgStep(c, st, t) {
+    var bar = Math.floor(st / 16) % 8, k = st % 16, i, r = BB_ROOT[bar], six = bbg.six;
+    if (k === 0) { BB_CH[bar].forEach(function (f) { bbNote(c, 'sawtooth', f, t, six * 15.5, 0.02, 700); bbNote(c, 'triangle', f * 2, t, six * 15.5, 0.02, 1700); }); bbDrum(c, t, 't'); }
+    if (k % 2 === 0) bbNote(c, 'sawtooth', (k === 6 || k === 14) ? r * 2 : r, t, six * 1.8, 0.17, 440);
+    if (k === 0 || k === 8 || (k === 10 && bar % 2)) bbDrum(c, t, 'k');
+    if (k === 4 || k === 12) bbDrum(c, t, 's');
+    if (k % 2 === 0) bbDrum(c, t, 'h');
+    if (bar % 4 === 3 && k >= 13) bbDrum(c, t, 'm');
+    if (k % 3 === 0) bbNote(c, 'sine', BB_CH[bar][(k / 3 | 0) % 3] * 4, t, six * 2.2, 0.022, 6000);
+    for (i = 0; i < BB_MEL.length; i++) if (BB_MEL[i][0] === st) { bbNote(c, 'sawtooth', BB_MEL[i][1], t, six * BB_MEL[i][2] * 0.95, 0.07, 2400); bbNote(c, 'square', BB_MEL[i][1] * 2, t, six * BB_MEL[i][2] * 0.5, 0.012, 3000); }
+  }
+  function bbgTick() {
+    var c = actx; if (!c || !bbg.on) return;
+    if (bbg.next < c.currentTime - 0.5) bbg.next = c.currentTime + 0.05;
+    while (bbg.next < c.currentTime + 0.3) { bbgStep(c, bbg.step, bbg.next); bbg.next += bbg.six; bbg.step = (bbg.step + 1) % 128; }
+  }
+  function bbgStart(stage) {
+    if (bbg.on || !soundOn || !userActive) return;
+    var c = audio(); if (!c) return;
+    bbg.on = true; bbg.six = 60 / BB_BPM[Math.max(0, Math.min(2, stage | 0))] / 4; bbg.gain = c.createGain();
+    bbg.gain.gain.setValueAtTime(0.0001, c.currentTime); bbg.gain.gain.linearRampToValueAtTime(0.4, c.currentTime + 0.5);
+    bbg.gain.connect(c.destination); bbg.next = c.currentTime + 0.08; bbg.step = 0; bbg.timer = setInterval(bbgTick, 80); bbgTick();
+  }
+  function bbgStop() {
+    if (!bbg.on) return;
+    bbg.on = false; clearInterval(bbg.timer); var g = bbg.gain, c = actx;
+    try { g.gain.cancelScheduledValues(c.currentTime); g.gain.setValueAtTime(Math.max(0.0001, g.gain.value), c.currentTime); g.gain.linearRampToValueAtTime(0.0001, c.currentTime + 0.45); } catch (e) {}
+    setTimeout(function () { try { g.disconnect(); } catch (e) {} }, 800);
+  }
+  function bbgDuck(on) { if (!bbg.on || !actx) return; try { var g = bbg.gain.gain; g.cancelScheduledValues(actx.currentTime); g.setValueAtTime(Math.max(0.0001, g.value), actx.currentTime); g.linearRampToValueAtTime(on ? 0.1 : 0.4, actx.currentTime + 0.25); } catch (e) {} }
+  /* 패널을 열 때: 얼음 종소리 + 낮은 울림 */
+  function sfxBossOpen() { ui(function (c, t) { [1568, 2093, 2637, 3136].forEach(function (f, i) { tone(c, t + i * 0.07, 'sine', f, f, 0.5, 0.06); }); tone(c, t, 'sine', 58, 38, 0.7, 0.3); tone(c, t, 'sawtooth', 110, 55, 0.5, 0.05); noise(c, t, 0.5, 0.05, 3500); }); }
+  /* 등장 컷인: 올라가는 긴장음 → (hit초 뒤) 쾅 */
+  function sfxBossIntro(hit) { ui(function (c, t) {
+    tone(c, t, 'sawtooth', 70, 640, hit, 0.1); tone(c, t, 'square', 140, 1100, hit, 0.04); noise(c, t, hit, 0.1, 1800);
+    var h = t + hit;
+    tone(c, h, 'sine', 80, 28, 1.0, 0.7); tone(c, h, 'sawtooth', 220, 70, 0.6, 0.2); tone(c, h, 'square', 110, 55, 0.5, 0.12); noise(c, h, 0.6, 0.32, 300);
+    tone(c, h + 0.05, 'sine', 2093, 2093, 0.9, 0.07); tone(c, h + 0.05, 'sine', 3136, 3136, 0.9, 0.05);
+    tone(c, h + 0.35, 'sawtooth', 164.81, 164.81, 0.9, 0.05); tone(c, h + 0.35, 'sawtooth', 196, 196, 0.9, 0.04);
+  }); }
+  function sfxBossWin() { ui(function (c, t) { [329.63, 392, 493.88, 659.25].forEach(function (f, i) { tone(c, t + i * 0.1, 'triangle', f, f, 0.3, 0.14); tone(c, t + i * 0.1, 'square', f / 2, f / 2, 0.25, 0.05); }); tone(c, t, 'sine', 90, 45, 0.3, 0.35); noise(c, t + 0.3, 0.3, 0.1, 5000); }); }
+  function sfxBossClear() { ui(function (c, t) {
+    var i; for (i = 0; i < 8; i++) tone(c, t + i * 0.09 * (1 - i * 0.04), 'sine', 100, 45, 0.18, 0.3);
+    [[329.63, 415.3, 493.88], [392, 493.88, 587.33], [493.88, 622.25, 739.99], [659.25, 830.61, 987.77]].forEach(function (ch, k) { ch.forEach(function (f) { tone(c, t + 0.7 + k * 0.28, 'sawtooth', f, f * 0.995, k === 3 ? 1.6 : 0.34, 0.06); tone(c, t + 0.7 + k * 0.28, 'triangle', f * 2, f * 2, k === 3 ? 1.6 : 0.34, 0.05); }); });
+    tone(c, t + 1.82, 'sine', 70, 35, 1.2, 0.5); noise(c, t + 1.82, 0.7, 0.22, 4000);
+    [1318.5, 1661, 1975.5, 2637].forEach(function (f, k) { tone(c, t + 1.9 + k * 0.08, 'sine', f, f, 0.8, 0.06); });
+  }); }
+  function sfxBossLose() { ui(function (c, t) { tone(c, t, 'sawtooth', 392, 196, 0.9, 0.13); tone(c, t + 0.15, 'sawtooth', 311, 155, 0.9, 0.1); tone(c, t + 0.3, 'sawtooth', 247, 98, 1.1, 0.1); tone(c, t, 'sine', 98, 36, 1.3, 0.45); noise(c, t, 0.5, 0.15, 400); }); }
   var clashVar = 12;   // 확정: 13번
   /* 참고 녹음을 분석해 만든 패링 소리: [몸통 저음] + [넓은 대역 충격 잡음] + [쇳소리 배음(지수 감쇠)] */
   function nzb(c, t, dur, gain, type, f, q, delay) {
@@ -12262,11 +12472,11 @@ var DM = (function () {
       t.style.color = w.i === 0 ? 'var(--p1)' : 'var(--p2)';
       ring(w.x, w.y, R * 4, C.gold, 0.8); ring(w.x, w.y, R * 2.5, '#ffffff', 0.5);
       sparks(w.x, w.y, C.gold, 40, 600); sparks(w.x, w.y, '#ffffff', 16, 400);
-      shake = 0.4; if (!VIC[w.type]) playFanfare();
+      shake = 0.4; if (!VIC[w.type] && !bossRun) playFanfare();
     }
     if (net.on && winner >= 0) { if (net.spec) title = (net.names[winner] || 'P' + (winner + 1)) + ' 승리!'; else { title = winner === net.me ? '승리!' : '패배…'; sub = '상대: ' + (net.names[1 - net.me] ? net.names[1 - net.me] + ' · ' : '') + W[fighters[1 - net.me].type].name + ' · ' + sub; } }
     t.textContent = title; $('#overSub').textContent = sub;
-    over.hidden = false; ecoMatchDone();
+    over.hidden = false; if (bossRun) bossFightDone(); else ecoMatchDone();
   }
 
   /* ---------- 그리기 ---------- */
@@ -15096,8 +15306,8 @@ var DM = (function () {
         var b = e.target.closest('button'); if (!b) return;
         if (b.dataset.open) { el._open = !el._open; if (el._open) el._rt = String(RAR[sel[i].type]); }
         if (b.dataset.rt !== undefined) el._rt = b.dataset.rt;
-        if (b.dataset.rnd) { var pool = Object.keys(W).filter(function (k) { return !isLocked(k) && !(i === net.me && clsActive() && clsTypeUsed(k)) && (el._rt === 'all' || String(RAR[k]) === el._rt); }); if (!pool.length) return; sel[i].type = pool[Math.floor(Math.random() * pool.length)]; el._open = false; }
-        if (b.dataset.type) { if (isLocked(b.dataset.type)) { netNotify('아직 없는 캐릭터예요'); return; } if (i === net.me && clsActive() && clsTypeUsed(b.dataset.type)) return; sel[i].type = b.dataset.type; el._open = false; }
+        if (b.dataset.rnd) { var pool = Object.keys(W).filter(function (k) { return !isLocked(k) && !(i === net.me && clsActive() && clsTypeUsed(k)) && !(bossRun && i === 0 && bossRun.used.indexOf(k) >= 0) && (el._rt === 'all' || String(RAR[k]) === el._rt); }); if (!pool.length) return; sel[i].type = pool[Math.floor(Math.random() * pool.length)]; el._open = false; }
+        if (b.dataset.type) { if (isLocked(b.dataset.type)) { netNotify('아직 없는 캐릭터예요'); return; } if (i === net.me && clsActive() && clsTypeUsed(b.dataset.type)) return; if (bossRun && i === 0 && bossRun.used.indexOf(b.dataset.type) >= 0) { netNotify('이번 도전에서 이미 쓴 캐릭터예요'); return; } sel[i].type = b.dataset.type; el._open = false; }
         if (sel[i].trait > W[sel[i].type].traits.length) sel[i].trait = 0;
         if (b.dataset.trait !== undefined) { var tv = +b.dataset.trait; if (tv && !talOwned(sel[i].type, tv - 1)) { netNotify('아직 없는 재능이에요'); return; } sel[i].trait = tv; }
         if (b.dataset.spell) { if (b.dataset.spell !== 'none' && !splOwned(sel[i].type, b.dataset.spell)) { netNotify('아직 없는 스펠이에요'); return; } if (i === net.me && clsActive() && b.dataset.spell !== 'none' && clsSpellUsed(b.dataset.spell) && sel[i].spells.indexOf(b.dataset.spell) < 0) return; toggleSpell(i, b.dataset.spell); }
@@ -15121,7 +15331,8 @@ var DM = (function () {
   function sync() {
     if (typeof netTypeSend === 'function') netTypeSend();
     if (typeof clsTabsSync === 'function') clsTabsSync();
-    if (!accBoot) sel.forEach(function (x) { if (isLocked(x.type)) { x.type = 'sword'; x.trait = 0; x.spells = []; } else { if (x.trait && !talOwned(x.type, x.trait - 1)) x.trait = 0; if (x.spells) x.spells = x.spells.filter(function (k) { return splOwned(x.type, k); }); } });   // 로그아웃·권한 해제로 잠기게 된 무기는 검으로
+    bossUi();
+    if (!accBoot) sel.forEach(function (x, xi) { if (bossRun && xi === 1) return; if (isLocked(x.type)) { x.type = 'sword'; x.trait = 0; x.spells = []; } else { if (x.trait && !talOwned(x.type, x.trait - 1)) x.trait = 0; if (x.spells) x.spells = x.spells.filter(function (k) { return splOwned(x.type, k); }); } });   // 로그아웃·권한 해제로 잠기게 된 무기는 검으로
     sel.forEach(function (x) { if (x.trait > W[x.type].traits.length) x.trait = 0; });
     applyColors();
     cardEls.forEach(function (el, i) {
@@ -15136,7 +15347,7 @@ var DM = (function () {
       if (el._rt === undefined) el._rt = String(RAR[sel[i].type]);
       el.querySelectorAll('[data-rt]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.rt === el._rt)); b.classList.toggle('lk', b.dataset.rt !== 'all' && !rarHas(+b.dataset.rt)); });
       el.querySelectorAll('.chips button').forEach(function (b) { b.hidden = el._rt !== 'all' && b.dataset.r !== el._rt; });
-      el.querySelectorAll('.chips [data-type]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.type === sel[i].type)); b.classList.toggle('lk', isLocked(b.dataset.type)); b.classList.toggle('us', i === net.me && clsActive() && clsTypeUsed(b.dataset.type)); });
+      el.querySelectorAll('.chips [data-type]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.type === sel[i].type)); b.classList.toggle('lk', isLocked(b.dataset.type)); b.classList.toggle('us', (i === net.me && clsActive() && clsTypeUsed(b.dataset.type)) || !!(bossRun && i === 0 && bossRun.used.indexOf(b.dataset.type) >= 0)); });
       el.querySelectorAll('[data-dir]').forEach(function (b) { b.setAttribute('aria-pressed', String(+b.dataset.dir === sel[i].dir)); });
       el.querySelectorAll('[data-col]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.col === colId(i))); });
       el.querySelectorAll('[data-trait]').forEach(function (b) { b.setAttribute('aria-pressed', String(+b.dataset.trait === sel[i].trait)); });
@@ -15182,7 +15393,7 @@ var DM = (function () {
   $('#sdBtn').addEventListener('click', function () { if (net.on && net.st !== 'select') return; sdOn = !sdOn; sync(); });
   $('#fxBtn').addEventListener('click', function () { if (net.on) return; fxOn = !fxOn; sync(); });
   $('#tickBtn').addEventListener('click', function () { tickOn = !tickOn; sync(); });
-  $('#snd').addEventListener('click', function () { soundOn = !soundOn; sync(); if (soundOn) { audio(); if (screenName === 'title' || screenName === 'home') bgmStart(); } else bgmStop(); hintSync(); });
+  $('#snd').addEventListener('click', function () { soundOn = !soundOn; sync(); if (soundOn) { audio(); if (screenName === 'title' || screenName === 'home') bgmStart(); } else { bgmStop(); bbgStop(); } hintSync(); });
 
   /* ---------- 화면 전환 ---------- */
   function clearFx() { hbFx.length = 0; wcFx.length = 0; snpFx.length = 0; slArr.length = 0; slFx.length = 0; bmArr.length = 0; amOrbs.length = 0; amBolts.length = 0; mrFx.length = 0; mrFeath.length = 0; crArrows.length = 0; crWaves.length = 0; rsShards.length = 0; chProj.length = 0; chDishes.length = 0; chFx.length = 0; asAmb.fl.length = 0; asAmb.g = 0; asAmb.prev = {}; roars.length = 0; cnBalls.length = 0; cnFx.length = 0; asCut(); asFx.length = 0; asDust.length = 0; miPetals.length = 0; miFx.length = 0; exSmoke.length = 0; tcCoins.length = 0; paItems.length = 0; paFx.length = 0; ftFx.length = 0; pwHands.length = 0; pwBones.length = 0; pwFogs.length = 0; bhCoins.length = 0; bhBlood.length = 0; bhSplats.length = 0; bhVig = 0; songNotes.length = 0; mgCards.length = 0; firePs.length = 0; clones.length = 0; fkGlobs.length = 0; fkPuds.length = 0; fkMarks.length = 0; fkGuts.length = 0; gmFloors.length = 0; gmFx.length = 0; syFx.length = 0; sySnow.length = 0; particles.length = 0; floaters.length = 0; slashes.length = 0; trail.length = 0; fishes.length = 0; shards.length = 0; cracksFx.length = 0; bursts.length = 0; slapFxs.length = 0; phxFxs.length = 0; arrows.length = 0; rains.length = 0; rings.length = 0; banners.length = 0; confetti.length = 0; shake = 0; slowT = 0; darkFlash = 0; hitStopT = 0; zoomT = 0; sdShow = 0; cine = null; winner = -1; }
@@ -15198,10 +15409,10 @@ var DM = (function () {
   var BOX_CHAR = [null, null, { 1: 55, 2: 40, 3: 5 }, { 1: 15, 2: 45, 3: 35, 4: 5 }, { 2: 20, 3: 45, 4: 28, 5: 7 }];
   var BOX_TS = [null, { 0: 35, 1: 50, 2: 15 }, { 1: 30, 2: 45, 3: 25 }, { 2: 25, 3: 45, 4: 30 }, { 3: 30, 4: 45, 5: 25 }];
   var eco = ecoLoad(), ecoGot = false;
-  /* 쿠폰 초기화: 이 값이 바뀔 때마다 이 기기의 쿠폰 사용 기록(test 쿠폰 · 예전 쿠폰 목록)을 한 번 지운다. 서버(accounts.js)의 COUPON_RESET_ID 와 같이 올린다 */
-  (function () { var RID = 'c1'; try { if (localStorage.getItem('spinclash.rst') !== RID) { eco.test = false; localStorage.removeItem('spinclash.cpn'); localStorage.setItem(ECO_KEY, JSON.stringify(eco)); localStorage.setItem('spinclash.rst', RID); } } catch (e) {} })();
+  /* 쿠폰 초기화: 이 값이 바뀔 때마다 이 기기의 쿠폰 사용 기록을 지우고, c2 부터는 캐릭터·토큰(전용·공유)·재능·스펠을, c3 부터는 상점 구매 기록(패스·패키지·정기 상품)도 한 번 처음 상태로 돌린다. 서버(accounts.js)의 COUPON_RESET_ID 와 같이 올린다 */
+  (function () { var RID = 'c3'; try { if (localStorage.getItem('spinclash.rst') !== RID) { eco.test = false; eco.own = { sword: 1, dagger: 1, bow: 1 }; eco.seen = { sword: 1, dagger: 1, bow: 1 }; eco.tok = {}; eco.stok = {}; eco.tal = {}; eco.spl = {}; eco.pk = {}; eco.sp = {}; eco.pass = 0; eco.login = ''; localStorage.removeItem('spinclash.cpn'); localStorage.setItem(ECO_KEY, JSON.stringify(eco)); localStorage.setItem('spinclash.rst', RID); } } catch (e) {} })();
   function ecoLoad() {
-    var d = { coin: 0, tok: {}, own: { sword: 1, dagger: 1, bow: 1 }, tal: {}, spl: {}, day: '', played: 0, box: [], tk: {}, pass: 0, pk: {}, login: '', test: false, seen: { sword: 1, dagger: 1, bow: 1 } };
+    var d = { coin: 0, gem: 0, tok: {}, own: { sword: 1, dagger: 1, bow: 1 }, tal: {}, spl: {}, day: '', played: 0, box: [], tk: {}, pass: 0, pk: {}, stok: {}, sp: {}, login: '', test: false, seen: { sword: 1, dagger: 1, bow: 1 }, boss: null };
     try { var j = JSON.parse(localStorage.getItem(ECO_KEY) || 'null'); if (j && typeof j === 'object') for (var k in d) if (j[k] != null) d[k] = j[k]; } catch (e) {}
     return d;
   }
@@ -15230,26 +15441,45 @@ var DM = (function () {
   }
   function boxApply(it) {
     if (it.k === 'coin') eco.coin += it.n;
+    else if (it.k === 'gem') eco.gem = (eco.gem || 0) + it.n;
     else if (it.k === 'tok') eco.tok[it.t] = (eco.tok[it.t] || 0) + it.n;
+    else if (it.k === 'stok') { eco.stok = eco.stok || {}; eco.stok[it.g] = (eco.stok[it.g] || 0) + it.n; }
     else if (it.k === 'chr') { if (eco.own[it.t]) { it.dup = true; eco.tok[it.t] = (eco.tok[it.t] || 0) + 20; } else eco.own[it.t] = 1; }
     else if (it.k === 'tal') { var a = it.t + ':' + it.i; eco.tal[a] = (eco.tal[a] || 0) + 1; }
     else if (it.k === 'spl') { var b = it.t + ':' + it.s; eco.spl[b] = (eco.spl[b] || 0) + 1; }
   }
   var COIN_IMG = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30"><circle cx="15" cy="15" r="12.5" fill="#f6c915" stroke="#0a1020" stroke-width="3"/><circle cx="15" cy="15" r="7.4" fill="#f0a800" stroke="#a86a00" stroke-width="1.6"/><path d="M8 9a9 9 0 0 1 6-3" stroke="#fff6b0" stroke-width="2" fill="none" stroke-linecap="round"/></svg>');
+  var GEM_IMG = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30"><path d="M8 5h14l7 8.5L15 28 1 13.5z" fill="#35b8f2"/><path d="M1 13.5L8 5l3.5 8.5z" fill="#9fe6ff"/><path d="M8 5h14l-3.5 8.5h-7z" fill="#d6f6ff"/><path d="M22 5l7 8.5h-10.5z" fill="#62cdfa"/><path d="M1 13.5h10.5L15 28z" fill="#2a9ae0"/><path d="M11.5 13.5h7L15 28z" fill="#4fc0f6"/><path d="M18.5 13.5H29L15 28z" fill="#1b78c8"/><path d="M8 5l3.5 8.5L15 28 18.5 13.5 22 5M1 13.5h28" fill="none" stroke="#0a1020" stroke-width="1.1" opacity=".5"/><path d="M8 5h14l7 8.5L15 28 1 13.5z" fill="none" stroke="#0a1020" stroke-width="2.4" stroke-linejoin="round"/></svg>');
+  /* 공유 토큰 그림: 등급색 동그란 토큰 + 가운데 번쩍이 (캐릭터 얼굴이 없는 게 전용 토큰과 다른 점) */
+  function stokImg(g) {
+    var c = RAR_INFO[g].c, l = tkMix(c, 0.55), d = tkMix(c, -0.3), ink = '#0a1020';
+    return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="21.500" r="16" fill="#0a1020" opacity=".3"/><circle cx="20" cy="20" r="16" fill="' + c + '" stroke="' + ink + '" stroke-width="3"/><circle cx="20" cy="20" r="11.500" fill="' + l + '" stroke="' + d + '" stroke-width="1.6"/><path d="M20 11L22.800 17.200L29 20L22.800 22.800L20 29L17.200 22.800L11 20L17.200 17.200z" fill="#fff" stroke="' + d + '" stroke-width="1.2" stroke-linejoin="round"/><path d="M9 14a12.500 12.500 0 0 1 7-5" stroke="#fff" stroke-opacity=".7" stroke-width="2" fill="none" stroke-linecap="round"/></svg>');
+  }
   function boxText(it) {
     var nm = it.t && W[it.t] ? W[it.t].name : '', rn = it.t ? (RAR_INFO[RAR[it.t] || 0] || RAR_INFO[0]).n : '', img = '';
     if (it.t) { try { img = makeIcon(it.t); } catch (e) {} }
     if (it.k === 'coin') return { img: COIN_IMG, name: '코인 ×' + it.n.toLocaleString(), sub: '' };
-    if (it.k === 'tok') return { img: img, name: nm + ' 토큰 ×' + it.n, sub: rn + ' 등급' };
+    if (it.k === 'gem') return { img: GEM_IMG, name: '다이아 ×' + it.n.toLocaleString(), sub: '' };
+    if (it.k === 'tok') return { img: img, name: nm + ' 토큰 ×' + it.n, sub: (it.rnd ? '무작위 토큰 · ' : '') + rn + ' 등급' };
+    if (it.k === 'bxs') return { img: boxImg(), name: '상자 ×' + it.n, sub: '다이아 ' + it.d.toLocaleString() + '개 · 홈의 상자에서 열어요' };
+    if (it.k === 'stok') return { img: stokImg(it.g), name: '공유 ' + RAR_INFO[it.g].n + ' 토큰 ×' + it.n, sub: '같은 등급 캐릭터 아무에게나 써요' };
     if (it.k === 'chr') return { img: img, name: nm, sub: rn + ' 캐릭터 · ' + (it.dup ? '이미 있어서 토큰 ×20' : '새 캐릭터!') };
     if (it.k === 'tal') return { img: img, name: W[it.t].traits[it.i].name, sub: nm + ' 재능' };
     return { img: img, name: SPELL[it.s].n, sub: nm + ' 스펠' };
   }
   var ECO_TEST_FILL = 10;   /* 테스트본: 상자를 항상 10개로 채워 둔다. 출시 때는 0으로 */
+  /* 상단 재화 칸은 좁아서: 9,999까지 그대로 · 99,999까지는 작은 글씨 · 그 이상은 만 단위로 줄여 쓴다 */
+  function hdrNum(el, n) {
+    if (!el) return;
+    var t = n.toLocaleString(), sm = false;
+    if (n >= 100000) { var m = n / 10000; t = (m < 100 ? m.toFixed(1).replace(/\.0$/, '') : Math.floor(m).toLocaleString()) + '만'; sm = true; } else if (n >= 10000) sm = true;
+    el.textContent = t; el.style.fontSize = sm ? '12px' : '';
+  }
   function ecoUi() {
     ecoRoll();
     if (ECO_TEST_FILL) { var fl = false; while (eco.box.length < ECO_TEST_FILL) { eco.box.push(wpick(boxDist())); fl = true; } if (fl) ecoSave(); }
-    var c = $('#hmCoin'); if (c) c.textContent = eco.coin.toLocaleString();
+    hdrNum($('#hmCoin'), eco.coin); hdrNum($('#hmGem'), eco.gem || 0);
+    if (typeof dotSync === 'function') dotSync();
     var cs = $('#hmBoxCs'); if (cs) cs.textContent = '오늘 ' + eco.played + '/' + ecoCap() + (eco.pass === 2 ? '개' : '판');
     var cb = $('#hmBoxCb'); if (cb) cb.textContent = eco.box.length ? '열기 ' + eco.box.length : '없음';
     var ob = $('#overBoxBtn'); if (ob && !ob.hidden) { ob.textContent = '상자 열기 (' + eco.box.length + ')'; ob.hidden = !eco.box.length; }
@@ -15262,10 +15492,210 @@ var DM = (function () {
     else { for (var gi = 0; gi < got; gi++) { eco.played++; eco.box.push(wpick(boxDist())); } ecoSave(); b.textContent = '상자 +' + got + ' · 오늘 ' + eco.played + '/' + cap + (eco.pass === 2 ? '개' : '판'); }
     b.hidden = false; bb.hidden = !eco.box.length; ecoUi();
   }
+  /* ═══════ 레드닷(빨간 점) ═══════
+     홈 아래 5개 탭 + 세로줄 7개 버튼. 자동 조건(보스전 등)이거나 설정의 테스트 스위치가 켜져 있으면 뜬다 */
+  var DOT_KEYS = [['shop', '상점'], ['col', '컬렉션'], ['play', '대전'], ['rank', '랭킹'], ['me', '프로필'], ['진보스전', '진보스전'], ['보스전', '보스전'], ['승부장', '승부장'], ['메일함', '메일함'], ['보관함', '보관함'], ['소셜', '소셜'], ['길드', '길드']];
+  var dotTest = {};
+  function dotAuto(k) { try { if (k === '보스전') { var b = bossSync(); return !b.sn || !b.ch; } } catch (e) {} return false; }   /* 이번 주 보스전을 아직 안 열어 봤거나, 도전 보상을 아직 못 받았으면 */
+  function dotEl(k) { return document.querySelector(/[가-힣]/.test(k) ? '#home .hsb[data-soon="' + k + '"]' : '#home .hnav button[data-hn="' + k + '"]'); }
+  function dotSync() {
+    DOT_KEYS.forEach(function (d) {
+      var b = dotEl(d[0]); if (!b) return;
+      var i = b.querySelector('.rdot'); if (!i) { i = document.createElement('i'); i.className = 'rdot'; i.hidden = true; b.appendChild(i); }
+      var on = !!(dotTest[d[0]] || dotAuto(d[0])); if (i.hidden === on) i.hidden = !on;
+    });
+    var g = $('#dotGrid'); if (g && g.children.length === DOT_KEYS.length) { Array.prototype.forEach.call(g.children, function (c, n) { c.setAttribute('aria-pressed', String(!!dotTest[DOT_KEYS[n][0]])); }); var all = DOT_KEYS.every(function (d) { return dotTest[d[0]]; }); $('#dotAll').textContent = all ? '전부 끄기' : '전부 켜기'; }
+  }
+  (function () {
+    var g = $('#dotGrid'); if (!g) return;
+    g.innerHTML = DOT_KEYS.map(function (d, n) { return '<button type="button" class="tog" data-n="' + n + '" aria-pressed="false">' + d[1] + '</button>'; }).join('');
+    g.addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; var k = DOT_KEYS[+b.dataset.n][0]; dotTest[k] = !dotTest[k]; uiTick(); dotSync(); });
+    $('#dotAll').addEventListener('click', function () { var all = DOT_KEYS.every(function (d) { return dotTest[d[0]]; }); DOT_KEYS.forEach(function (d) { dotTest[d[0]] = !all; }); uiTick(); dotSync(); });
+  })();
+  /* ═══════ 홈 공지 배너 ═══════ 서버(/api/notice)에 한 개만 저장. 읽기는 누구나, 쓰기는 제작자 계정만(서버가 다시 확인한다) */
+  var news = { t: '', at: 0, tm: 0, sig: '', own: false };
+  try { var nj0 = JSON.parse(localStorage.getItem('spinclash.news') || 'null'); if (nj0 && typeof nj0.t === 'string') { news.t = nj0.t; news.at = nj0.at | 0; } } catch (e) {}
+  function newsOwn() { return news.own || !!(acct.me && acct.me.o); }
+  function newsFit() {
+    var t = $('#hmNewsT'), v = t.parentNode; t.classList.remove('mq');
+    var cw = v.clientWidth; if (cw <= 0) return;   /* 홈이 숨겨져 있으면 폭을 못 잰다 → 홈이 보일 때 다시 */
+    var w = t.offsetWidth;
+    if (news.t && w > cw) { t.style.setProperty('--from', cw + 'px'); t.style.setProperty('--to', '-' + w + 'px'); t.style.setProperty('--dur', Math.max(6, (cw + w) / 48).toFixed(1) + 's'); t.classList.add('mq'); }
+  }
+  function newsUi(force) {
+    var el = $('#hmNews'); if (!el) return;
+    var own = newsOwn(), has = !!news.t, sig = (own ? 1 : 0) + '|' + news.t;
+    el.hidden = !(has || own); el.classList.toggle('own', own); el.classList.toggle('empty', !has);
+    if (own) { el.setAttribute('role', 'button'); el.tabIndex = 0; } else { el.setAttribute('role', 'note'); el.removeAttribute('tabindex'); }
+    $('#hmNewsEd').hidden = !own;
+    if (sig === news.sig && !force) return;
+    news.sig = sig; $('#hmNewsT').textContent = has ? news.t : '공지 쓰기 (제작자 전용)'; newsFit();
+  }
+  function newsSet(t, at) { news.t = t || ''; news.at = at | 0; try { localStorage.setItem('spinclash.news', JSON.stringify({ t: news.t, at: news.at })); } catch (e) {} newsUi(); }
+  function newsLoad(force) {
+    if (!window.SPIN_ACC || (!force && Date.now() - news.tm < 20000)) return; news.tm = Date.now();
+    acApi('/api/notice').then(function (j) { if (j && j.ok) newsSet(j.t, j.at); });
+  }
+  function newsEdit(on) {
+    var m = $('#newsModal'); m.hidden = !on; if (!on) return;
+    var i = $('#newsIn'); i.value = news.t; $('#newsCnt').textContent = Array.from(i.value).length + '/200'; $('#newsSave').disabled = false; setTimeout(function () { try { i.focus(); } catch (e) {} }, 60);
+  }
+  function newsSave(del) {
+    if (!newsOwn()) return; var v = del ? '' : $('#newsIn').value, b = $('#newsSave'); b.disabled = true;
+    acApi('/api/notice', { t: v }).then(function (j) {
+      b.disabled = false;
+      if (j.status === 401 && j.c === 'auth') { acClear(); netNotify('로그인이 만료됐어요. 다시 로그인해 주세요'); return; }
+      if (!j.ok) { netNotify(j.m || '공지를 올리지 못했어요'); return; }
+      newsSet(j.t, j.at); newsEdit(false); netNotify(j.t ? '공지를 올렸어요' : '공지를 지웠어요');
+    });
+  }
+  $('#hmNews').addEventListener('click', function () { if (newsOwn()) { uiTick(); newsEdit(true); } });
+  $('#hmNews').addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && newsOwn()) { e.preventDefault(); newsEdit(true); } });
+  $('#newsIn').addEventListener('input', function () { var a = Array.from(this.value); if (a.length > 200) this.value = a.slice(0, 200).join(''); $('#newsCnt').textContent = Math.min(200, a.length) + '/200'; });
+  $('#newsSave').addEventListener('click', function () { uiConfirm(); newsSave(false); });
+  $('#newsDel').addEventListener('click', function () { uiBack(); newsSave(true); });
+  $('#newsX').addEventListener('click', function () { uiBack(); newsEdit(false); });
+  $('#newsModal').addEventListener('click', function (e) { if (e.target === this) newsEdit(false); });
+  window.addEventListener('resize', function () { newsUi(true); });
+  setInterval(function () { if (screenName === 'home' && !document.hidden) newsLoad(); }, 60000);
+  /* ═══════ 주간 보스전 (이번 주 보스: 설녀) ═══════
+     날짜·횟수·보상은 지금은 이 기기(localStorage)에서 계산한다 = 베타용. 서버 경제가 생기면 서버로 옮긴다 */
+  var BOSS_TYPE = 'sulnyeo', BOSS_REFILL = [50, 100, 150], BOSS_TRIES = 5, bossRun = null;   /* 기본 도전 5회 · 다이아로 +5회씩 */
+  function bossDayKst() { return Math.floor((Date.now() + 9 * 3600000) / 86400000); }
+  function bossWeek() { return Math.floor((bossDayKst() + 3) / 7); }   /* 월요일 0시(한국 시간)에 새 주 */
+  function bossSync() {
+    var wk = bossWeek();
+    if (!eco.boss || eco.boss.wk !== wk) { eco.boss = { wk: wk, tries: BOSS_TRIES, rf: 0, ch: 0, cl: 0, sn: 0, v: 2 }; ecoSave(); }
+    else if (!eco.boss.v) { eco.boss.v = 2; eco.boss.tries += BOSS_TRIES - 3; ecoSave(); }   /* 기본 3회였던 이번 주 기록은 한 번 +2 해 준다 */
+    return eco.boss;
+  }
+  function bossLeftTxt() { var left = Math.floor((bossWeek() + 1) * 7 - 3) - bossDayKst(); return left <= 1 ? '오늘까지' : left + '일 남음'; }
+  function bossStage(i) { return i === 0 ? '노재능' : '재능 ' + i + ' · ' + W[BOSS_TYPE].traits[i - 1].name; }
+  function bossOpen() { audio(); tk.mode = 'list'; $('#tkOv').hidden = true; $('#hmInv').hidden = false; $('#bsInfo').hidden = true; $('#bossOv').hidden = false; boxPause = true; bossSync().sn = 1; ecoSave(); dotSync(); bossSnow(); bossRender(); sfxBossOpen(); }
+  function bossClose() { $('#bsInfo').hidden = true; $('#bossOv').hidden = true; $('#hmInv').hidden = true; boxPause = homeTabCur !== 'play'; }
+  function bossRender() {
+    var b = bossSync(), ri = RAR_INFO[RAR[BOSS_TYPE]], nm = W[BOSS_TYPE].name, h = '', i;
+    $('#bsHd').style.setProperty('--rc', ri.c); $('#bsImg').src = makeIcon(BOSS_TYPE); $('#bsRp').textContent = ri.n; $('#bsLeft').textContent = bossLeftTxt();
+    h += '<p class="csd">이번 주 보스는 <b>' + nm + '</b>예요. 내 캐릭터 3명이 한 명씩 차례로 붙어요. <b>한 번이라도 지면 실패</b>, 쓴 캐릭터는 이번 도전에서 다시 못 써요.</p>';
+    h += '<h4>싸우는 순서</h4>';
+    for (i = 0; i < 3; i++) h += '<div class="ctl bsSt" style="--i:' + i + ';--c:' + BOSS_COL[i] + '"><span class="bsN">' + (i + 1) + '</span><div class="tx2"><b>' + nm + ' ' + bossStage(i) + '</b></div><em>' + ['기본', '강화', '최종'][i] + '</em></div>';
+    h += '<h4>보상</h4>';
+    h += '<div class="ctl' + (b.ch ? ' own' : '') + '"><div class="tx2"><b>도전 보상 · ' + nm + ' 토큰 ×5</b><small>도전만 해도 받아요 (한 주에 1번)</small></div><em>' + (b.ch ? '받음' : '미수령') + '</em></div>';
+    h += '<div class="ctl' + (b.cl ? ' own' : '') + '"><div class="tx2"><b>격파 보상 · ' + nm + ' 토큰 ×10</b><small>3판을 다 이기면 받아요 (한 주에 1번)</small></div><em>' + (b.cl ? '받음' : '미수령') + '</em></div>';
+    h += '<h4>도전 횟수</h4>';
+    h += '<div class="ctl"><div class="tx2"><b>' + (b.cl ? '격파 완료 · 계속 도전 가능' : '남은 도전 ' + b.tries + '회') + '</b><small>' + (b.cl ? '이번 주 보상은 다 받았어요. 보상 없이 마음껏 도전해요' : '충전 ' + b.rf + '/' + BOSS_REFILL.length + ' · 다 쓰면 다이아로 +' + BOSS_TRIES + '회') + '</small></div></div>';
+    $('#bsBody').innerHTML = h;
+    var at = $('#bsAt'), go = $('#bsGo');
+    go.disabled = false; go.dataset.m = 'go';
+    if (b.cl) { at.innerHTML = '<b>격파 완료!</b>\n보상 없이 다시 도전해요'; go.textContent = '다시 도전'; }
+    else if (b.tries > 0) { at.innerHTML = '남은 도전 <b>' + b.tries + '회</b>' + (b.ch ? '' : '\n처음 도전하면 토큰 ×5'); go.textContent = '도전하기'; }
+    else if (b.rf < BOSS_REFILL.length) { at.innerHTML = '도전을 다 썼어요\n<b>+' + BOSS_TRIES + '회 충전</b> · 다이아 ' + BOSS_REFILL[b.rf] + '개 (보유 ' + (eco.gem || 0).toLocaleString() + ')'; go.textContent = '충전하기'; go.dataset.m = 'refill'; }
+    else { at.innerHTML = '이번 주 도전은 끝났어요\n다음 주에 다시 만나요'; go.textContent = '끝'; go.disabled = true; }
+  }
+  function bossGo() {
+    var b = bossSync(), m = $('#bsGo').dataset.m;
+    if (m === 'refill') {
+      var pr = BOSS_REFILL[b.rf]; if (pr == null) return;
+      if ((eco.gem || 0) < pr) { netNotify('다이아가 모자라요 (' + pr + '개 필요)'); return; }
+      eco.gem -= pr; b.tries += BOSS_TRIES; b.rf++; ecoSave(); ecoUi(); uiConfirm(); bossRender(); return;
+    }
+    var free = !!b.cl; if (!free && b.tries <= 0) return;
+    if (!free) b.tries--;
+    var it = null; if (!free && !b.ch) { b.ch = 1; it = { k: 'tok', t: BOSS_TYPE, n: 5 }; boxApply(it); }
+    ecoSave(); ecoUi(); uiConfirm();
+    bossRun = { i: 0, used: [], free: free, mode: 'sel', bk: JSON.parse(JSON.stringify(sel)) };
+    bossClose();
+    if (it) { tkReveal(it, '확인'); bx.fin = bossToSelect; } else bossToSelect();
+  }
+  function bossBoss() { var c = sel[1] && sel[1].col; sel[1] = { type: BOSS_TYPE, trait: bossRun.i, dir: 6, ang: DIRS[6].a, col: c || 'red', spells: [] }; }
+  function bossToSelect() {
+    var r = bossRun; if (!r) return;
+    var x = sel[0]; if (isLocked(x.type) || r.used.indexOf(x.type) >= 0) { var ks = Object.keys(W).filter(function (k) { return k !== 'dummy' && !isLocked(k) && r.used.indexOf(k) < 0; }); x.type = ks[0] || 'sword'; x.trait = 0; x.spells = []; }
+    r.mode = 'sel'; bossBoss(); showScreen('select'); sync();
+  }
+  function bossUi() {
+    var on = !!bossRun; document.body.classList.toggle('boss', on);
+    var bar = $('#bossBar'); bar.hidden = !on;
+    if (on) {
+      var r = bossRun, nm = W[BOSS_TYPE].name;
+      bar.innerHTML = '<img alt="" src="' + makeIcon(BOSS_TYPE) + '"><div><b>' + (r.i + 1) + '/3판 · ' + nm + ' (' + bossStage(r.i) + ')</b><small>' + (r.used.length ? '쓴 캐릭터: ' + r.used.map(function (k) { return W[k].name; }).join(', ') : '캐릭터를 골라 보스에 도전해요') + '</small></div>';
+    }
+    var sb = $('#startBtn'); if (on && !net.on) sb.textContent = '보스전 시작'; else if (sb.textContent === '보스전 시작') sb.textContent = '대결 시작';
+  }
+  function bossEnd() {
+    var r = bossRun; if (!r) return; bossRun = null; bossIntroTk++; $('#bossIntro').hidden = true; bbgStop(); document.body.classList.remove('bossBt');
+    sel = r.bk; $('#again').hidden = false; $('#again').textContent = '다시 대결'; $('#resel').textContent = '무기 다시 고르기'; $('#overTitle').style.color = '';
+    sync();
+  }
+  function bossLeave(panel, msg) { bossEnd(); showScreen('home'); if (panel) bossOpen(); else if (msg) netNotify(msg); }
+  /* 한 판이 끝났을 때 (finish 에서 부른다) */
+  function bossFightDone() {
+    var r = bossRun, t = $('#overTitle'), s = $('#overSub'), ag = $('#again'), rs = $('#resel'), b = bossSync(), nm = W[BOSS_TYPE].name;
+    $('#overBox').hidden = true; $('#overBoxBtn').hidden = true; rs.textContent = '포기하기'; ag.hidden = false; bbgStop();
+    if (winner === -1) { r.mode = 'redo'; t.textContent = '무승부'; t.style.color = 'var(--ink)'; s.textContent = '같은 판을 다시 해요 (' + (r.i + 1) + '/3판)'; ag.textContent = '재대결'; return; }
+    if (winner !== 0) { r.mode = 'end'; t.textContent = '보스전 실패…'; t.style.color = 'var(--p2)'; s.textContent = nm + ' (' + bossStage(r.i) + ')에게 졌어요 · ' + (r.free || b.cl ? '다시 도전할 수 있어요' : '남은 도전 ' + b.tries + '회'); ag.hidden = true; rs.textContent = '보스전으로'; sfxBossLose(); return; }
+    r.used.push(sel[0].type); t.style.color = 'var(--p1)';
+    if (r.i < 2) { r.mode = 'next'; t.textContent = (r.i + 1) + '/3판 승리!'; s.textContent = '다음은 ' + nm + ' ' + bossStage(r.i + 1) + ' · 다른 캐릭터를 골라요'; ag.textContent = '다음 판'; sfxBossWin(); return; }
+    r.mode = 'end'; ag.hidden = true; rs.textContent = '보스전으로'; t.textContent = nm + ' 격파!'; sfxBossClear(); setTimeout(function () { bossConfetti(['#ffd23a', '#9be6ff', '#fff', '#5cbcf0']); }, 1800);
+    if (!r.free && !b.cl) {
+      b.cl = 1; var it = { k: 'tok', t: BOSS_TYPE, n: 10 }; boxApply(it); ecoSave(); ecoUi();
+      s.textContent = '3판 전승 · 격파 보상 ' + nm + ' 토큰 ×10';
+      setTimeout(function () { if (bossRun === r && r.mode === 'end') { tkReveal(it, '확인'); bx.fin = null; } }, 1000);
+    } else s.textContent = '3판 전승 · 보상은 이미 받았어요';
+  }
+  function bossFight() { var r = bossRun; bossBoss(); bossIntro(function () { if (bossRun !== r) return; start(); document.body.classList.add('bossBt'); bbgStart(r.i); }); }
+  function bossAgain() {
+    var r = bossRun; if (!r) return;
+    if (r.mode === 'next') { r.i++; bossToSelect(); } else if (r.mode === 'redo') bossFight();
+  }
+  /* ── 보스전 연출: 패널 눈송이 · 등장 컷인 · 정보창 · 색종이 ── */
+  var BOSS_COL = ['#5cbcf0', '#a06bff', '#ff4d4d'];
+  function bossSnow() {
+    var w = $('#bsSnow'), h = '', i; if (!w) return;
+    for (i = 0; i < 16; i++) { var sz = 2 + Math.random() * 3.5; h += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;width:' + sz.toFixed(1) + 'px;height:' + sz.toFixed(1) + 'px;--dx:' + Math.round(-30 + Math.random() * 60) + 'px;animation-duration:' + (5 + Math.random() * 5).toFixed(1) + 's;animation-delay:' + (-Math.random() * 8).toFixed(1) + 's"></i>'; }
+    w.innerHTML = h;
+  }
+  var bossIntroTk = 0;
+  function bossIntro(done) {
+    var r = bossRun, el = $('#bossIntro'), full = r.i === 0 && r.mode !== 'redo', tk0 = ++bossIntroTk, d = full ? 2.4 : 1.5;
+    el.className = full ? '' : 'rd'; el.style.setProperty('--d', d + 's'); el.style.setProperty('--ac', BOSS_COL[r.i]);
+    var tape = '<span>' + new Array(14).join('WARNING ▲ BOSS ▲ ') + '</span>';
+    el.innerHTML = '<div class="bi-flash"></div>' + (full ? '<div class="bi-tape t">' + tape + '</div><div class="bi-tape b">' + tape + '</div>' : '') +
+      '<div class="bi-main"><img class="bi-img" alt="" src="' + makeIcon(BOSS_TYPE) + '"><div class="bi-nm">' + W[BOSS_TYPE].name + '</div><div class="bi-sub">' + (r.i + 1) + '/3판 · ' + bossStage(r.i) + '</div><div class="bi-hint">' + (full ? '한 번이라도 지면 실패!' : (r.i === 2 ? '마지막 판! 끝까지 이겨요' : '더 강해졌어요')) + '</div></div>';
+    el.hidden = false; sfxBossIntro(d * 0.36);
+    function end() { if (bossIntroTk !== tk0) return; bossIntroTk++; el.hidden = true; el.innerHTML = ''; if (done) done(); }
+    var t0 = Date.now(); el.onpointerdown = function () { if (Date.now() - t0 > 700) end(); };
+    setTimeout(end, d * 1000);
+  }
+  function bossConfetti(cols) {
+    var w = $('#bossFx'), h = '', i; if (!w) return;
+    for (i = 0; i < 56; i++) { var a = Math.random() * Math.PI * 2, d = 90 + Math.random() * 240; h += '<i style="background:' + cols[i % cols.length] + ';--dx:' + Math.round(Math.cos(a) * d) + 'px;--dy:' + Math.round(Math.sin(a) * d * 0.8 + 90 + Math.random() * 120) + 'px;--r:' + Math.round(Math.random() * 720 - 360) + 'deg;animation-delay:' + (Math.random() * 0.15).toFixed(2) + 's"></i>'; }
+    w.innerHTML = h; setTimeout(function () { w.innerHTML = ''; }, 1900);
+  }
+  function bossInfoShow(on) {
+    var b = $('#bsInfo'); b.hidden = !on; if (!on) return;
+    var nm = W[BOSS_TYPE].name;
+    $('#bsIt').innerHTML =
+      '<p>매주 월요일 0시(한국 시간)에 바뀌는 <b>주간 이벤트</b>예요. 신화·전설·태고 등급 중 한 명이 보스로 나오고, 지금은 <b>' + nm + '</b>가 나와요.</p>' +
+      '<h5>싸우는 방법</h5><p>내 캐릭터 3명이 한 명씩 차례로 보스와 1대1로 붙어요. 순서는 <b>노재능 → 재능 1 → 재능 2</b>이고, 판이 올라갈수록 보스가 강해져요. 보스는 스펠을 안 써요.</p>' +
+      '<p><b>한 번이라도 지면 실패</b>예요(무승부는 다시 해요). 한 번 도전에서 같은 캐릭터는 한 번만 쓸 수 있어요.</p>' +
+      '<h5>도전 횟수</h5><p>도전을 시작할 때 1회가 줄고, 기본 <b>' + BOSS_TRIES + '회</b>예요. 다 쓰면 다이아로 +' + BOSS_TRIES + '회씩 충전해요: <b>50 → 100 → 150</b>. 150이 마지막이라 한 주에 최대 ' + BOSS_TRIES * (1 + BOSS_REFILL.length) + '번 도전할 수 있어요.</p>' +
+      '<h5>보상</h5><p><b>도전 보상</b>: ' + nm + ' 토큰 5개 (처음 도전하면 바로, 한 주에 1번)<br><b>격파 보상</b>: ' + nm + ' 토큰 10개 (3판을 다 이기면, 한 주에 1번)<br>그러니까 한 주에 토큰을 최대 15개 모을 수 있어요.</p>' +
+      '<p>한 번 격파한 뒤에는 그 주에 보상 없이, 횟수 소모 없이 계속 도전할 수 있어요.</p>' +
+      '<h5>' + nm + ' 팁</h5><p>체력이 약한 대신 얼음입김으로 빙결 게이지를 채워 느리게 만들어요. 얼어붙으면 빙검을 뽑아 빠르게 달려 베니까 조심해요!</p>' +
+      '<h5>알아두기</h5><p>베타 동안은 도전 횟수와 보상이 이 기기에만 기록돼요.</p>';
+    $('#bsInfo').scrollTop = 0; $('#bsInfo .bsIb').scrollTop = 0;
+  }
+  $('#bsI').addEventListener('click', function () { uiTick(); bossInfoShow(true); });
+  $('#bsIok').addEventListener('click', function () { uiBack(); bossInfoShow(false); });
+  $('#bsInfo').addEventListener('click', function (e) { if (e.target === this) { uiBack(); bossInfoShow(false); } });
+  $('#bsX').addEventListener('click', function () { uiBack(); bossClose(); });
+  $('#bossOv').addEventListener('click', function (e) { if (e.target === this) { uiBack(); bossClose(); } });
+  $('#bsGo').addEventListener('click', bossGo);
   function shade(hex, f) { var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; function m(v) { return Math.max(0, Math.min(255, Math.round(v * (1 + f)))); } return 'rgb(' + m(r) + ',' + m(g) + ',' + m(b) + ')'; }
   var bx = { t: 0, cur: 0, show: 0, taps: 0, promo: [], done: false, tm: [] };
   function tint(hex, f) { var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; function m(v) { return Math.round(v + (255 - v) * f); } return 'rgb(' + m(r) + ',' + m(g) + ',' + m(b) + ')'; }
-  function boxColor(g) { var ov = $('#boxOv'), c = RAR_INFO[g].c; ov.style.setProperty('--bc', c); ov.style.setProperty('--bd', shade(c, -0.4)); ov.style.setProperty('--bl', tint(c, 0.5)); }
+  function boxColor(g, hex) { var ov = $('#boxOv'), c = hex || RAR_INFO[g].c; ov.style.setProperty('--bc', c); ov.style.setProperty('--bd', shade(c, -0.4)); ov.style.setProperty('--bl', tint(c, 0.5)); }
   var BX_CL = ['hit', 'up', 'lidHit', 'lidUp', 'open', 'go', 'big', 'pop', 'qk', 'qk2'];
   function bxAnim(el, cls) { BX_CL.forEach(function (c) { el.classList.remove(c); }); void el.offsetWidth; el.classList.add(cls); }
   var boxPause = false;   /* 상자 화면이 열려 있는 동안 뒤의 대전 데모는 멈춘다(렉 방지) */
@@ -15345,6 +15775,7 @@ var DM = (function () {
   }
   function boxTsShow(it) {
     var isT = it.k === 'tal', g = RAR[it.t] || 0, col = RAR_INFO[g].c, ov = $('#boxOv'), w = $('#bxChr'), hx = $('#bxCHex'), gh = $('#bxCGhost'), tx = boxText(it);
+    $('#bxCName').style.fontSize = '';
     var cnt = isT ? eco.tal[it.t + ':' + it.i] : eco.spl[it.t + ':' + it.s];
     boxColor(g); ov.style.setProperty('--ray', '0.42'); $('#bxStage').classList.add('chrMode');
     hx.innerHTML = isT ? hexIcon(it.t, it.i + 1, false) : spHex(it.s, false);
@@ -15376,14 +15807,26 @@ var DM = (function () {
     bxLater(function () { hx.animate([{ transform: 'translate(0px,0px) scale(1) rotate(360deg)' }, { transform: 'translate(0px,-6px) scale(1.04) rotate(360deg)' }], { duration: 1100, direction: 'alternate', iterations: Infinity, easing: 'ease-in-out', fill: 'forwards' }); }, 1350);
     bxLater(function () { ok.style.opacity = '1'; ok.style.pointerEvents = 'auto'; }, 1000);
   }
+  /* 큰 획득 연출에 쓰는 정보: 캐릭터 · 토큰 · 선택권 · 패스 (재능·스펠은 boxTsShow) */
+  function chrInfo(it) {
+    var g, c;
+    if (it.k === 'chr') { g = RAR[it.t] || 0; return { g: g, c: RAR_INFO[g].c, name: W[it.t].name, rar: RAR_INFO[g].n, sub: it.dup ? '이미 있어서 토큰 ×20으로 바뀌었어' : '', tag: it.dup ? '보유 중' : 'NEW!', dup: !!it.dup, img: boxText(it).img }; }
+    if (it.k === 'coin' || it.k === 'gem') { var gm = it.k === 'gem'; return { g: gm ? 4 : 3, c: gm ? '#35b8f2' : '#ffc61a', name: (gm ? '다이아 ×' : '코인 ×') + it.n.toLocaleString(), rar: '재화', sub: '', tag: 'GET!', dup: false, img: boxText(it).img }; }
+    if (it.k === 'tok') { g = RAR[it.t] || 0; return { g: g, c: RAR_INFO[g].c, name: W[it.t].name + ' 토큰', rar: (it.rnd ? '무작위 ' : '') + RAR_INFO[g].n + ' 토큰', sub: '×' + it.n + ' 받았어요', tag: '×' + it.n, dup: false, img: boxText(it).img }; }
+    if (it.k === 'stok') { g = it.g; return { g: g, c: RAR_INFO[g].c, name: '공유 ' + RAR_INFO[g].n + ' 토큰', rar: '공유 토큰', sub: '×' + it.n + ' · 같은 등급 캐릭터 아무에게나 써요', tag: '×' + it.n, dup: false, img: stokImg(g) }; }
+    if (it.k === 'tkt') { g = it.g; return { g: g, c: RAR_INFO[g].c, name: tkName(it.kind, it.g), rar: '선택권', sub: '보관함에서 써요', tag: '×' + (it.n || 1), dup: false, img: tkImg(it.kind, it.g) }; }
+    if (it.k === 'pass') { var P = SH_PASS[it.lv]; return { g: it.lv === 2 ? 5 : 3, c: P.c, name: P.n, rar: '패스', sub: '상자 하루 ' + ecoCap() + (it.lv === 2 ? '개' : '판') + ' · 일일 로그인 보상', tag: 'NEW!', dup: false, img: 'data:image/svg+xml,' + encodeURIComponent(shPassSvg(P.c).replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"')) }; }
+    return null;
+  }
   function boxChrShow(it) {
-    var g = RAR[it.t] || 0, col = RAR_INFO[g].c, ov = $('#boxOv'), w = $('#bxChr'), img = $('#bxCImg'), tx = boxText(it);
+    var X = chrInfo(it), ov = $('#boxOv'), w = $('#bxChr'), img = $('#bxCImg');
     if (ov.hidden) return;
-    if (it.k !== 'chr') { boxTsShow(it); return; }
-    boxColor(g); ov.style.setProperty('--ray', '0.5'); $('#bxStage').classList.add('chrMode');
-    $('#bxCName').textContent = W[it.t].name; $('#bxCRar').textContent = RAR_INFO[g].n; $('#bxCSub').textContent = it.dup ? '이미 있어서 토큰 ×20으로 바뀌었어' : '';
-    var tg = $('#bxCTag'); tg.textContent = it.dup ? '보유 중' : 'NEW!'; tg.classList.toggle('dup', !!it.dup);
-    img.src = tx.img; var ok = $('#bxChrOk'); ok.textContent = eco.box.length ? '다음 상자 (' + eco.box.length + ')' : '확인';
+    if (!X) { boxTsShow(it); return; }
+    var g = X.g, col = X.c;
+    boxColor(g, col); ov.style.setProperty('--ray', '0.5'); $('#bxStage').classList.add('chrMode');
+    $('#bxCName').textContent = X.name; $('#bxCName').style.fontSize = X.name.length > 8 ? '25px' : X.name.length > 6 ? '29px' : ''; $('#bxCRar').textContent = X.rar; $('#bxCSub').textContent = X.sub;
+    var tg = $('#bxCTag'); tg.textContent = X.tag; tg.classList.toggle('dup', X.dup);
+    img.src = X.img; var ok = $('#bxChrOk'); ok.textContent = eco.box.length ? '다음 상자 (' + eco.box.length + ')' : '확인';
     w.hidden = false;
     var br = $('#bxBox').getBoundingClientRect(), ir = img.getBoundingClientRect(), dx = Math.round(br.left + br.width / 2 - (ir.left + ir.width / 2)), dy = Math.round(br.top + br.height * 0.42 - (ir.top + ir.height / 2));
     var K = { fill: 'forwards' }, bm = $('#bxCBeam'), pl = $('#bxCPlate');
@@ -15426,13 +15869,15 @@ var DM = (function () {
     ui(function (c, tm) { var n = [523, 659, 784, 1047, 1319, 1568]; for (var i = 0; i < 2 + t; i++) { tone(c, tm + i * 0.07, 'triangle', n[i], n[i], 0.2, 0.12); tone(c, tm + i * 0.07, 'square', n[i] / 2, n[i] / 2, 0.16, 0.05); } });
     try { if (navigator.vibrate) navigator.vibrate(t >= 3 ? [60, 40, 90] : 50); } catch (e) {}
   }
-  function boxClose() { if (bx.tkt) { tkEnd(); return; } bxClear(); chrReset(); boxPause = false; $('#boxOv').hidden = true; bx.done = false; ecoUi(); }
+  function boxClose() { if (bx.tkt) { extDone(); return; } bxClear(); chrReset(); boxPause = false; $('#boxOv').hidden = true; bx.done = false; ecoUi(); }
   /* ---------- 컬렉션 탭 ---------- */
   var TOK_COST = { chr: 30, tal: 15, spl: 5 };   /* 토큰 교환: 캐릭터 30 · 재능 15 · 스펠 5 (기획 총정리) */
   var col = { rt: 'all', t: null, item: null, ico: {} };
   function colTypes() { return Object.keys(W).filter(function (k) { return k !== 'dummy'; }); }
   function colIcon(t) { if (!col.ico[t]) { try { col.ico[t] = makeIcon(t); } catch (e) { col.ico[t] = ''; } } return col.ico[t]; }
-  function colTok(t) { return eco.tok[t] || 0; }
+  function colShr(t) { return ((eco.stok || {})[RAR[t] || 0]) || 0; }   /* 같은 등급 공유 토큰 */
+  function colTok(t) { return (eco.tok[t] || 0) + colShr(t); }   /* 교환에는 전용 + 공유가 함께 쓰인다 (전용 먼저 씀) */
+  function colTokTx(t) { var sh = colShr(t); return colTok(t) + (sh ? ' (공유 ' + sh + ' 포함)' : ''); }
   var homeTabCur = 'play';
   function homeTab(name) {
     if (homeTabCur === name) return;
@@ -15469,7 +15914,7 @@ var DM = (function () {
     var sh = $('#colSheet'); sh.hidden = false; sh.style.setProperty('--rc', ri.c);
     $('#csHead').classList.toggle('lock', !o); $('#csHead').style.setProperty('--rc', ri.c);
     $('#csImg').src = colIcon(t); $('#csNm').textContent = w.name;
-    $('#csSt').innerHTML = '<span class="rp">' + ri.n + '</span><span>' + (o ? '보유 중' : '미보유 · 토큰 ' + colTok(t) + ' / ' + TOK_COST.chr) + '</span>';
+    $('#csSt').innerHTML = '<span class="rp">' + ri.n + '</span><span>' + (o ? '보유 중' : '미보유 · 토큰 ' + colTokTx(t) + ' / ' + TOK_COST.chr) + '</span>';
     $('#csDesc').textContent = w.desc;
     $('#csTal').innerHTML = w.traits.length ? w.traits.map(function (tr, i) {
       var has = talOwned(t, i), sel = col.item && col.item.k === 'tal' && col.item.i === i;
@@ -15490,7 +15935,7 @@ var DM = (function () {
     else { have = splOwned(t, it.s); name = SPELL[it.s].n; desc = SPELL[it.s].d; }
     bt.hidden = kind === 'chr' && o; bt.dataset.k = kind;
     if (have) { at.innerHTML = '<b>' + name + '</b>\n' + desc; bt.hidden = true; return; }
-    at.innerHTML = '<b>' + name + '</b> · 토큰 ' + tk + ' / ' + cost + '\n' + desc;
+    at.innerHTML = '<b>' + name + '</b> · 토큰 ' + colTokTx(t) + ' / ' + cost + '\n' + desc;
     bt.hidden = false;
     if (kind !== 'chr' && !o) { bt.textContent = '캐릭터 먼저'; bt.disabled = true; }
     else if (tk < cost) { bt.textContent = '토큰 부족'; bt.disabled = true; }
@@ -15503,12 +15948,12 @@ var DM = (function () {
     else if (!charOwned(t)) return;
     else if (kind === 'tal') { var a = t + ':' + it.i; if (eco.tal[a]) return; eco.tal[a] = 1; }
     else { var b = t + ':' + it.s; if (eco.spl[b]) return; eco.spl[b] = 1; }
-    eco.tok[t] = colTok(t) - cost; if (kind === 'chr') eco.seen[t] = 1; ecoSave(); uiConfirm();
+    var own = eco.tok[t] || 0, useO = Math.min(own, cost); eco.tok[t] = own - useO; if (cost > useO) eco.stok[RAR[t] || 0] = colShr(t) - (cost - useO);
+    if (kind === 'chr') eco.seen[t] = 1; ecoSave(); uiConfirm();
     try { if (navigator.vibrate) navigator.vibrate(40); } catch (e) {}
-    colRender(); colSheet(t, true);
-    if (kind === 'chr') { var im = $('#csHead .im'); im.classList.remove('pop'); void im.offsetWidth; im.classList.add('pop'); netNotify(W[t].name + ' 획득!'); }
-    else netNotify((kind === 'tal' ? W[t].traits[it.i].name : SPELL[it.s].n) + ' 획득!');
-    sync();
+    colRender(); colSheet(t, true); sync();
+    /* 교환도 상자·선택권과 같은 큰 획득 연출. 끝나면 캐릭터 창이 갱신된 채로 보인다 */
+    bx.fin = null; tkReveal(kind === 'chr' ? { k: 'chr', t: t } : kind === 'tal' ? { k: 'tal', t: t, i: it.i } : { k: 'spl', t: t, s: it.s }, '확인', null, false);
   }
   $('#colTabs').addEventListener('click', function (e) { var b = e.target.closest('[data-rt]'); if (!b) return; uiTick(); col.rt = b.dataset.rt; colRender(); $('#colGrid').scrollTop = 0; });
   $('#colGrid').addEventListener('click', function (e) { var b = e.target.closest('[data-t]'); if (!b) return; uiTick(); var t = b.dataset.t; colSheet(t, false); if (eco.own[t] && !eco.seen[t]) { eco.seen[t] = 1; ecoSave(); } });
@@ -15530,14 +15975,62 @@ var DM = (function () {
   function tkN(kind, g) { return (eco.tk && eco.tk[kind + g]) || 0; }
   function tkAdd(kind, g, n) { eco.tk = eco.tk || {}; eco.tk[kind + g] = Math.max(0, tkN(kind, g) + n); }
   function tkTotal() { var n = 0; for (var k in (eco.tk || {})) n += eco.tk[k] || 0; return n; }
+  /* 선택권 그림: 흰 입장권 + 등급색 스텁 + 흰 메달(등급색 테두리). 등급이 오를수록 디테일이 늘어난다
+     일반=낡고 찢김 · 희귀=깔끔 · 초희귀=가끔 반짝 · 영웅=포일 반사광 · 신화=빛무리 · 전설=금테+바깥 금빛 반짝이+테두리 도는 혜성 */
+  function tkMix(hex, f) { var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255; function m(v) { return Math.round(f >= 0 ? v + (255 - v) * f : v * (1 + f)); } return 'rgb(' + m(r) + ',' + m(g) + ',' + m(b) + ')'; }
+  function tkSpark(x, y, s, col, begin, dur, dutyOn) {
+    var p = 'M' + x + ' ' + (y - s) + 'L' + (x + s * .28) + ' ' + (y - s * .28) + 'L' + (x + s) + ' ' + y + 'L' + (x + s * .28) + ' ' + (y + s * .28) + 'L' + x + ' ' + (y + s) + 'L' + (x - s * .28) + ' ' + (y + s * .28) + 'L' + (x - s) + ' ' + y + 'L' + (x - s * .28) + ' ' + (y - s * .28) + 'Z';
+    if (begin == null) return '<path d="' + p + '" fill="' + col + '"/>';
+    var on = dutyOn || 0.3;   /* 한 주기 중 반짝이는 비율 */
+    return '<g transform="translate(' + x + ' ' + y + ')"><path d="' + p.replace(/(-?[\d.]+) (-?[\d.]+)/g, function (m, a, b) { return (a - x).toFixed(2) + ' ' + (b - y).toFixed(2); }) + '" fill="' + col + '" opacity="0"><animate attributeName="opacity" values="0;0;1;0;0" keyTimes="0;' + (0.5 - on / 2).toFixed(2) + ';0.5;' + (0.5 + on / 2).toFixed(2) + ';1" dur="' + dur + 's" begin="' + begin + 's" repeatCount="indefinite"/><animateTransform attributeName="transform" type="scale" values="0.3;0.3;1.15;0.3;0.3" keyTimes="0;' + (0.5 - on / 2).toFixed(2) + ';0.5;' + (0.5 + on / 2).toFixed(2) + ';1" dur="' + dur + 's" begin="' + begin + 's" repeatCount="indefinite"/></path></g>';
+  }
+  function tkGlyph(kind, c) {
+    var d = tkMix(c, -0.45), l = tkMix(c, 0.55), ink = '#0a1020', t = 'translate(44 24.4) scale(.86)';
+    if (kind === 'chr') return '<g transform="' + t + '"><path d="M-8 9a8 7.4 0 0 1 16 0z" fill="' + c + '" stroke="' + ink + '" stroke-width="1.5" stroke-linejoin="round"/><circle cx="0" cy="-3.6" r="4.6" fill="' + l + '" stroke="' + ink + '" stroke-width="1.5"/><path d="M-4.2 -5.2a4.6 4.6 0 0 1 8.4 0c-2-1.6-6.4-1.6-8.4 0z" fill="' + d + '"/></g>';
+    if (kind === 'tal') return '<g transform="' + t + '" stroke-linejoin="round"><path d="M0 -10L8.7 -5V5L0 10L-8.7 5V-5z" fill="' + c + '" stroke="' + ink + '" stroke-width="1.6"/><path d="M0 -10L8.7 -5L0 0L-8.7 -5z" fill="' + l + '"/><path d="M8.7 -5V5L0 10V0z" fill="' + d + '"/><path d="M0 -10L8.7 -5V5L0 10L-8.7 5V-5z" fill="none" stroke="' + ink + '" stroke-width="1.6"/><path d="M-8.7 -5L0 0L8.7 -5M0 0V10" fill="none" stroke="' + ink + '" stroke-width="1"/><path d="M-3 -9.2l.6 1.6 1.6.6-1.6.6-.6 1.6-.6-1.6-1.6-.6 1.6-.6z" fill="#fff"/></g>';
+    return '<g transform="' + t + '" stroke-linejoin="round"><path d="M0 -10L2.6 -2.6L10 0L2.6 2.6L0 10L-2.6 2.6L-10 0L-2.6 -2.6z" fill="' + c + '" stroke="' + ink + '" stroke-width="1.6"/><path d="M0 -10L2.6 -2.6L0 0L-2.6 -2.6z" fill="' + l + '"/><path d="M7.5 -7.5l1 2.2 2.2 1-2.2 1-1 2.2-1-2.2-2.2-1 2.2-1z" fill="' + l + '" stroke="' + ink + '" stroke-width="1"/></g>';
+  }
   function tkImg(kind, g) {
-    var c = RAR_INFO[g].c, glyph = kind === 'chr' ? '<circle cx="20" cy="16" r="4.2" fill="#fff" stroke="#0a1020" stroke-width="1.6"/><path d="M12.5 29a7.5 7 0 0 1 15 0z" fill="#fff" stroke="#0a1020" stroke-width="1.6" stroke-linejoin="round"/>' : kind === 'tal' ? '<path d="M20 11l7.5 4.3v8.6L20 28.2l-7.5-4.3v-8.6z" fill="#fff" stroke="#0a1020" stroke-width="1.6" stroke-linejoin="round"/>' : '<path d="M20 10.5l2.7 5.6 6.1.8-4.5 4.2 1.1 6-5.4-3-5.4 3 1.1-6-4.5-4.2 6.1-.8z" fill="#fff" stroke="#0a1020" stroke-width="1.6" stroke-linejoin="round"/>';
-    return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><path d="M4 8h32a2 2 0 0 1 2 2v5a5 5 0 0 0 0 10v5a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-5a5 5 0 0 0 0-10v-5a2 2 0 0 1 2-2z" fill="' + c + '" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/>' + glyph + '</svg>');
+    var c = RAR_INFO[g].c, l = tkMix(c, 0.5), d = tkMix(c, -0.3), ink = '#0a1020', i, defs, mid = '', top = '', back = '', rays = '', crown = '';
+    var BODY = 'M6 6H66a3 3 0 0 1 3 3V17a7 7 0 0 0 0 14V39a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V31a7 7 0 0 0 0-14V9a3 3 0 0 1 3-3z';
+    var paper = g === 0 ? ['#f3f1e8', '#cfcabb'] : ['#ffffff', '#dfe5f1'];
+    defs = '<clipPath id="cp"><path d="' + BODY + '"/></clipPath><linearGradient id="b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + paper[0] + '"/><stop offset="1" stop-color="' + paper[1] + '"/></linearGradient><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + (g === 5 ? '#fff1a8' : l) + '"/><stop offset=".55" stop-color="' + c + '"/><stop offset="1" stop-color="' + d + '"/></linearGradient><radialGradient id="mw" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="' + tkMix(c, 0.8) + '"/></radialGradient><filter id="g" x="-20%" y="-30%" width="140%" height="160%"><feGaussianBlur stdDeviation="1.8"/></filter><clipPath id="mc"><circle cx="44" cy="24" r="10"/></clipPath>';
+    if (g === 0) defs += '<mask id="tr"><rect x="-4" y="-4" width="80" height="56" fill="#fff"/><path d="M57 6L59.500 10L62 7.500L64 12L66.500 8.500L69 13L75 13L75 -2L57 -2z" fill="#000"/></mask>';
+    /* 스텁: 바코드 줄무늬 */
+    var bar = ''; for (i = 0; i < 6; i++) bar += '<path d="M' + (8 + i * 2.2) + ' ' + (15 + (i % 3)) + 'V' + (33 - ((i + 1) % 3)) + '" stroke="#fff" stroke-opacity=".38" stroke-width="' + (i % 2 ? 0.8 : 1.4) + '"/>';
+    var body = '<path d="' + BODY + '" fill="url(#b)"/><g clip-path="url(#cp)"><rect x="0" y="0" width="22" height="48" fill="url(#s)"/></g>' + bar +
+      '<path d="M22 7V41" stroke="' + ink + '" stroke-opacity=".55" stroke-width="1.2" stroke-dasharray="1.6 2.2" stroke-linecap="round"/><path d="M26 11H64M26 37H64" stroke="' + c + '" stroke-opacity=".8" stroke-width="1" stroke-dasharray="2 2"/>' +
+      '<path d="' + BODY + '" fill="none" stroke="' + ink + '" stroke-width="2.6" stroke-linejoin="round"/>';
+    if (g === 0) {   /* 낡음: 접힌 자국 · 얼룩 · 찢긴 모서리 */
+      body += '<path d="M30 8L34 20L31 31L35 40" fill="none" stroke="#8a826c" stroke-opacity=".35" stroke-width=".9"/><path d="M52 6L50 17L54 28" fill="none" stroke="#8a826c" stroke-opacity=".28" stroke-width=".8"/><circle cx="29" cy="35" r="1.6" fill="#8a826c" opacity=".22"/><circle cx="60" cy="38" r="1.1" fill="#8a826c" opacity=".22"/><circle cx="12" cy="40" r="1.2" fill="#fff" opacity=".18"/>';
+      body = '<g mask="url(#tr)">' + body + '</g><path d="M57 6L59.500 10L62 7.500L64 12L66.500 8.500L69 13" fill="none" stroke="' + ink + '" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/>';
+    }
+    if (g >= 4) {   /* 빛무리(바깥) */
+      back = '<path d="' + BODY + '" fill="none" stroke="' + (g === 5 ? '#ffc21a' : c) + '" stroke-width="' + (g === 5 ? 4.6 : 3.2) + '" filter="url(#g)" opacity=".5"><animate attributeName="opacity" values="' + (g === 5 ? '.5;1;.5' : '.25;.8;.25') + '" dur="2.6s" repeatCount="indefinite"/></path>';
+    } else if (g === 3) back = '<path d="' + BODY + '" fill="none" stroke="' + c + '" stroke-width="2.4" filter="url(#g)" opacity=".4"/>';
+    var ringC = g === 5 ? '#e0a510' : c;
+    var medal = '<circle cx="44" cy="24" r="12.4" fill="' + ringC + '" stroke="' + ink + '" stroke-width="2"/>' + (g === 5 ? '<circle cx="44" cy="24" r="11.2" fill="none" stroke="#fff3b0" stroke-width=".8" stroke-dasharray="1.5 1.5"/>' : '') + '<circle cx="44" cy="24" r="10" fill="url(#mw)" stroke="' + ink + '" stroke-width="1.2"/>' + rays + tkGlyph(kind, c);
+    if (g >= 3) medal += '<circle cx="44" cy="24" r="12.4" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width=".8" stroke-dasharray="3 5"/>';
+    /* 반짝이 */
+    if (g === 2) top += tkSpark(61, 13, 3.2, c, 0.6, 4.2, 0.22) + tkSpark(27, 36.5, 2.2, c, 2.4, 5.1, 0.2);
+    if (g === 3) top += tkSpark(61, 13, 3.4, c, 0, 3.0, 0.3) + tkSpark(27, 36.5, 2.4, c, 1.4, 3.6, 0.28) + tkSpark(64, 36, 2, c, 2.2, 3.3, 0.26);
+    if (g === 4) top += tkSpark(61, 12, 3.6, '#ff6b70', 0, 2.4, 0.4) + tkSpark(27, 36.5, 2.6, '#ff6b70', 0.8, 2.8, 0.38) + tkSpark(64, 36, 2.2, '#ff6b70', 1.6, 2.6, 0.36) + tkSpark(25, 11, 1.8, '#ff6b70', 2.0, 3.0, 0.34);
+    if (g === 5) top += tkSpark(61, 12, 3.8, '#e0a510', 0, 2.0, 0.42) + tkSpark(27, 36.5, 2.8, '#e0a510', 0.6, 2.3, 0.4) + tkSpark(64, 36, 2.4, '#e0a510', 1.2, 2.1, 0.4) + tkSpark(25, 11, 2, '#e0a510', 1.7, 2.5, 0.38) + tkSpark(13, 24, 2.2, '#fff', 0.9, 2.2, 0.4);
+    if (g === 5) {   /* 전설: 표 바깥으로 번지는 금빛 반짝이 + 테두리를 도는 빛 */
+      top += tkSpark(8, 0.5, 2.6, '#ffd23a', 0.3, 2.4, 0.36) + tkSpark(36, -0.6, 2.2, '#fff', 1.4, 2.9, 0.34) + tkSpark(63, 1, 2.8, '#ffd23a', 2.0, 2.6, 0.36) +
+        tkSpark(-0.5, 24, 2.4, '#fff', 0.8, 2.7, 0.34) + tkSpark(72, 26, 2.4, '#ffd23a', 1.7, 2.5, 0.36) +
+        tkSpark(14, 47, 2.6, '#ffd23a', 1.1, 2.6, 0.36) + tkSpark(42, 48, 2.2, '#fff', 2.3, 2.8, 0.34) + tkSpark(66, 46.5, 2.8, '#ffd23a', 0.1, 2.4, 0.36);
+      var cm, k, W = 1.1, N = 14, cl;   /* 꼬리가 서서히 옅어지는 혜성 2개가 반대편에서 테두리를 돈다 */
+      for (cm = 0; cm < 2; cm++) for (k = 0; k < N; k++) { cl = k < 2 ? '#fffbe0' : (k < 6 ? '#ffe98a' : '#ffc21a'); top += '<path d="' + BODY + '" pathLength="100" fill="none" stroke="' + cl + '" stroke-width="' + (k < 2 ? 1.7 : 1.4) + '" stroke-dasharray="' + W + ' ' + (100 - W) + '" opacity="' + (k === 0 ? 1 : (0.95 * Math.pow(1 - k / N, 1.1)).toFixed(2)) + '"><animate attributeName="stroke-dashoffset" from="' + ((k + 1) * W) + '" to="' + ((k + 1) * W - 100) + '" dur="3.6s" begin="' + (cm * -1.8) + 's" repeatCount="indefinite"/></path>'; }
+    }
+    var shine = g >= 3 ? '<g clip-path="url(#cp)"><rect x="-30" y="-6" width="' + (g === 5 ? 11 : 8) + '" height="62" fill="#fff" opacity="' + (g >= 4 ? 0.5 : 0.4) + '" transform="rotate(22 0 24)"><animateTransform attributeName="transform" type="translate" additive="sum" values="0 0;125 0;125 0" keyTimes="0;.4;1" dur="' + (g === 5 ? 2.6 : 3.4) + 's" repeatCount="indefinite"/></rect></g>' : '';
+    var gold = g === 5 ? '<path d="M8 9.500H64a2 2 0 0 1 2 2V18a6 6 0 0 0 0 12V36.500a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V30a6 6 0 0 0 0-12V11.500a2 2 0 0 1 2-2z" fill="none" stroke="#e0a510" stroke-width="1" opacity=".9"/>' : '';
+    return 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="-3 -3 78 54"><defs>' + defs + '</defs>' + back + '<path d="' + BODY + '" transform="translate(0 2)" fill="#0a1020" opacity=".35"/>' + body + gold + medal + top + shine + '</svg>');
   }
   function tkName(kind, g) { return RAR_INFO[g].n + ' ' + TK_KIND[kind] + ' 선택권'; }
   function tkHead() {}
-  function tkOpen() { tk.mode = 'list'; $('#hmInv').hidden = false; $('#tkOv').hidden = false; boxPause = true; tkRender(); }
-  function tkClose() { if (bx.tkt) tkEnd(); $('#tkOv').hidden = true; $('#hmInv').hidden = true; boxPause = homeTabCur !== 'play'; }
+  function tkOpen() { tk.mode = 'list'; $('#bossOv').hidden = true; $('#hmInv').hidden = false; $('#tkOv').hidden = false; boxPause = true; tkRender(); }
+  function tkClose() { if (bx.tkt) { bx.fin = null; tkEnd(); } $('#tkOv').hidden = true; $('#hmInv').hidden = true; boxPause = homeTabCur !== 'play'; }
   function tkSetAct(txt, label, on) { $('#tkAct').hidden = !txt; $('#tkAt').innerHTML = txt || ''; var b = $('#tkGo'); b.textContent = label; b.disabled = !on; }
   function tkUsable(kind, g) {   /* 지금 이 선택권으로 고를 수 있는 게 있는지 */
     if (kind === 'chr') return boxPool(g).length > 0;
@@ -15589,19 +16082,22 @@ var DM = (function () {
     else if (kind === 'spl' && tk.t && tk.s) it = { k: 'spl', t: tk.t, s: tk.s };
     else return;
     boxApply(it); if (it.k === 'chr') eco.seen[it.t] = 1; tkAdd(kind, g, -1); ecoSave(); uiConfirm(); sync();
-    tk.mode = 'res'; colRender(); tkHead(); tkReveal(it);
+    tk.mode = 'res'; colRender(); tkHead(); bx.fin = null; tkReveal(it);
   }
   /* 선택권으로 얻을 때도 상자와 같은 획득 연출(boxChrShow)을 쓴다 */
-  function tkReveal(it) {
-    var ov = $('#boxOv');
-    bxClear(); chrReset(); bx.tkt = true; bx.done = true; bx.lock = true;
+  function tkReveal(it, okText, next, skip) {
+    var ov = $('#boxOv'), cb = $('#bxClose');
+    cb.classList.toggle('skip', !!skip); cb.textContent = skip ? '건너뛰기' : '✕'; cb.style.visibility = skip ? '' : 'hidden';
+    bxClear(); chrReset(); bx.tkt = true; bx.done = true; bx.lock = true; bx.next = next || null;
     ov.classList.add('tkMode'); ov.hidden = false; $('#bxStage').hidden = false; $('#bxRes').hidden = true; $('#bxBox').classList.remove('open');
-    boxChrShow(it); $('#bxChrOk').textContent = '확인';
+    boxChrShow(it); $('#bxChrOk').textContent = okText || '확인';
   }
+  function extDone() { var f = bx.fin; bx.fin = null; tkEnd(); if (f) f(); }
   function tkEnd() {
     var ov = $('#boxOv'); bxClear(); chrReset(); ov.classList.remove('tkMode'); ov.hidden = true;
+    var cb = $('#bxClose'); cb.classList.remove('skip'); cb.textContent = '✕'; cb.style.visibility = '';
     bx.tkt = false; bx.done = false; bx.lock = false;
-    if (!$('#hmInv').hidden) { tk.mode = 'list'; tkRender(); tkHead(); }
+    if (!$('#hmInv').hidden && !$('#tkOv').hidden) { tk.mode = 'list'; tkRender(); tkHead(); }
   }
   $('#hmInv').addEventListener('click', function (e) { if (e.target === this) { uiBack(); tkClose(); } });
   $('#tkX').addEventListener('click', function () { uiBack(); tkClose(); });
@@ -15622,8 +16118,21 @@ var DM = (function () {
     { n: '스핀 라이트 패스', p: 9900, desc: '상자 하루 15판 · 일일 로그인 보상 일반·희귀 토큰 ×5\n퀘스트 +3개(준비 중)', c: '#33c8f0' },
     { n: '스핀 패스', p: 19800, desc: '라이트 혜택 포함 · 상자 하루 20개(판당 2개)\n일일 로그인 보상 영웅 토큰 ×5 · 상자 등급 분포 상승', c: '#ffc61a' }];
   var SH_PK = [
-    { n: '입문', p: 1900, g: 1 }, { n: '초보', p: 3900, g: 2 }, { n: '중급', p: 9900, g: 3 },
-    { n: '상급', p: 19900, g: 4 }, { n: '고인물', p: 39900, g: 5 }, { n: '썩은물', p: 69900, g: 5, taigo: true }];
+    { n: '입문', p: 1900, g: 1, c: 500, d: 20 }, { n: '초보', p: 3900, g: 2, c: 1200, d: 50 }, { n: '중급', p: 9900, g: 3, c: 3500, d: 150 },
+    { n: '상급', p: 19900, g: 4, c: 8000, d: 350 }, { n: '고인물', p: 39900, g: 5, c: 20000, d: 800 }, { n: '썩은물', p: 69900, g: 5, c: 40000, d: 1500, taigo: true }];
+  /* 정기 상점: 일간(매일 0시) · 주간(월요일 0시) · 월간(매달 1일 0시), 모두 한국 시간. 한 번 사면 다음 기간까지 구매 완료 */
+  function shMonthKey() { var t = new Date(Date.now() + 9 * 3600000); return t.getUTCFullYear() * 12 + t.getUTCMonth(); }
+  function shFull(g, c, d) { return [{ k: 'coin', n: c }, { k: 'gem', n: d }, { k: 'tkt', kind: 'chr', g: g, n: 1 }, { k: 'tkt', kind: 'tal', g: g, n: 1 }, { k: 'tkt', kind: 'spl', g: g, n: 2 }]; }
+  var SH_RP = [
+    { id: 'd', h: '일간 상점', sub: '매일 0시에 새로 열려요', key: function () { return bossDayKst(); }, n: '듬뿍 토큰 패키지', p: 1100, c: 3, give: [{ k: 'stok', g: 0, n: 5 }, { k: 'stok', g: 1, n: 5 }, { k: 'stok', g: 2, n: 2 }, { k: 'stok', g: 3, n: 1 }],
+      desc: '공유 일반 토큰 ×5 · 공유 희귀 토큰 ×5\n공유 초희귀 토큰 ×2 · 공유 영웅 토큰 ×1' },
+    { id: 'w', h: '주간 상점', sub: '매주 월요일 0시에 새로 열려요', key: function () { return bossWeek(); }, n: '치맥 대신 신화 풀강화 패키지', p: 19900, c: 4, give: shFull(4, 8000, 350),
+      desc: '신화 캐릭터 선택권 ×1 · 신화 재능 선택권 ×1\n신화 스펠 선택권 ×2\n코인 8,000 · 다이아 350' },
+    { id: 'm', h: '월간 상점', sub: '매달 1일 0시에 새로 열려요', key: shMonthKey, n: '피자 한판 대신 전설 풀강화 패키지', p: 29900, c: 5, give: shFull(5, 15000, 600),
+      desc: '전설 캐릭터 선택권 ×1 · 전설 재능 선택권 ×1\n전설 스펠 선택권 ×2\n코인 15,000 · 다이아 600' }];
+  var SH_DIA = [{ d: 100, b: 5 }, { d: 1000, b: 55 }, { d: 2000, b: 120 }];   /* 다이아 상점: 다이아 → 상자 */
+  function boxImg() { var e = document.querySelector('#hmBoxCard svg'); return e ? 'data:image/svg+xml,' + encodeURIComponent(e.outerHTML.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"')) : ''; }
+  function shOwner() { return !!(acct.me && acct.me.o); }   /* 상점 맨 아래 테스트 버튼은 제작자 계정만 */
   function shWon(n) { return n.toLocaleString() + '원'; }
   function shPassSvg(c) { return '<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M5 9h30a2 2 0 0 1 2 2v5a4 4 0 0 0 0 8v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-5a4 4 0 0 0 0-8v-5a2 2 0 0 1 2-2z" fill="' + c + '" stroke="#0a1020" stroke-width="2.6" stroke-linejoin="round"/><path d="M20 12.5l2.4 5 5.4.7-3.9 3.8.9 5.4-4.8-2.6-4.8 2.6.9-5.4-3.9-3.8 5.4-.7z" fill="#fff" stroke="#0a1020" stroke-width="1.6" stroke-linejoin="round"/></svg>'; }
   function shRender() {
@@ -15636,56 +16145,92 @@ var DM = (function () {
       var done = eco.login === ecoDay();
       h += '<div class="shp"><div class="tt"><b>일일 로그인 보상</b><small>' + (eco.pass === 2 ? '무작위 영웅 토큰 ×5' : '무작위 일반·희귀 캐릭터 토큰 ×5') + '</small></div><button type="button" class="by" data-by="login"' + (done ? ' disabled' : '') + '>' + (done ? '받음' : '받기') + '</button></div>';
     }
-    h += '<h4>패키지 <span style="font-weight:700;color:var(--hmu);font-size:11px">1회 한정 · 구성은 임시</span></h4><div class="shg">';
+    SH_RP.forEach(function (R) {
+      var got = (eco.sp || {})[R.id] === R.key(), ic = R.id === 'd' ? stokImg(3) : tkImg('chr', R.c);
+      h += '<h4>' + R.h + ' <span style="font-weight:700;color:var(--hmu);font-size:11px">' + R.sub + ' · 구성은 임시</span></h4><div class="shp' + (got ? ' on' : '') + '" style="border-color:' + (got ? 'var(--hbd)' : RAR_INFO[R.c].c) + '"><img src="' + ic + '" alt=""><div class="tt"><b>' + R.n + '</b><small>' + R.desc + '</small><small class="pr">' + shWon(R.p) + '</small></div><button type="button" class="by" data-by="rp' + R.id + '"' + (got ? ' disabled' : '') + '>' + (got ? '구매 완료' : '받기') + '</button></div>';
+    });
+    h += '<h4>다이아 상점 <span style="font-weight:700;color:var(--hmu);font-size:11px">다이아로 상자를 사요</span></h4><div class="shg">';
+    SH_DIA.forEach(function (k, i) {
+      var ok = (eco.gem || 0) >= k.d;
+      h += '<div class="shk"><b>상자 ×' + k.b + '</b><small>다이아 100개당 ' + (k.b / k.d * 100).toFixed(1).replace(/\.0$/, '') + '개꼴</small><button type="button" class="by dia" data-by="dia' + i + '"' + (ok ? '' : ' disabled') + '>' + k.d.toLocaleString() + ' 다이아</button></div>';
+    });
+    h += '</div><h4>1회 한정 패키지 <span style="font-weight:700;color:var(--hmu);font-size:11px">한 번만 살 수 있어요 · 구성은 임시</span></h4><div class="shg">';
     SH_PK.forEach(function (k, i) {
       var got = !!eco.pk[i], ri = RAR_INFO[k.g];
-      h += '<div class="shk" style="border-color:' + (got ? 'var(--hbd)' : ri.c) + '"><b>' + k.n + '</b><small>' + ri.n + ' 캐릭터·재능·스펠 선택권\n' + ri.n + ' 토큰 ×20' + (k.taigo ? '\n태고 토큰 ×5' : '') + '</small><small class="pr">' + shWon(k.p) + '</small><button type="button" class="by" data-by="pk' + i + '"' + (got ? ' disabled' : '') + '>' + (got ? '구매 완료' : '받기') + '</button></div>';
+      h += '<div class="shk" style="border-color:' + (got ? 'var(--hbd)' : ri.c) + '"><b>' + k.n + '</b><small>' + ri.n + ' 캐릭터' + (k.taigo ? '·재능·스펠' : '') + ' 선택권\n무작위 ' + ri.n + ' 토큰 ×20\n코인 ' + k.c.toLocaleString() + ' · 다이아 ' + k.d.toLocaleString() + (k.taigo ? '\n태고 토큰 ×5' : '') + '</small><small class="pr">' + shWon(k.p) + '</small><button type="button" class="by" data-by="pk' + i + '"' + (got ? ' disabled' : '') + '>' + (got ? '구매 완료' : '받기') + '</button></div>';
     });
-    h += '</div><button type="button" class="shdbg" data-by="tkall">테스트: 선택권 전부 +1 (일반~전설, 3종)</button><button type="button" class="shdbg" data-by="reset">테스트: 구매 기록 초기화</button>';
+    h += '</div>';
+    if (shOwner()) h += '<button type="button" class="shdbg" data-by="tkall">테스트: 선택권 전부 +1 (일반~전설, 3종)</button><button type="button" class="shdbg" data-by="reset">테스트: 구매 기록 초기화</button>';
     $('#shBody').innerHTML = h;
   }
   function shpick(g, skip) { var a = boxPool(g).filter(function (k) { return k !== skip; }); return a.length ? a[Math.floor(Math.random() * a.length)] : pickChar(g); }
   function shShow(title, items) {
     $('#shResT').textContent = title;
     $('#shResL').innerHTML = items.map(function (it) {
-      var tx = it.k === 'tkt' ? { img: tkImg(it.kind, it.g), name: tkName(it.kind, it.g), sub: '컬렉션 > 선택권에서 써요' } : boxText(it), c = it.k === 'coin' ? RAR_INFO[0].c : RAR_INFO[it.k === 'tkt' ? it.g : (RAR[it.t] || 0)].c;
+      var tx = it.k === 'tkt' ? { img: tkImg(it.kind, it.g), name: tkName(it.kind, it.g) + (it.n > 1 ? ' ×' + it.n : ''), sub: '보관함에서 써요' } : boxText(it), c = it.k === 'coin' ? '#ffc61a' : it.k === 'gem' ? '#35b8f2' : RAR_INFO[(it.k === 'tkt' || it.k === 'stok') ? it.g : (RAR[it.t] || 0)].c;
+      if (it.k === 'bxs') c = '#ffc61a';
       return '<div class="shr" style="--rc:' + c + '">' + (tx.img ? '<img src="' + tx.img + '" alt="">' : '') + '<span><b>' + tx.name + '</b><small>' + tx.sub + '</small></span></div>';
     }).join('');
+    var rows = $('#shResL').children, ok = $('#shResOk'); shTm.forEach(clearTimeout); shTm = [];
+    ok.style.visibility = rows.length > 1 ? 'hidden' : '';
     $('#shRes').hidden = false;
+    /* 받은 것들이 하나씩 번쩍이며 나타난다 */
+    Array.prototype.forEach.call(rows, function (r, i) {
+      shTm.push(setTimeout(function () { if ($('#shRes').hidden) return; r.classList.add('in'); uiTick(0.9 + Math.min(i, 8) * 0.09); try { if (navigator.vibrate) navigator.vibrate(14); } catch (e) {} }, 120 + i * 190));
+    });
+    if (rows.length > 1) shTm.push(setTimeout(function () { ok.style.visibility = ''; }, 120 + rows.length * 190 + 120));
   }
+  var shTm = [];
   function shBuy(id) {
     var items = [], title = '받았어요!';
+    if ((id === 'tkall' || id === 'reset') && !shOwner()) return;
     if (id === 'tkall') { ['chr', 'tal', 'spl'].forEach(function (kd) { for (var g = 0; g <= 5; g++) tkAdd(kd, g, 1); }); ecoSave(); netNotify('선택권 18장을 받았어요 · 컬렉션에서 써요'); return; }
-    if (id === 'reset') { eco.pk = {}; eco.pass = 0; eco.login = ''; eco.tk = {}; ecoSave(); ecoUi(); shRender(); netNotify('구매 기록을 초기화했어요'); return; }
+    if (id === 'reset') { eco.pk = {}; eco.sp = {}; eco.stok = {}; eco.pass = 0; eco.login = ''; eco.tk = {}; ecoSave(); ecoUi(); shRender(); netNotify('구매 기록을 초기화했어요'); return; }
     if (id === 'pass1' || id === 'pass2') {
       var lv = +id.slice(4); if (eco.pass >= lv) return; eco.pass = lv; ecoSave(); ecoUi(); uiConfirm(); shRender();
-      shShow(SH_PASS[lv].n + ' 시작!', []);
-      $('#shResL').innerHTML = '<div class="shr" style="--rc:' + SH_PASS[lv].c + '">' + shPassSvg(SH_PASS[lv].c).replace('<svg', '<svg width="44" height="44"') + '<span><b>' + SH_PASS[lv].n + '</b><small>상자 하루 ' + ecoCap() + (lv === 2 ? '개' : '판') + ' · 일일 로그인 보상 받을 수 있어요</small></span></div>';
+      shReveal([{ k: 'pass', lv: lv }], '');
       return;
     }
     if (id === 'login') {
       if (!eco.pass || eco.login === ecoDay()) return;
       var t = eco.pass === 2 ? pickChar(3) : pickChar(Math.random() < 0.5 ? 0 : 1);
-      items.push({ k: 'tok', t: t, n: 5 }); eco.login = ecoDay(); title = '로그인 보상!';
+      items.push({ k: 'tok', t: t, n: 5, rnd: true }); eco.login = ecoDay(); title = '로그인 보상!';
     } else if (id.indexOf('pk') === 0) {
-      var i = +id.slice(2), K = SH_PK[i]; if (eco.pk[i]) return; eco.pk[i] = 1; title = K.n + ' 패키지!';
-      ['chr', 'tal', 'spl'].forEach(function (kd) { items.push({ k: 'tkt', kind: kd, g: K.g }); });
-      items.push({ k: 'tok', t: shpick(K.g), n: 20 });
+      var i = +id.slice(2), K = SH_PK[i]; if (eco.pk[i]) return; eco.pk[i] = 1; title = K.n + ' 1회 한정 패키지!';
+      items.push({ k: 'coin', n: K.c }, { k: 'gem', n: K.d });
+      (K.taigo ? ['chr', 'tal', 'spl'] : ['chr']).forEach(function (kd) { items.push({ k: 'tkt', kind: kd, g: K.g }); });
+      items.push({ k: 'tok', t: shpick(K.g), n: 20, rnd: true });
       if (K.taigo) items.push({ k: 'tok', t: pickChar(6), n: 5 });
+    } else if (id.indexOf('dia') === 0) {
+      var DK = SH_DIA[+id.slice(3)]; if (!DK || (eco.gem || 0) < DK.d) { netNotify('다이아가 모자라요'); return; }
+      eco.gem -= DK.d; for (var bi = 0; bi < DK.b; bi++) eco.box.push(wpick(boxDist()));
+      ecoSave(); ecoUi(); uiConfirm(); shRender(); shShow('상자 ×' + DK.b + ' 샀어요!', [{ k: 'bxs', n: DK.b, d: DK.d }]); return;
+    } else if (id.indexOf('rp') === 0) {
+      var R = SH_RP.filter(function (x) { return x.id === id.slice(2); })[0]; if (!R) return;
+      eco.sp = eco.sp || {}; if (eco.sp[R.id] === R.key()) return; eco.sp[R.id] = R.key(); title = R.n + '!';
+      items = R.give.map(function (x) { var o = {}; for (var q in x) o[q] = x[q]; return o; });
     } else return;
-    items.forEach(function (it) { if (it.k === 'tkt') tkAdd(it.kind, it.g, 1); else boxApply(it); }); ecoSave(); ecoUi(); uiConfirm(); shRender(); shShow(title, items);
+    items.forEach(function (it) { if (it.k === 'tkt') tkAdd(it.kind, it.g, it.n || 1); else boxApply(it); }); ecoSave(); ecoUi(); uiConfirm(); shRender(); shReveal(items, title);
+  }
+  /* 구매 획득 연출: 하나씩 큰 연출로 보여 주고, 여러 개면 마지막에 받은 목록을 정리해서 보여 준다 */
+  function shReveal(items, title) {
+    var n = items.length;
+    bx.fin = n > 1 ? function () { shShow(title, items); } : null;
+    (function step(i) {
+      tkReveal(items[i], i < n - 1 ? '다음 (' + (n - i - 1) + ')' : '확인', i < n - 1 ? function () { uiConfirm(); step(i + 1); } : null, i < n - 1);
+    })(0);
   }
   function shopRender() { shRender(); }
   $('#shBody').addEventListener('click', function (e) { var b = e.target.closest('[data-by]'); if (!b || b.disabled) return; shBuy(b.dataset.by); });
-  $('#shResOk').addEventListener('click', function () { uiBack(); $('#shRes').hidden = true; });
-  function homeSync() { $('#hmNick').textContent = (acct && acct.me) ? acct.me.n : nick; ecoUi(); }
+  $('#shResOk').addEventListener('click', function () { uiBack(); $('#shRes').hidden = true; shTm.forEach(clearTimeout); shTm = []; });
+  function homeSync() { $('#hmNick').textContent = (acct && acct.me) ? acct.me.n : nick; ecoUi(); if (typeof newsUi === 'function') { newsUi(true); newsLoad(); } }
   function arenaTo(home) {
     var ar = $('#arena'), host = home ? $('#hmSlot') : setupEl.parentNode;
     if (home) { if (ar.parentNode !== host) host.appendChild(ar); }
     else if (ar.parentNode !== host) host.insertBefore(ar, setupEl);
   }
   function showScreen(name) {
-    screenName = name;
+    screenName = name; document.body.classList.remove('bossBt'); bbgStop();
     colShow(false);
     var title = name === 'title', select = name === 'select', battle = name === 'battle', cls = name === 'cls', spec = name === 'spec', home = name === 'home';
     $('#home').hidden = !home;
@@ -15748,18 +16293,23 @@ var DM = (function () {
   $('#nickIn').addEventListener('change', nickRead);
   function cpnRefresh(msg) {
     var m = $('#cpnMsg'); if (!m) return;
-    var op = ['r4', 'r5', 'r6'].filter(grantHas);
-    m.textContent = msg || (eco.test && !op.length ? '테스트 쿠폰 적용 중 · 일반~영웅 열림' : !acct.me ? (window.SPIN_ACC ? '쿠폰은 로그인하면 쓸 수 있어요' : '쿠폰은 지금 쓸 수 없어요') : (op.length ? '열린 등급: ' + op.map(function (g) { return GRANT_NAME[g]; }).join(' · ') : '코드를 넣으면 새 무기가 열려요'));
+    var op = ['rA', 'rB'].filter(grantHas);
+    m.textContent = msg || (!acct.me ? (window.SPIN_ACC ? '쿠폰은 로그인하면 쓸 수 있어요' : '쿠폰은 지금 쓸 수 없어요') : (op.length ? '열린 것: ' + op.map(function (g) { return GRANT_NAME[g]; }).join(' · ') + ' 캐릭터·재능·스펠' : '코드를 넣으면 캐릭터·재능·스펠이 열려요'));
     cmdTagSync();
+  }
+  /* nospinclash · nobeta30: 그 등급 묶음의 캐릭터·재능·스펠을 모두 없앤다 (기본 검·단검·활만 남음). 서버가 권한을 회수하고, 이 기기에 저장된 보유분도 지운다 */
+  function cpnWipe(g) {
+    var lo = g === 'rB' ? 6 : 0, hi = g === 'rB' ? 6 : 5, keep = { sword: 1, dagger: 1, bow: 1 };
+    colTypes().forEach(function (t) {
+      var r = RAR[t] || 0; if (r < lo || r > hi || keep[t]) return;
+      delete eco.own[t]; delete eco.seen[t];
+      [eco.tal, eco.spl].forEach(function (o) { Object.keys(o).forEach(function (k) { if (k.indexOf(t + ':') === 0) delete o[k]; }); });
+    });
+    ecoSave(); if (typeof colRender === 'function') colRender();
   }
   function cpnApply() {
     var inp = $('#cpnIn'), c = inp.value.trim().toLowerCase();
     if (!c) { cpnRefresh('코드를 입력해 주세요'); return; }
-    if (c === 'test' || c === 'notest') {   /* 테스트 쿠폰(기기에만 저장): 일반~영웅 캐릭터와 그 재능·스펠이 전부 열린다 */
-      eco.test = c === 'test'; ecoSave(); inp.value = '';
-      cpnRefresh(eco.test ? '테스트 쿠폰 적용! 일반~영웅이 모두 열렸어요' : '테스트 쿠폰을 해제했어요');
-      sync(); if (typeof colRender === 'function' && homeTabCur === 'col') colRender(); return;
-    }
     if (!acct.me) { cpnRefresh(window.SPIN_ACC ? '쿠폰은 로그인하면 쓸 수 있어요' : '쿠폰은 지금 쓸 수 없어요'); return; }
     if (acct.busy) return;
     acct.busy = true; $('#cpnBtn').disabled = true; cpnRefresh('확인하는 중…');
@@ -15769,10 +16319,11 @@ var DM = (function () {
       if (j.me && acct.me) { acct.me = j.me; }
       var t;
       if (!j.ok) t = j.m || '코드를 확인하지 못했어요';
+      else if ((j.k === 'revoke' || j.k === 'norev') && (j.g === 'rA' || j.g === 'rB')) { cpnWipe(j.g); t = GRANT_NAME[j.g] + ' 캐릭터·재능·스펠을 모두 없앴어요 (검·단검·활만 남아요)'; }
       else if (j.k === 'revoke') t = '제작자 권한을 해제했어요' + (j.me && acct.me && /^플레이어\d+$/.test(j.me.n) ? ' · 닉네임은 ' + j.me.n + ' 으로 바뀌었어요' : '');
       else if (j.k === 'norev') t = '해제할 제작자 권한이 없어요';
       else if (j.k === 'dup') t = '이미 적용된 코드예요';
-      else t = j.g === 'cmd' ? '제작자 권한이 열렸어요 · 닉네임 "유령" 사용 가능' : (GRANT_NAME[j.g] || '') + ' 등급이 열렸어요!';
+      else t = j.g === 'cmd' ? '제작자 권한이 열렸어요 · 닉네임 "유령" 사용 가능' : (GRANT_NAME[j.g] || '') + ' 캐릭터·재능·스펠이 모두 열렸어요!';
       if (j.ok) inp.value = '';
       accUiSync(); cpnRefresh(t); sync();
     });
@@ -15789,6 +16340,7 @@ var DM = (function () {
     return fetch(path, o).then(function (r) { return r.json().catch(function () { return { ok: false, m: '서버 응답이 이상해요' }; }).then(function (j) { j.status = r.status; return j; }); }, function () { return { ok: false, c: 'net', m: '서버에 연결하지 못했어요' }; });
   }
   function accUiSync() {
+    if (typeof newsUi === 'function') newsUi();
     var on = !!window.SPIN_ACC; $('#accRow').hidden = !on; $('#accRow2').hidden = !on; if (!on) return;
     $('#accInfo').textContent = acct.me ? '로그인: ' + acct.me.n : '손님으로 하는 중';
     $('#accInfo2').textContent = acct.me ? acct.me.u + ' · ' + acct.me.n : '저장·트로피는 로그인하면 쓸 수 있어요';
@@ -15926,10 +16478,10 @@ var DM = (function () {
   $('#closeHelp').addEventListener('click', function () { $('#helpModal').hidden = true; });
   $('#helpModal').addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
   $('#settings').addEventListener('click', function (e) { if (e.target === this) closeSettings(); });
-  $('#homeBtn').addEventListener('click', function () { if (net.on) { netLeave(); return; } showScreen('home'); });
-  $('#startBtn').addEventListener('click', function () { if (net.on) netReadyToggle(); else start(); });
-  $('#again').addEventListener('click', function () { if (net.on) netRematch(); else start(); });
-  $('#resel').addEventListener('click', function () { if (net.on) netBack(); else showScreen('select'); });
+  $('#homeBtn').addEventListener('click', function () { if (net.on) { netLeave(); return; } if (bossRun) { bossLeave(bossRun.mode === 'end', bossRun.mode === 'end' ? '' : '보스전을 포기했어요'); return; } showScreen('home'); });
+  $('#startBtn').addEventListener('click', function () { if (net.on) netReadyToggle(); else if (bossRun) bossFight(); else start(); });
+  $('#again').addEventListener('click', function () { if (net.on) netRematch(); else if (bossRun) bossAgain(); else start(); });
+  $('#resel').addEventListener('click', function () { if (net.on) netBack(); else if (bossRun) bossLeave(bossRun.mode === 'end', bossRun.mode === 'end' ? '' : '보스전을 포기했어요'); else showScreen('select'); });
   $('#backBtn').addEventListener('click', function () { showScreen('select'); });
   [0, 1].forEach(function (i) {
     [0, 1].forEach(function (j) { $('#sp' + i + '_' + j).addEventListener('pointerdown', function (e) { e.preventDefault(); if (net.on) { if (i === net.me && net.st === 'play') net.pend.push(j); return; } castSpell(i, j); }); });
@@ -15942,10 +16494,10 @@ var DM = (function () {
   });
   pauseBtn.addEventListener('click', function () {
     if (net.on || (phase !== 'playing' && phase !== 'countdown')) return;
-    paused = !paused; pauseBtn.textContent = paused ? '계속하기' : '일시정지';
+    paused = !paused; pauseBtn.textContent = paused ? '계속하기' : '일시정지'; if (bossRun) bbgDuck(paused);
   });
   document.addEventListener('visibilitychange', function () {
-    if (document.hidden) bgmStop(); else if ((screenName === 'title' || screenName === 'home') && userActive) bgmStart();
+    if (document.hidden) { bgmStop(); bbgStop(); } else if (bossRun && screenName === 'battle' && (phase === 'playing' || phase === 'countdown') && userActive) bbgStart(bossRun.i); else if ((screenName === 'title' || screenName === 'home') && userActive) bgmStart();
     if (document.hidden && phase === 'playing' && !paused && !demo && !net.on) { paused = true; pauseBtn.textContent = '계속하기'; }
   });
 
@@ -16511,15 +17063,18 @@ var DM = (function () {
   $('#hmOffline').addEventListener('click', function () { audio(); showScreen('select'); });
   $('#hmGear').addEventListener('click', openSettings);
   document.querySelectorAll('#home .hnav button').forEach(function (b) { b.addEventListener('click', function () { audio(); if (b.dataset.hn === 'col' || b.dataset.hn === 'shop' || b.dataset.hn === 'play') { if (homeTabCur === b.dataset.hn) return; uiTick(); homeTab(b.dataset.hn); } else netNotify('준비 중이에요'); }); });
-  document.querySelectorAll('#home .hsb').forEach(function (b) { b.addEventListener('click', function () { audio(); if (b.dataset.soon === '보관함') { uiTick(); tkOpen(); } else netNotify(b.dataset.soon + '은(는) 준비 중이에요'); }); });
+  document.querySelectorAll('#home .hsb').forEach(function (b) { b.addEventListener('click', function () { audio(); if (b.dataset.soon === '보관함') { uiTick(); tkOpen(); } else if (b.dataset.soon === '보스전') { uiTick(); bossOpen(); } else netNotify(b.dataset.soon + '은(는) 준비 중이에요'); }); });
   document.querySelectorAll('#home .hcard').forEach(function (b) { b.addEventListener('click', function () { if (b.id === 'hmBoxCard') { audio(); boxOpen(); } else netNotify(b.dataset.soon + '은(는) 준비 중이에요'); }); });
   $('#overBoxBtn').addEventListener('click', function () { audio(); boxOpen(); });
   $('#boxOv').addEventListener('pointerdown', function (e) { if (e.target.closest('#bxClose,#bxOk,#bxChrOk') || $('#bxStage').hidden) return; boxTap(); });
   $('#bxClose').addEventListener('click', function () { uiBack(); boxClose(); });
-  function boxNext() { if (bx.tkt) { uiBack(); tkEnd(); return; } try { if (eco.box.length) { uiConfirm(); boxOpen(); } else { uiBack(); boxClose(); } } catch (e) { try { boxClose(); } catch (e2) {} } }
+  function boxNext() { if (bx.tkt) { if (bx.next) { var nx = bx.next; nx(); } else { uiBack(); extDone(); } return; } try { if (eco.box.length) { uiConfirm(); boxOpen(); } else { uiBack(); boxClose(); } } catch (e) { try { boxClose(); } catch (e2) {} } }
   $('#bxChrOk').addEventListener('click', boxNext);
   $('#bxOk').addEventListener('click', boxNext);
-  window.__eco = { force: ecoForce, get: function () { return eco; }, roll: boxRoll, push: function (t) { eco.box.push(t); ecoSave(); ecoUi(); }, done: ecoMatchDone, reset: function () { ecoGot = false; } };
+  window.__acct = acct;
+  window.__news = { own: function (v) { news.own = !!v; newsUi(true); }, set: function (t) { newsSet(t, 1); newsUi(true); } };
+  window.__boss = { run: function () { return bossRun; }, kill: function (k) { fighters[k].hp = 0; }, open: bossOpen, week: bossWeek, sync: bossSync };
+  window.__eco = { mk: makeIcon, force: ecoForce, get: function () { return eco; }, roll: boxRoll, push: function (t) { eco.box.push(t); ecoSave(); ecoUi(); }, done: ecoMatchDone, reset: function () { ecoGot = false; } };
   $('#hmAv').addEventListener('click', function () { netNotify('프로필은 준비 중이에요'); });
   function netCreateRoom(mode) {
     var nk = nickRead(); netShow('menu', '방을 만드는 중…');

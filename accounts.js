@@ -21,9 +21,11 @@ function cleanNick(s) {
   s = String(s == null ? '' : s).replace(/[\u0000-\u001f\u007f-\u009f​-‏‪-‮⁦-⁩﻿]/g, '').replace(/\s+/g, ' ').trim();
   return Array.from(s).slice(0, 10).join('').trim();
 }
-/* 쿠폰으로 열리는 권한: r4=신화 · r5=전설 · r6=태고 등급, cmd=제작자 권한(닉네임 "유령" 사용). 코드는 환경변수 COUPON_CODES 에만 있다
- * 형식: 코드=권한,코드=권한 …  (권한 앞에 -를 붙이면 그 권한을 뺏는 코드)  예) abc=r4,def=r5,ghi=r6,jkl=cmd,mno=-cmd */
-const GRANTS = new Set(['r4', 'r5', 'r6', 'cmd']);
+/* 쿠폰으로 열리는 권한: rA=일반~전설 캐릭터·재능·스펠 전부 · rB=태고 전부. 코드는 환경변수 COUPON_CODES 에만 있다
+ * 형식: 코드=권한,코드=권한 …  예) spinclash=rA,beta30=rB  (코드 앞에 no 를 붙이면 자동으로 반대: nospinclash = rA 회수. 권한 앞에 -를 붙인 코드도 회수용)
+ * cmd=제작자 권한(닉네임 "유령")은 쿠폰으로는 더 못 얻는다: 제작자 계정(OWNER_USERNAME)에만 자동으로 붙는다. 예전 r4·r5·r6·cmd 코드는 모두 무효 */
+const GRANTS = new Set(['rA', 'rB']);                  // 쿠폰으로 얻을 수 있는 권한
+const GRANTS_ALL = new Set(['rA', 'rB', 'cmd']);       // 계정에 저장될 수 있는 권한
 function parseCoupons(str) {
   const m = new Map();
   String(str || '').split(',').forEach((part) => {
@@ -34,7 +36,7 @@ function parseCoupons(str) {
   return m;
 }
 function grantList(u) {
-  const a = String(u.grants || '').split(',').filter((x) => GRANTS.has(x));
+  const a = String(u.grants || '').split(',').filter((x) => GRANTS_ALL.has(x));
   if (u.owner && a.indexOf('cmd') < 0) a.push('cmd');
   return a;
 }
@@ -88,7 +90,7 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
   /* 쿠폰 초기화: COUPON_RESET_ID 를 새 값으로 바꿔서 배포하면, 서버가 켜질 때 모든 계정의 쿠폰 권한(grants)을 한 번만 비운다.
    * 제작자 권한을 잃은 일반 계정의 "유령" 닉네임도 쿠폰 해제 때처럼 '플레이어####' 로 바꾼다. 제작자 계정(OWNER_USERNAME)은 쿠폰이 아니라서 그대로.
    * 끝까지 성공해야 기록을 남기므로, 도중에 실패하면 다음 시작 때 다시 한다. 게임 쪽(index.html)의 같은 이름 값도 같이 올릴 것 */
-  const COUPON_RESET_ID = 'c1';
+  const COUPON_RESET_ID = 'c3';
   async function couponResetOnce() {
     const done = await q("SELECT v FROM app_meta WHERE k = 'coupon_reset'");
     if (done.rows[0] && done.rows[0].v === COUPON_RESET_ID) return;
@@ -245,6 +247,25 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
   }
   const isUniq = (e, name) => e && e.code === '23505' && (!name || String(e.constraint || e.message || '').indexOf(name) >= 0);
 
+  /* ── 공지(홈 화면 배너): 제작자 계정만 쓰고, 모두가 읽는다. app_meta 의 'notice' 에 JSON {t, at} 로 저장 ── */
+  const NOTICE_MAX = 200;
+  let noticeCache = null, noticeAt = 0;
+  async function noticeGet() {
+    if (noticeCache && Date.now() - noticeAt < 15000) return noticeCache;
+    const r = await q("SELECT v FROM app_meta WHERE k = 'notice'");
+    let v = { t: '', at: 0 };
+    if (r.rows[0]) { try { const j = JSON.parse(r.rows[0].v); if (j && typeof j.t === 'string') v = { t: j.t, at: +j.at || 0 }; } catch (e) {} }
+    noticeCache = v; noticeAt = Date.now(); return v;
+  }
+  async function noticeSet(u, b, res) {
+    if (!u.owner) return fail(res, 403, 'owner', '제작자 계정만 쓸 수 있어요');
+    const t = Array.from(String(b && b.t != null ? b.t : '').replace(/[\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '').replace(/[\u0000-\u001f\u007f]+/g, ' ').replace(/\s+/g, ' ').trim()).slice(0, NOTICE_MAX).join('');
+    const v = { t, at: t ? Date.now() : 0 };
+    await q("INSERT INTO app_meta (k, v) VALUES ('notice', $1) ON CONFLICT (k) DO UPDATE SET v = EXCLUDED.v", [JSON.stringify(v)]);
+    noticeCache = v; noticeAt = Date.now();
+    send(res, 200, { ok: true, t: v.t, at: v.at });
+  }
+
   A.handle = async function handle(req, res) {
     const url = new URL(req.url, 'http://x'); const p = url.pathname;
     if (p.indexOf('/api/') !== 0) return false;
@@ -252,6 +273,7 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
       if (!A.enabled) { fail(res, 503, 'off', '계정 기능이 아직 꺼져 있어요'); return true; }
       if (req.method === 'GET' && p === '/api/email/verify') { await emailVerify(url, res); return true; }
       if (req.method === 'GET' && p === '/api/me') { const u = await userFromToken(bearer(req)); if (!u) fail(res, 401, 'auth', '로그인이 필요해요'); else send(res, 200, { ok: true, me: me(u), mail: A.mailOn }); return true; }
+      if (req.method === 'GET' && p === '/api/notice') { const n = await noticeGet(); send(res, 200, { ok: true, t: n.t, at: n.at }); return true; }
       if (req.method !== 'POST') { fail(res, 405, 'method', '잘못된 요청이에요'); return true; }
       const b = await readBody(req); const addr = ip(req);
       switch (p) {
@@ -263,6 +285,7 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
       const u = await userFromToken(bearer(req)); if (!u) { fail(res, 401, 'auth', '로그인이 필요해요'); return true; }
       switch (p) {
         case '/api/logout': await q('DELETE FROM sessions WHERE token_hash = $1 RETURNING 1', [sha(bearer(req))]); send(res, 200, { ok: true }); return true;
+        case '/api/notice': await noticeSet(u, b, res); return true;
         case '/api/nick': await setNick(u, b, res); return true;
         case '/api/coupon': await redeem(u, b, addr, res); return true;
         case '/api/pw': await setPw(u, b, req, res); return true;
@@ -333,7 +356,11 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
     if (!code) return fail(res, 400, 'cpn', '코드를 입력해 주세요');
     const kU = 'cpf:' + u.id, kIp = 'cpi:' + addr;
     if (!rateLeft(kU, 10, 600 * 1000) || !rateLeft(kIp, 40, 600 * 1000)) return fail(res, 429, 'rate', '코드를 너무 많이 틀렸어요. 10분 뒤에 다시 해 주세요');
-    const hit = couponMap.get(code);
+    let hit = couponMap.get(code);
+    if (!hit && code.indexOf('no') === 0) {   // 코드 앞에 no 를 붙이면 반대(권한 회수): nospinclash · nobeta30
+      const base = couponMap.get(code.slice(2));
+      if (base && !base.rev) hit = { g: base.g, rev: true };
+    }
     if (!hit) { rate(kU, 1e9, 600 * 1000); rate(kIp, 1e9, 600 * 1000); return send(res, 200, { ok: false, k: 'none', m: '없는 코드예요' }); }
     const cur = grantList({ grants: u.grants, owner: false });   // 저장된 권한만 (제작자 계정의 자동 cmd 는 따로)
     let kind, nick = u.nick;
