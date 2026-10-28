@@ -91,7 +91,7 @@ function specStatus(room, only) {
 }
 /* 접속 중인 사람 수: 페이지를 열어 둔 연결(hi 를 보낸 연결)만 센다. 변할 때마다 0.6초 모아서 한 번에 알린다 */
 let countT = null, lastCount = -1;
-function onlineCount() { let n = 0; wss.clients.forEach((w) => { if (w._pres) n++; }); return n; }
+function onlineCount() { let n = 0; wss.clients.forEach((w) => { if (w._pres && w._ps !== 'off') n++; }); return n; }   // 오프라인 대전을 하는 중인 사람(off)은 세지 않는다
 /* 제작자 전용 접속자 목록: [닉네임, 상태] 만 보낸다 (상태는 각 사람의 화면이 알려 준 값: home 홈 · mm 매칭 중 · prep 전투 준비중 · fight 전투중 · spec 관전중 · off 오프라인) */
 const PST_OK = new Set(['home', 'mm', 'prep', 'fight', 'spec', 'off']);
 function sendPlist(w) {

@@ -218,9 +218,12 @@ body.online .ctrl { display: none; }
 .onl.tap { pointer-events: auto; cursor: pointer; padding: 6px 8px; margin: -6px -8px; text-decoration: underline dotted; text-underline-offset: 3px; }
 .onlList { display: flex; flex-direction: column; gap: 6px; max-height: 55vh; overflow-y: auto; }
 .onlRow { display: flex; justify-content: space-between; gap: 10px; border: 2px solid var(--line); padding: 8px 10px; font-weight: 700; font-size: 14px; }
-.onlRow b { overflow-wrap: anywhere; }
+.onlRow b { overflow-wrap: anywhere; display: flex; align-items: center; gap: 8px; }
+.onlRow b::before { content: ''; flex: none; width: 10px; height: 10px; border-radius: 50%; background: #2fb857; border: 1.5px solid var(--line); }
+.onlRow.off b::before { background: #e8383d; }
 .onlRow i { font-style: normal; font-size: 12px; color: var(--muted); white-space: nowrap; align-self: center; }
 .onlRow.fight i, .onlRow.prep i { color: var(--p2); }
+.onlRow.off { opacity: 0.7; }
 .onlRow.mm i { color: var(--p1); }
 #clsSpReset { align-self: center; min-height: 36px; font-size: 13px; }
 #clsSpReset[hidden] { display: none; }
@@ -946,7 +949,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v594</span>
+      <span class="verTag">v595</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -17332,7 +17335,7 @@ var DM = (function () {
   function presList(off) { var ws = pres.ws; if (ws && ws.readyState === 1) { try { ws.send(JSON.stringify({ t: 'plist', tk: acct.tk || '', off: off ? 1 : 0 })); } catch (e) {} } }
   function onlRender() {
     var box = $('#onlList'); if (!box || $('#onlModal').hidden) return;
-    $('#onlH').textContent = '접속 중 ' + onl.list.length + '명';
+    $('#onlH').textContent = '접속 중 ' + onl.list.filter(function (r) { return r[1] !== 'off'; }).length + '명';   /* 오프라인 대전 중인 사람은 세지 않는다 */
     box.textContent = '';
     if (!onl.list.length) { var em = document.createElement('p'); em.className = 'netTxt'; em.textContent = '목록을 불러오는 중…'; box.appendChild(em); return; }
     onl.list.forEach(function (r) {
