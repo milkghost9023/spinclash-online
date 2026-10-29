@@ -847,6 +847,14 @@ body.boss .chips button.us::after { content: '사용'; }
 #bossOv .csh .im img { animation: bsFloat 3s ease-in-out infinite; }
 @keyframes bsPulse { 0%, 100% { box-shadow: 0 0 0 2px var(--ink), 0 0 10px rgba(130, 215, 255, 0.45); } 50% { box-shadow: 0 0 0 2px var(--ink), 0 0 24px rgba(160, 232, 255, 0.95); } }
 @keyframes bsSpin { to { transform: rotate(360deg); } }
+/* 진보스전 창: 기존 색감 + 새 구조(설명 글 / 난이도 카드) */
+#hmInv .jbhero { flex-wrap: wrap; row-gap: 2px; }
+#hmInv .jbhero .jbim { flex: none; }
+#hmInv .jbhero .jbtx { flex: 1; min-width: 0; }
+#hmInv .jbhero .jbwn { flex: 1 1 100%; margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 2px; }
+#hmInv .jbhero .jbwn li { font: 700 12px/1.45 'Noto Sans KR', sans-serif; color: var(--hmu); word-break: keep-all; }
+#hmInv .jblv .jbt { display: none; }
+#hmInv .jblv .jbbd { display: flex; flex-direction: column; gap: 3px; }
 @keyframes bsFloat { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-3px) rotate(2deg); } }
 #bossOv .bsTr { display: flex; align-items: center; gap: 8px; }
 #bossOv .bsTag { display: inline-block; margin-right: 6px; padding: 0 6px; border-radius: 4px; border: 2px solid var(--ink); background: #e5322d; color: #fff; font: 900 10px/16px 'Noto Sans KR', sans-serif; letter-spacing: 0.12em; transform: skewX(-8deg); animation: bsTag 1.3s ease-in-out infinite; }
@@ -1096,7 +1104,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v612</span>
+      <span class="verTag">v616</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -2560,7 +2568,7 @@ var DM = (function () {
         tc.x += tc.vx * dt; tc.y += tc.vy * dt; tc.rot += dt * 22;
         tc.sp = (tc.sp || 0) - dt; if (tc.sp <= 0) { tc.sp = 0.012; sparks(tc.x, tc.y, Math.random() < 0.5 ? '#ff7a1a' : '#ffe08a', 1, 110); flame(tc.x, tc.y, 1, 60); }
         var sp0 = Math.hypot(tc.vx, tc.vy) || 1, ux = tc.vx / sp0, uy = tc.vy / sp0;
-        if (op.hp > 0 && Math.hypot(op.x - tc.x, op.y - tc.y) < R + 14) {
+        if (op.hp > 0 && Math.hypot(op.x - tc.x, op.y - tc.y) < rOf(op) + 14) {
           if (op.inv > 0) sparks(tc.x, tc.y, '#ffb02e', 8, 240);
           else {
             addBurn(op, f, 1);
@@ -2636,7 +2644,7 @@ var DM = (function () {
   function canParryArrow(d) { return d.hp > 0 && d.frozen <= 0 && !isBow(d) && d.type !== 'master' && d.type !== 'hyup' && d.type !== 'ronin' && !unarmed(d); }
   /* ---- 전략가 위험 인지: 웅덩이 / 모아베기 / 날아오는 것들 ---- */
   function tactReachOf(op) {
-    var base = 2 * R + 6;
+    var base = R + rOf(op) + 6;
     if (op.type === 'master') return base + M_REACH;
     if (op.type === 'hyup' || op.type === 'ronin') return base + H_REACH;
     if (op.type === 'black') return base + BK_REACH + 40;
@@ -2681,7 +2689,7 @@ var DM = (function () {
     var N = 36, DT = 1 / 30, sp0 = SPD();
     var opath = [], ot = { x: op.x, y: op.y }, om = immobile(op) ? 0 : moveMul(op), ov = { x: op.vx * om, y: op.vy * om };
     for (var i = 0; i < N; i++) { ot.x += ov.x * DT; ot.y += ov.y * DT; reflectWall(ot, ov); opath.push({ x: ot.x, y: ot.y }); }
-    var myReach = 2 * R + wlen(f) + 6, ranged = isBow(op), opReach = ranged ? 2 * R + 30 : tactReachOf(op);
+    var myReach = R + rOf(op) + wlen(f) + 6, ranged = isBow(op), opReach = ranged ? R + rOf(op) + 30 : tactReachOf(op);
     var opDmg = Math.max(1, damageOf(op, false) || 3), aggr = Math.max(0.45, Math.min(1.6, 1 + (f.hp / (f.maxHp || 100) - op.hp / (op.maxHp || 100)))), reachAdv = myReach >= opReach ? 1 : 1.35;
     var hasDagger = !f.dg, dgRest = f.dg && f.dg.st === 'rest' ? f.dg : null, best = null, cands = [];
     var melee = hasDagger && f.tdc > 0 && !(f.trait === 2 && f.hp <= 50), retr = !!f.dg, danW = retr ? (f.shield > 0 ? 0.45 : 2.8) : (melee ? TD_DAN : 1.15), offW = retr ? 0 : (melee ? TD_OFF : 1);
@@ -2732,7 +2740,7 @@ var DM = (function () {
     var late = -f.gpCd;
     var gDmg = f.dg ? 6 : 8;
     if (trap) mode = 1; else if (op.hp <= 12 && dist < 680 && !hookBlocked(f, op)) mode = 4; else if (danger) mode = 2;
-    else if (late > (low ? 0.8 : 1.6) && dist < 2 * R + wlen(f) + 230 && closing > -80) mode = 3;
+    else if (late > (low ? 0.8 : 1.6) && dist < R + rOf(op) + wlen(f) + 230 && closing > -80) mode = 3;
     else if (late > 4.5 && dist < 560) mode = 3;
     if (!mode) return false;
     f.gpCd = GP_CD; f.tbc = 0;
@@ -2792,7 +2800,7 @@ var DM = (function () {
       var px = c.x, py = c.y; c.x += c.vx * dt; c.y += c.vy * dt;
       c.tr -= dt; if (c.tr <= 0) { c.tr = 0.035; particles.push({ x: c.x, y: c.y, vx: (Math.random() - 0.5) * 30, vy: (Math.random() - 0.5) * 30, life: 0.3, max: 0.3, color: Math.random() < 0.5 ? '#e9b6ff' : '#ffffff', size: 4 }); }
       if (c.hc > 0) c.hc -= dt;
-      if (op.hp > 0 && Math.hypot(c.x - op.x, c.y - op.y) < R + 20) {
+      if (op.hp > 0 && Math.hypot(c.x - op.x, c.y - op.y) < rOf(op) + 20) {
         var res = applyDamage(op, MG_DMG, { src: f });
         if (res) {
           f.hits++; op.flash = 0.1; floater(op.x, Math.max(60, op.y - R - 14), '-' + res.dmg + res.note, C.p[f.i], 46);
@@ -2997,8 +3005,8 @@ var DM = (function () {
     c.gcd -= dt;
     if (c.gsw > 0) {
       c.gsw -= dt;
-      if (!c.ghit && c.gsw <= 0.12) { c.ghit = true; if (dl <= 2 * R + 92) { var own = fighters[c.i]; var r = applyDamage(o, PW_G_DMG + pwB(own), { src: own }); if (r) { floater(o.x, Math.max(60, o.y - R - 18), '-' + r.dmg, '#dfe6ff', 50); sparks(o.x, o.y, '#dfe6ff', 10, 420); ring(o.x, o.y, R * 2.2, '#cfd8ff', 0.3); o.flash = 0.15; shake = Math.max(shake, 0.25); playHit(false); } } }
-    } else if (c.gcd <= 0 && dl <= 2 * R + 80) { c.gsw = 0.3; c.ghit = false; c.gcd = 1.1; sfxPwClaw(); }
+      if (!c.ghit && c.gsw <= 0.12) { c.ghit = true; if (dl <= R + rOf(o) + 92) { var own = fighters[c.i]; var r = applyDamage(o, PW_G_DMG + pwB(own), { src: own }); if (r) { floater(o.x, Math.max(60, o.y - R - 18), '-' + r.dmg, '#dfe6ff', 50); sparks(o.x, o.y, '#dfe6ff', 10, 420); ring(o.x, o.y, R * 2.2, '#cfd8ff', 0.3); o.flash = 0.15; shake = Math.max(shake, 0.25); playHit(false); } } }
+    } else if (c.gcd <= 0 && dl <= R + rOf(o) + 80) { c.gsw = 0.3; c.ghit = false; c.gcd = 1.1; sfxPwClaw(); }
   }
   function pwSummon(f, n) {
     for (var q = 0; q < n; q++) { var a = q / n * TAU + 0.6, g = pwGhost(f, f.x + Math.cos(a) * R * 2.1, f.y + Math.sin(a) * R * 2.1, 0); ring(g.x, g.y, R * 2.4, '#dfe6ff', 0.45); sparks(g.x, g.y, '#dfe6ff', 14, 360); sparks(g.x, g.y, '#8a5cf0', 8, 300); }
@@ -3068,10 +3076,10 @@ var DM = (function () {
         if (!cl.hit && cl.t >= 0.17) {
           cl.hit = true; var an = Math.atan2(d.y - f.y, d.x - f.x);
           for (var q = 0; q < (cl.kind === 2 ? 5 : 3); q++) pushSlash({ x: d.x, y: d.y, ang: an + Math.PI / 2 + (q - (cl.kind === 2 ? 2 : 1)) * 0.28, len: R * (cl.kind === 2 ? 5.5 : 4.4), delay: q * 0.02, age: 0, p: false, col: '#d8c8ff' });
-          if (dist <= 2 * R + PW_K_REACH + 25) pwHurt(f, d, cl.kind === 2 ? 8 : 4, '#b99aff', cl.kind === 0 ? '왼손 할퀴기' : (cl.kind === 1 ? '오른손 할퀴기' : '양손 할퀴기'));
+          if (dist <= R + rOf(d) + PW_K_REACH + 25) pwHurt(f, d, cl.kind === 2 ? 8 : 4, '#b99aff', cl.kind === 0 ? '왼손 할퀴기' : (cl.kind === 1 ? '오른손 할퀴기' : '양손 할퀴기'));
         }
         if (cl.t >= 0.42) { c.claw = null; c.cd = PW_K_CD; if (c.cs >= 3) { ring(f.x, f.y, R * 3, '#8a5cf0', 0.4); pwDone(a, 0.5); return; } }
-      } else if (c.cd <= 0 && dist <= 2 * R + PW_K_REACH) { c.claw = { kind: c.cs % 3, t: 0, hit: false }; c.cs++; sfxPwClaw(); }
+      } else if (c.cd <= 0 && dist <= R + rOf(d) + PW_K_REACH) { c.claw = { kind: c.cs % 3, t: 0, hit: false }; c.cs++; sfxPwClaw(); }
       if (c.t >= PW_K_DUR && !c.claw) { ring(f.x, f.y, R * 3, '#8a5cf0', 0.4); pwDone(a, PW_CD); }
     } else if (c.id === 3) { if (c.t >= 0.7) pwDone(a, PW_CD); }
     else if (c.id === 4) { if (c.t >= 0.8) pwDone(a, PW_CD); }
@@ -3090,7 +3098,7 @@ var DM = (function () {
     for (i = pwBones.length - 1; i >= 0; i--) {
       var b = pwBones[i]; b.t += dt; f = fighters[b.own]; d = fighters[1 - b.own];
       var bx = b.sx + b.ux * PW_B_SPD * b.t, by = b.sy + b.uy * PW_B_SPD * b.t;
-      if (!b.hit && d.hp > 0 && phase === 'playing') { var sg = { x1: bx - b.ux * 120, y1: by - b.uy * 120, x2: bx + b.ux * 120, y2: by + b.uy * 120 }; if (segCircle(sg, d.x, d.y, R + 26)) { b.hit = true; pwHurt(f, d, PW_B_DMG, '#efe9d6', '뼈'); } }
+      if (!b.hit && d.hp > 0 && phase === 'playing') { var sg = { x1: bx - b.ux * 120, y1: by - b.uy * 120, x2: bx + b.ux * 120, y2: by + b.uy * 120 }; if (segCircle(sg, d.x, d.y, rOf(d) + 26)) { b.hit = true; pwHurt(f, d, PW_B_DMG, '#efe9d6', '뼈'); } }
       if (b.t > 2700 / PW_B_SPD) pwBones.splice(i, 1);
     }
     for (i = pwFogs.length - 1; i >= 0; i--) {
@@ -3098,8 +3106,8 @@ var DM = (function () {
       if (g.acc >= PW_FOG_TICK) {
         g.acc -= PW_FOG_TICK;
         if (phase === 'playing') {
-          if (d.hp > 0 && Math.hypot(d.x - g.x, d.y - g.y) <= g.r + R * 0.3) { var r = applyDamage(d, PW_FOG_AMT + pwB(f), { dot: true, src: f }); if (r) { floater(d.x, Math.max(60, d.y - R - 10), '-' + r.dmg, '#b99aff', 38, d); sparks(d.x, d.y, '#8a5cf0', 5, 180); } }
-          if (f.hp > 0 && Math.hypot(f.x - g.x, f.y - g.y) <= g.r + R * 0.3) {
+          if (d.hp > 0 && Math.hypot(d.x - g.x, d.y - g.y) <= g.r + rOf(d) * 0.3) { var r = applyDamage(d, PW_FOG_AMT + pwB(f), { dot: true, src: f }); if (r) { floater(d.x, Math.max(60, d.y - R - 10), '-' + r.dmg, '#b99aff', 38, d); sparks(d.x, d.y, '#8a5cf0', 5, 180); } }
+          if (f.hp > 0 && Math.hypot(f.x - g.x, f.y - g.y) <= g.r + rOf(f) * 0.3) {
             var hl = f.trait === 1 ? PW_FOG_AMT : Math.min(PW_FOG_AMT, f.maxHp - f.hp);
             if (hl > 0) { f.hp += hl; f.maxHp = Math.max(f.maxHp, f.hp); floater(f.x, Math.max(60, f.y - R - 18), '+' + hl, '#4cd964', 38, f); sparks(f.x, f.y, '#b6f5c0', 5, 200); }
           }
@@ -3241,7 +3249,7 @@ var DM = (function () {
   function bhStep(f, k, dt) {
     var a = bhInit(f), d = fighters[1 - k];
     if (d.hp <= 0) { a.mt = 0; return; }
-    if (a.mt > 0 && f.hp > 0 && Math.hypot(d.x - f.x, d.y - f.y) <= 2 * R + 6) {
+    if (a.mt > 0 && f.hp > 0 && Math.hypot(d.x - f.x, d.y - f.y) <= R + rOf(d) + 6) {
       var cr = applyDamage(d, BH_COLLECT, { src: f });
       if (cr) {
         bhCollect(f, d, { x: d.x, y: d.y }); bldAdd(d, BH_COLLECT_BLD, f); f.hits++; f.cool = 0.2; d.cool = 0.2;
@@ -3499,7 +3507,7 @@ var DM = (function () {
     if (a.sw) {
       a.sw.t += dt; var u = Math.min(1, a.sw.t / AX_SWING_T), e = u * u * (3 - 2 * u); a.sa = -1.35 + 2.7 * e;
       if (!a.sw.hit) {
-        var an = f.ang + a.sa, sg = { x1: f.x, y1: f.y, x2: f.x + Math.cos(an) * (R + AX_REACH), y2: f.y + Math.sin(an) * (R + AX_REACH) }, pp = segCircle(sg, d.x, d.y, R);
+        var an = f.ang + a.sa, sg = { x1: f.x, y1: f.y, x2: f.x + Math.cos(an) * (R + AX_REACH), y2: f.y + Math.sin(an) * (R + AX_REACH) }, pp = segCircle(sg, d.x, d.y, rOf(d));
         if (pp) {
           a.sw.hit = true;
           var crit = Math.random() < (f.trait === 2 ? 1 / 3 : 0.5), dmg = AX_DMG * (crit ? (f.trait === 2 ? 5 : 2) : 1), res = applyDamage(d, dmg, { src: f });
@@ -3525,7 +3533,7 @@ var DM = (function () {
         f.jx = (Math.random() - 0.5) * 7; f.jy = (Math.random() - 0.5) * 7;
         if (Math.random() < 0.7) sparks(f.x + Math.cos(f.ang - 1.35) * (R + 100) * Math.random(), f.y + Math.sin(f.ang - 1.35) * (R + 100) * Math.random(), '#ff7a4a', 1, 180);
         c.rp = (c.rp || 0) - dt; if (c.rp <= 0) { c.rp = 0.16; ring(f.x, f.y, R * 2.6, '#c4301a', 0.25); }
-        if (dist <= 2 * R + AX_REACH * 0.92 || c.ht >= AX_HOLD) { axRelease(f); return; }
+        if (dist <= R + rOf(d) + AX_REACH * 0.92 || c.ht >= AX_HOLD) { axRelease(f); return; }
       }
       return;
     }
@@ -3588,7 +3596,7 @@ var DM = (function () {
     sparks(b.x, b.y, '#ffe45c', b.big ? 40 : 18, b.big ? 760 : 460); sparks(b.x, b.y, '#ffffff', b.big ? 18 : 8, 520); sparks(b.x, b.y, '#7ad7ff', b.big ? 16 : 6, 400);
     b.hitT = 0.28; b.fl = 1;
     sfxThunder(b.big); shake = Math.max(shake, b.big ? 0.6 : 0.3); if (b.big && (!b.nc || b.fin)) { critFl = Math.max(critFl, 0.25); if (fxOn && !demo) hitStopT = Math.max(hitStopT, 0.06); }
-    if (d.hp > 0 && Math.hypot(d.x - b.x, d.y - b.y) < R * (b.big ? 1.5 : 1.25) + R) {
+    if (d.hp > 0 && Math.hypot(d.x - b.x, d.y - b.y) < R * (b.big ? 1.5 : 1.25) + rOf(d)) {
       var res = applyDamage(d, b.dmg, { src: f });
       if (res) { f.hits++; d.flash = 0.14; floater(d.x, Math.max(60, d.y - R - 12), '-' + res.dmg + res.note, '#ffe45c', b.big ? 78 : 46); }
     }
@@ -3672,7 +3680,7 @@ var DM = (function () {
     }
     if (rv.st === 'spin') { rv.sp += dt; if (rv.sp >= RV_SPIN) { rv.st = 'aim'; rv.cd = 0.25; ring(f.x, f.y, R * 1.6, '#d8b45a', 0.25); } return; }
     rv.cd -= dt; if (rv.cd > 0) return;
-    var dist = Math.hypot(op.x - f.x, op.y - f.y), quick = f.trait === 2 && dist < RV_QD_RANGE;
+    var dist = Math.hypot(op.x - f.x, op.y - f.y), quick = f.trait === 2 && dist < RV_QD_RANGE + rOf(op) - R;
     if (quick && !rv.qd) { rv.qd = true; traitFx(f, '퀵드로우!', '#ff6a3d', 'shing', false); ring(f.x, f.y, R * 2.4, '#ff6a3d', 0.3); }
     if (!quick) rv.qd = false;
     var ang = f.ang + (quick ? (Math.random() - 0.5) * 0.1 : 0), spd = f.trait === 1 ? RV_SPD1 : RV_SPD, dmg = 4, c = Math.cos(ang), s2 = Math.sin(ang);
@@ -3812,7 +3820,7 @@ var DM = (function () {
     if (P.st === 'fly') {
       var px = P.x, py = P.y; P.x += P.vx * dt; P.y += P.vy * dt; P.rot += 14 * dt; P.life -= dt;
       P.tr -= dt; if (P.tr <= 0) { P.tr = 0.02; particles.push({ x: P.x, y: P.y, vx: (Math.random() - 0.5) * 40, vy: (Math.random() - 0.5) * 40, life: 0.3, max: 0.3, color: '#8ac926', size: 8 }); }
-      if (segCircle({ x1: px, y1: py, x2: P.x, y2: P.y }, op.x, op.y, R + 10)) {
+      if (segCircle({ x1: px, y1: py, x2: P.x, y2: P.y }, op.x, op.y, rOf(op) + 10)) {
         var pr0 = applyDamage(op, 10, { src: f }); plgAdd(op, 10, f); floater(op.x, Math.max(60, op.y - R - 14), pr0 ? '-' + pr0.dmg + ' 독포션' + pr0.note : '독 10', '#9dc12a', 56); plgSplash(op.x, op.y); f.pot = null; f.brew = 0; return;
       }
       if (hookWall(P.x, P.y) || P.x < -40 || P.x > F + 40 || P.y < -40 || P.y > F + 40 || P.life <= 0) { P.st = 'rest'; P.vx = P.vy = 0; plgSplash(P.x, P.y); ring(P.x, P.y, R * 0.9, '#8ac926', 0.4); }
@@ -3872,7 +3880,7 @@ var DM = (function () {
         var ws = wseg(op, INNER, R + wlen(op)), hit = segSeg({ x1: D.x - ux * 40, y1: D.y - uy * 40, x2: D.x, y2: D.y }, ws);
         if (hit.d <= W[op.type].width / 2 + 5) { sparks(hit.x, hit.y, TGC.s, 8, 260); clashFx(hit.x, hit.y, false); tactRest(f, D.x - ux * 24, D.y - uy * 24); return; }
       }
-      if (op.hp > 0 && segCircle(seg, op.x, op.y, R + 6)) {
+      if (op.hp > 0 && segCircle(seg, op.x, op.y, rOf(op) + 6)) {
         var tdv = tdDmg(f), res = applyDamage(op, tdv, { src: f });
         if (res) {
           var bigT = tdv >= 6, fa = Math.atan2(D.vy, D.vx);
@@ -4003,7 +4011,7 @@ var DM = (function () {
     /* 끈: 속박이 풀린 적이 닿으면 끊어짐 */
     if (op.hp > 0 && !(op.bind > 0)) for (var ti = H.tethers.length - 1; ti >= 0; ti--) {
       var te = H.tethers[ti];
-      if (segCircle(te, op.x, op.y, R)) {
+      if (segCircle(te, op.x, op.y, rOf(op))) {
         H.tethers.splice(ti, 1);
         var steps = 14; for (var q = 0; q <= steps; q++) sparks(te.x1 + (te.x2 - te.x1) * q / steps, te.y1 + (te.y2 - te.y1) * q / steps, '#ffe08a', 1, 200);
         holyShatter(op.x, op.y, 14, null); ring(op.x, op.y, R * 1.8, '#ffd23a', 0.3); sfxHolyBreak();
@@ -4018,7 +4026,7 @@ var DM = (function () {
       var ch = H.chains[ci]; ch.age += dt;
       if (ch.st === 'fly') {
         var px = ch.x, py = ch.y; ch.x += ch.dx * HL_CH_V * dt; ch.y += ch.dy * HL_CH_V * dt;
-        if (op.hp > 0 && segCircle({ x1: px, y1: py, x2: ch.x, y2: ch.y }, op.x, op.y, R + 14) && holyChainHit(f, op, ch)) continue;
+        if (op.hp > 0 && segCircle({ x1: px, y1: py, x2: ch.x, y2: ch.y }, op.x, op.y, rOf(op) + 14) && holyChainHit(f, op, ch)) continue;
         if (ch.age > 0.6) H.chains.splice(ci, 1);
       }
     }
@@ -4038,7 +4046,7 @@ var DM = (function () {
         if (f.trait === 2) while (H.tn < 5 && H.t >= (H.tn + 1) * HL_TRACK / 5) {
           H.tn++;
           sparks(H.px, H.py, '#ffd23a', 8, 260); ring(H.px, H.py, R * 1.5, '#ffd23a', 0.2); sfxHolyPing();
-          if (op.hp > 0 && Math.hypot(op.x - H.px, op.y - H.py) < R + 26) {
+          if (op.hp > 0 && Math.hypot(op.x - H.px, op.y - H.py) < rOf(op) + 26) {
             var pr = applyDamage(op, 1, { src: f, noHit: true });
             if (pr) { holyHeal(f, pr); floater(op.x + (Math.random() - 0.5) * 30, Math.max(60, op.y - R - 12), '-' + pr.dmg + pr.note, '#ffd23a', 34); sparks(op.x, op.y, '#fff1b0', 8, 260); op.flash = 0.08; }
           }
@@ -4084,7 +4092,7 @@ var DM = (function () {
       var nx = fi.x + Math.cos(fi.a) * AN_FISH_SPEED * dt, ny = fi.y + Math.sin(fi.a) * AN_FISH_SPEED * dt;
       if (hookWall(nx + Math.cos(fi.a) * 26, ny + Math.sin(fi.a) * 26)) { fi.a = Math.atan2(CX - fi.y, CX - fi.x) + (Math.random() - 0.5) * 1.4; fi.turn = 0; }
       else { fi.x = nx; fi.y = ny; }
-      if (op.hp > 0 && Math.hypot(op.x - fi.x, op.y - fi.y) < R + 14) {
+      if (op.hp > 0 && Math.hypot(op.x - fi.x, op.y - fi.y) < rOf(op) + 14) {
         fishes.splice(i, 1);
         var res = applyDamage(op, AN_FISH_DMG, { src: me });
         if (res) { floater(fi.x, fi.y - 30, '-' + res.dmg + res.note, C.p[me.i], 46); anSplash(fi.x, fi.y, false); sfxSlap(false); shake = Math.max(shake, 0.12); }
@@ -4113,7 +4121,7 @@ var DM = (function () {
     }
     if (g.st === 'pull') {
       g.t += dt;
-      var dx = op.x - f.x, dy = op.y - f.y, dist = Math.hypot(dx, dy) || 1, want = 2 * R + 6, ux = dx / dist, uy = dy / dist;
+      var dx = op.x - f.x, dy = op.y - f.y, dist = Math.hypot(dx, dy) || 1, want = R + rOf(op) + 6, ux = dx / dist, uy = dy / dist;
       if (op.hp <= 0) { anEnd(f); return; }
       if (op.vx || op.vy) { g.dv = [op.vx, op.vy]; op.vx = 0; op.vy = 0; }
       op.stun = Math.max(op.stun, 0.3); op.kT = 0;
@@ -4152,7 +4160,7 @@ var DM = (function () {
         shake = Math.max(shake, 0.3); sfxZipEnd(); anEnd(f); return;
       }
       f.x += zx / zd * step; f.y += zy / zd * step;
-      if (!g.hit && op.hp > 0 && Math.hypot(op.x - f.x, op.y - f.y) < 2 * R) {
+      if (!g.hit && op.hp > 0 && Math.hypot(op.x - f.x, op.y - f.y) < R + rOf(op)) {
         g.hit = true;
         var r2 = applyDamage(op, AN_ZIP_DMG, { src: f });
         if (r2) { floater(op.x, Math.max(60, op.y - R - 12), '-' + r2.dmg + r2.note, C.p[f.i], 56); sparks(op.x, op.y, '#dfe7ee', 18, 480); ring(op.x, op.y, R * 2, '#dfe7ee', 0.3); shake = Math.max(shake, 0.3); playHit(true); }
@@ -4255,7 +4263,7 @@ var DM = (function () {
   }
   function rustRoll(f) { if (f.type === 'rusty' && !rsBroken(f) && f.hp > 0 && Math.random() < RS_BREAK) rustBreak(f); }
   function addRust(d, a, amt) {
-    if (d.hp <= 0) return;
+    if (d.hp <= 0 || d.type === 'rgiant') return;   /* 녹슨 거인: 파상풍 면역 */
     d.rust = (d.rust || 0) + amt;
     if (d.rust >= 0.999) {
       d.rust = 0; var dm = 8 + Math.floor(Math.random() * 7), r = applyDamage(d, dm, { dot: true, src: a });
@@ -4278,7 +4286,7 @@ var DM = (function () {
       var e = rsShards[i], h = fighters[e.own]; e.t += dt;
       if (!h) { rsShards.splice(i, 1); continue; }
       var tg = fkTargets(h), hitT = null;
-      for (var q = 0; q < tg.length; q++) if (tg[q].hp > 0 && Math.hypot(tg[q].x - e.x, tg[q].y - e.y) <= R + 8) { hitT = tg[q]; break; }
+      for (var q = 0; q < tg.length; q++) if (tg[q].hp > 0 && Math.hypot(tg[q].x - e.x, tg[q].y - e.y) <= rOf(tg[q]) + 8) { hitT = tg[q]; break; }
       if (!hitT) continue;
       rsShards.splice(i, 1);
       var r = applyDamage(hitT, 2, { src: h });
@@ -4334,7 +4342,7 @@ var DM = (function () {
       if (!a.sw.hit && u >= 0.5) {
         a.sw.hit = true; tg = fkTargets(f);
         tg.forEach(function (t) {
-          if (t.hp <= 0 || Math.hypot(t.x - f.x, t.y - f.y) > 2 * R + 105) return;
+          if (t.hp <= 0 || Math.hypot(t.x - f.x, t.y - f.y) > R + rOf(t) + 105) return;
           var res = applyDamage(t, CN_SW_DMG, { src: f });
           if (res) {
             var dx = t.x - f.x, dy = t.y - f.y, dl = Math.hypot(dx, dy) || 1;
@@ -4349,7 +4357,7 @@ var DM = (function () {
     if (f.bind > 0 && a.st === 'aim') return;
     if (a.st === 'idle') {
       a.cd -= dt;
-      if (f.trait === 1 && a.left > 0 && a.swcd <= 0 && !a.sw && o && o.hp > 0 && Math.hypot(o.x - f.x, o.y - f.y) <= 2 * R + 70) {
+      if (f.trait === 1 && a.left > 0 && a.swcd <= 0 && !a.sw && o && o.hp > 0 && Math.hypot(o.x - f.x, o.y - f.y) <= R + rOf(o) + 70) {
         a.sw = { t: 0, hit: false }; a.left--; a.swcd = 1.0; sfxCnSwing();
       }
       if (a.cd <= 0 && !a.sw) { a.st = 'aim'; a.t = 0; a.lock = false; a.ang = f.ang; sfxCnAim(); }
@@ -4374,7 +4382,7 @@ var DM = (function () {
       b.x += b.vx * dt; b.y += b.vy * dt;
       particles.push({ x: b.x, y: b.y, vx: (Math.random() - 0.5) * 60, vy: (Math.random() - 0.5) * 60, life: 0.35, max: 0.35, color: Math.random() < 0.5 ? '#ff8a2a' : '#8a8a8a', size: 8 + Math.random() * 6 });
       var tg = fkTargets(f), hit = null;
-      for (q = 0; q < tg.length; q++) if (tg[q].hp > 0 && Math.hypot(tg[q].x - b.x, tg[q].y - b.y) <= R + CN_BR) { hit = tg[q]; break; }
+      for (q = 0; q < tg.length; q++) if (tg[q].hp > 0 && Math.hypot(tg[q].x - b.x, tg[q].y - b.y) <= rOf(tg[q]) + CN_BR) { hit = tg[q]; break; }
       if (hit) {
         var res = applyDamage(hit, cnDmg(f), { src: f });
         if (res) {
@@ -4387,7 +4395,7 @@ var DM = (function () {
       if (b.x < 8 || b.x > F - 8 || b.y < 8 || b.y > F - 8) {
         var ex = Math.max(8, Math.min(F - 8, b.x)), ey = Math.max(8, Math.min(F - 8, b.y));
         tg.forEach(function (t) {
-          if (t.hp <= 0 || Math.hypot(t.x - ex, t.y - ey) > CN_EXP_R + R * 0.5) return;
+          if (t.hp <= 0 || Math.hypot(t.x - ex, t.y - ey) > CN_EXP_R + rOf(t) * 0.5) return;
           var r2 = applyDamage(t, cnExp(f), { src: f });
           if (r2) { f.hits++; t.flash = 0.25; floater(t.x, Math.max(60, t.y - R - 24), '-' + r2.dmg, '#ff9a3a', 72); }
         });
@@ -5302,7 +5310,7 @@ var DM = (function () {
       w.t += dt; w.r += (w.spd || RO_SPD) * dt;
       for (var j = 0; j < tg.length; j++) {
         var o = tg[j];
-        if (!o || o.hp <= 0 || w.done.indexOf(o) >= 0 || Math.hypot(o.x - w.x, o.y - w.y) > w.r + R * 0.6) continue;
+        if (!o || o.hp <= 0 || w.done.indexOf(o) >= 0 || Math.hypot(o.x - w.x, o.y - w.y) > w.r + rOf(o) * 0.6) continue;
         w.done.push(o);
         if (w.dmg > 0) {
           var res = applyDamage(o, w.dmg, { src: w.src });
@@ -5639,7 +5647,7 @@ var DM = (function () {
           gap = pp.d - (R + W[o.type].width / 2 + 8);
           if (gap < 50) score -= (50 - Math.max(-30, gap)) * w * 2;
         } else if (reach > 0 && o.hp > 0) {
-          gap = Math.hypot(px - ox, py - oy) - (2 * R + reach);
+          gap = Math.hypot(px - ox, py - oy) - (R + rOf(o) + reach);
           if (gap < 50) score -= (50 - Math.max(-30, gap)) * w * 1.6;
         }
         for (k = 0; k < arrows.length; k++) {
@@ -5647,7 +5655,7 @@ var DM = (function () {
           gap = Math.hypot(px - (ar.x + ar.vx * t), py - (ar.y + ar.vy * t)) - (R + 12);
           if (gap < 50) score -= (50 - Math.max(-30, gap)) * w * 2;
         }
-        gap = Math.hypot(px - ox, py - oy) - 2 * R; if (gap < 30) score -= (30 - gap) * 0.4;
+        gap = Math.hypot(px - ox, py - oy) - (R + rOf(o)); if (gap < 30) score -= (30 - gap) * 0.4;
         if (px < R || px > F - R || py < R || py > F - R) score -= 4;
       }
       score += Math.cos(a - Math.atan2(tgt.vy, tgt.vx)) * 3;
@@ -5663,7 +5671,7 @@ var DM = (function () {
   function assistMul(f) {
     var o = fighters[1 - f.i]; if (!o || o.hp <= 0) return 1;
     var dist = Math.hypot(o.x - f.x, o.y - f.y);
-    return dist < 2 * R + wlen(f) + 140 ? 1.6 : 1.25;
+    return dist < R + rOf(o) + wlen(f) + 140 ? 1.6 : 1.25;
   }
   function bombSrc(o) { var s = o.src; return s && s.cl && fighters[s.i] ? fighters[s.i] : s; }   /* 분신·영물이 때려도 본체의 폭탄이 넘어간다 */
   function bombTry(o, d) { var s = bombSrc(o); if (s && s.bombT > 0 && s !== d && !o.dot && !o.bomb) bombPass(s, d); }
@@ -5704,7 +5712,7 @@ var DM = (function () {
     var p = fighters[f.plBy];
     if (!p || p.hp <= 0 || f.hp <= 0) { f.pl = 0; return; }
     f.pl -= dt;
-    var dx = p.x - f.x, dy = p.y - f.y, dl = Math.hypot(dx, dy), stopD = 2 * R + 6;
+    var dx = p.x - f.x, dy = p.y - f.y, dl = Math.hypot(dx, dy), stopD = rOf(f) + rOf(p) + 6;
     if (dl > stopD) { var mv = Math.min(dl - stopD, 3400 * dt); f.x += dx / dl * mv; f.y += dy / dl * mv; if (Math.random() < 0.6) trail.push({ x: f.x, y: f.y, i: f.i, life: 0.2, ux: dx / dl, uy: dy / dl }); }
     else { f.pl = 0; shake = Math.max(shake, 0.4); ring((f.x + p.x) / 2, (f.y + p.y) / 2, R * 2.4, '#ffffff', 0.3); sparks((f.x + p.x) / 2, (f.y + p.y) / 2, '#f48cff', 18, 480); if (fxOn && !demo) hitStopT = Math.max(hitStopT, 0.05); }
   }
@@ -5743,7 +5751,7 @@ var DM = (function () {
       }
     } else if (k === 'pull') {
       var pdx = f.x - o.x, pdy = f.y - o.y, pdl = Math.hypot(pdx, pdy);
-      if (o.hp <= 0 || pdl <= 2 * R + 8) ok = false;
+      if (o.hp <= 0 || pdl <= rOf(f) + rOf(o) + 8) ok = false;
       else {
         o.pl = 0.3; o.plBy = f.i; f.plFx = 0.4; o.kT = 0; o.kvx = o.kvy = 0;
         ring(o.x, o.y, R * 2.2, '#e667d9', 0.3); ring(f.x, f.y, R * 2.2, '#e667d9', 0.3); sparks(o.x, o.y, '#ffb3f5', 16, 420);
@@ -6174,7 +6182,7 @@ var DM = (function () {
     if (dom) playSlash(); else { playKatana(); if (fxOn && !demo && r) hitStopT = Math.max(hitStopT, 0.04); }
     if (!dom) {
       var lx = d.x - f.x, ly = d.y - f.y, ll = Math.hypot(lx, ly) || 1;
-      if (!immobile(f) && ll > 2 * R + 20) { f.kvx = lx / ll * 1100; f.kvy = ly / ll * 1100; f.kT = 0.14; }
+      if (!immobile(f) && ll > R + rOf(d) + 20) { f.kvx = lx / ll * 1100; f.kvy = ly / ll * 1100; f.kT = 0.14; }
     }
   }
   function domainStep(c, dt) {
@@ -6293,7 +6301,7 @@ var DM = (function () {
       if (f.ts <= 0) { f.ts = 0.03; var sv = Math.hypot(f.vx, f.vy) || 1; trail.push({ x: f.x, y: f.y, i: f.i, life: 0.3, ux: f.vx / sv, uy: f.vy / sv }); if (Math.random() < 0.7) sparks(f.x, f.y, '#9aa0ff', 1, 150); }
       if (f.trait === 2 && !f.dashHit && f.hp > 0) {
         var o2 = fighters[1 - f.i];
-        if (o2.hp > 0 && Math.hypot(o2.x - f.x, o2.y - f.y) < 2 * R + 8) {
+        if (o2.hp > 0 && Math.hypot(o2.x - f.x, o2.y - f.y) < R + rOf(o2) + 8) {
           f.dashHit = true;
           var r2 = applyDamage(o2, 4, { src: f });
           if (r2) {
@@ -6489,7 +6497,7 @@ var DM = (function () {
       c.t -= dt;
       if (c.t <= 0) {
         var sp = Math.hypot(d.vx, d.vy) || 1, vx = d.vx / sp, vy = d.vy / sp, ox = a.x, oy = a.y;
-        a.x = d.x - vx * (2 * R + 12); a.y = d.y - vy * (2 * R + 12); pushIn(a, false);
+        a.x = d.x - vx * (R + rOf(d) + 12); a.y = d.y - vy * (R + rOf(d) + 12); pushIn(a, false);
         for (var i = 0; i < 8; i++) { var q = i / 8; trail.push({ x: ox + (a.x - ox) * q, y: oy + (a.y - oy) * q, i: a.i, life: 0.35, ux: vx, uy: vy }); }
         a.ang = Math.atan2(d.y - a.y, d.x - a.x); a.ghost = 0;
         c.stage = 'cut'; c.t = 0.5; c.fl = 0.7; c.ux = vx; c.uy = vy;
@@ -6609,7 +6617,7 @@ var DM = (function () {
         var tca = f.ang + f.gsa, tr0 = R + GD_REST + GD_SPIN_EXT; if (Math.random() < 0.7) sparks(f.x + Math.cos(tca) * tr0, f.y + Math.sin(tca) * tr0, Math.random() < 0.5 ? '#ffffff' : '#9fd0ff', 2, 280); 
         if (op.hp > 0 && !sw.hit) {
           var an = f.ang + f.gsa, sg = gdSeg(f, an, INNER, R + GD_REST + GD_SPIN_EXT);
-          var p = segCircle(sg, op.x, op.y, R);
+          var p = segCircle(sg, op.x, op.y, rOf(op));
           if (p) {
             sw.hit = true;
             var res = applyDamage(op, GD_SPIN_DMG, { src: f });
@@ -6631,14 +6639,14 @@ var DM = (function () {
     var ext = gdExt(f);
     if (f.gk === null) {
       var dist = Math.hypot(op.x - f.x, op.y - f.y);
-      if (f.gc <= 0 && dist <= 2 * R + GD_REST + ext * 0.9) { f.gk = 0; f.gh = false; sfxGdThrust(); }
+      if (f.gc <= 0 && dist <= R + rOf(op) + GD_REST + ext * 0.9) { f.gk = 0; f.gh = false; sfxGdThrust(); }
       else { f.gx = 0; return; }
     } else f.gk += dt;
     var t = f.gk, e = t < 0.1 ? t / 0.1 : (t < 0.16 ? 1 : 1 - (t - 0.16) / 0.14);
     if (t >= 0.30) { f.gk = null; f.gx = 0; f.gc = f.type === 'silver' ? 1.5 : GD_CD; return; }
     f.gx = ext * Math.max(0, e);
     if (!f.gh && e > 0.2 && op.hp > 0) {
-      var sg2 = gdSeg(f, f.ang, INNER, R + GD_REST + f.gx), p2 = segCircle(sg2, op.x, op.y, R);
+      var sg2 = gdSeg(f, f.ang, INNER, R + GD_REST + f.gx), p2 = segCircle(sg2, op.x, op.y, rOf(op));
       if (p2) {
         f.gh = true;
         var dm = gdBuff(f) ? GD_DMG2 : GD_DMG, miss = false, crit = false;
@@ -6804,7 +6812,7 @@ var DM = (function () {
     if (b.sw) {
       b.sw.t += dt; var u = Math.min(1, b.sw.t / BK_SWING_T), e = u * u * (3 - 2 * u); b.sa = -1.35 + 2.7 * e;
       if (!b.sw.hit && d.hp > 0) {
-        var an = f.ang + b.sa, c2 = Math.cos(an), s2 = Math.sin(an), sg = { x1: f.x, y1: f.y, x2: f.x + c2 * (R + BK_BIG_REACH), y2: f.y + s2 * (R + BK_BIG_REACH) }, pp = segCircle(sg, d.x, d.y, R);
+        var an = f.ang + b.sa, c2 = Math.cos(an), s2 = Math.sin(an), sg = { x1: f.x, y1: f.y, x2: f.x + c2 * (R + BK_BIG_REACH), y2: f.y + s2 * (R + BK_BIG_REACH) }, pp = segCircle(sg, d.x, d.y, rOf(d));
         if (pp) {
           b.sw.hit = true;
           var dmg = 5 + Math.floor(Math.random() * 16), crit = false;
@@ -6871,12 +6879,12 @@ var DM = (function () {
       if (c.stun > 0) c.stun -= dt; else { c.x += c.vx * dt; c.y += c.vy * dt; wallBounce(c); }
       if (c.stun <= 0 && o.hp > 0) c.ang = Math.atan2(o.y - c.y, o.x - c.x);
       if (c.shk) { if (c.stun > 0) { c.jx = (Math.random() - 0.5) * 7; c.jy = (Math.random() - 0.5) * 7; } else { c.shk = false; c.mst = false; c.jx = 0; c.jy = 0; } }
-      (pwDead(own) ? [o] : [o, own]).forEach(function (q) { var dx = c.x - q.x, dy = c.y - q.y, dl = Math.hypot(dx, dy); if (dl < 2 * R && dl > 0) { var ov = (2 * R - dl) / 2; c.x += dx / dl * ov; c.y += dy / dl * ov; if (q === o) { var vn = c.vx * dx / dl + c.vy * dy / dl; if (vn < 0) { c.vx -= 2 * vn * dx / dl; c.vy -= 2 * vn * dy / dl; } } } });
+      (pwDead(own) ? [o] : [o, own]).forEach(function (q) { var dx = c.x - q.x, dy = c.y - q.y, dl = Math.hypot(dx, dy), rq = R + rOf(q); if (dl < rq && dl > 0) { var ov = (rq - dl) / 2; c.x += dx / dl * ov; c.y += dy / dl * ov; if (q === o) { var vn = c.vx * dx / dl + c.vy * dy / dl; if (vn < 0) { c.vx -= 2 * vn * dx / dl; c.vy -= 2 * vn * dy / dl; } } } });
       if (c.stun <= 0 && o.hp > 0 && phase === 'playing' && !cine) { if (c.gh) pwGhostStep(c, o, dt); else if (c.sp) slSpiritStep(c, o, own, dt); else blackStep(c, c.i, dt); }
       hitClone(o, c);
-      if (o.type === 'freak' && Math.hypot(o.x - c.x, o.y - c.y) < 2 * R + 2) freakTouch(o, c);
-      if ((o.type === 'fighter' || o.type === 'lightning') && Math.hypot(o.x - c.x, o.y - c.y) < 2 * R + 2) ftTouch(o, c);
-      if (!(o.stun > 0 || o.frozen > 0) && Math.hypot(o.x - c.x, o.y - c.y) < 2 * R + 2) { holyTouch(o, c); snTouch(o, c); ashTouch(o, c); rustTouch(o, c); sisTouch(o, c); gtTouch(o, c); bsTouch(o, c); wcTouch(o, c); }
+      if (o.type === 'freak' && Math.hypot(o.x - c.x, o.y - c.y) < R + rOf(o) + 2) freakTouch(o, c);
+      if ((o.type === 'fighter' || o.type === 'lightning') && Math.hypot(o.x - c.x, o.y - c.y) < R + rOf(o) + 2) ftTouch(o, c);
+      if (!(o.stun > 0 || o.frozen > 0) && Math.hypot(o.x - c.x, o.y - c.y) < R + rOf(o) + 2) { holyTouch(o, c); snTouch(o, c); ashTouch(o, c); rustTouch(o, c); sisTouch(o, c); gtTouch(o, c); rgTouch(o, c); bsTouch(o, c); wcTouch(o, c); }
     }
   }
 
@@ -7004,7 +7012,7 @@ var DM = (function () {
     if (!d || d.hp <= 0) { a.cut = null; f.inv = 0; return; }
     var dx = d.x - f.x, dy = d.y - f.y, dist = Math.hypot(dx, dy) || 1, ux = dx / dist, uy = dy / dist; f.ang = Math.atan2(dy, dx);
     if (c.st === 'dash') {
-      var stop = 2 * R + 6, step = Math.min(Math.max(0, dist - stop), 3800 * dt);
+      var stop = R + rOf(d) + 6, step = Math.min(Math.max(0, dist - stop), 3800 * dt);
       f.x += ux * step; f.y += uy * step; wallBounce(f);
       c.tr -= dt; if (c.tr <= 0) { c.tr = 0.018; trail.push({ x: f.x, y: f.y, i: f.i, life: 0.34, ux: ux, uy: uy }); if (Math.random() < 0.2) miPetal(f.x + (Math.random() - 0.5) * R, f.y + (Math.random() - 0.5) * R, (Math.random() - 0.5) * 120, (Math.random() - 0.5) * 120, 1, 0.9); sparks(f.x, f.y, '#ffe27a', 2, 260); sparks(f.x, f.y, '#ffffff', 1, 200); }
       if (step <= 0.01 || c.t > 0.8) {
@@ -7268,7 +7276,7 @@ var DM = (function () {
     snd(function (c, t) { noise(c, t, 0.1, 0.5, 900); tone(c, t, 'sine', 160, 45, 0.3, 0.5); noise(c, t, 0.2, 0.2, 5000); });
     ring(b.x, b.y, R * 2.6, '#e7c27a', 0.35); ring(b.x, b.y, R * 1.3, '#ffffff', 0.2); sparks(b.x, b.y, '#b89868', 16, 560); sparks(b.x, b.y, '#ffe9b0', 10, 620); sparks(b.x, b.y, '#ffffff', 6, 520);
     shake = Math.max(shake, 0.55); critFl = Math.max(critFl, 0.12); if (fxOn && !demo) hitStopT = Math.max(hitStopT, 0.04);
-    if (d && d.hp > 0 && Math.hypot(d.x - b.x, d.y - b.y) < R * 1.25 + R) {
+    if (d && d.hp > 0 && Math.hypot(d.x - b.x, d.y - b.y) < R * 1.25 + rOf(d)) {
       var res = applyDamage(d, GB_RAIN, { src: f });
       if (res) { f.hits++; d.flash = 0.14; floater(d.x, Math.max(60, d.y - R - 12), '-' + res.dmg + res.note, '#e7c27a', 46); }
     }
@@ -8262,7 +8270,7 @@ var DM = (function () {
       var c = exSmoke[i]; c.t += dt; var fr = Math.pow(0.08, dt); c.vx *= fr; c.vy *= fr; c.x += c.vx * dt; c.y += c.vy * dt;
       if (c.t >= c.life) { exSmoke.splice(i, 1); continue; }
       var tg = fighters[1 - c.own], h = fighters[c.own];
-      if (tg && tg.hp > 0 && h && h.hp > 0) { var rr = c.r0 + 48 * (c.t / c.life); if (Math.hypot(tg.x - c.x, tg.y - c.y) <= R + rr * 0.6) hitBy[c.own] = true; }
+      if (tg && tg.hp > 0 && h && h.hp > 0) { var rr = c.r0 + 48 * (c.t / c.life); if (Math.hypot(tg.x - c.x, tg.y - c.y) <= rOf(tg) + rr * 0.6) hitBy[c.own] = true; }
     }
     fighters.forEach(function (h) {
       if (h.type !== 'extg' || !h.ex) return;
@@ -8359,7 +8367,7 @@ var DM = (function () {
       var wt = paTouch(c.x, c.y);
       if (wt) { var vn = c.vx * wt.nx + c.vy * wt.ny; if (vn < 0) { c.vx -= 2 * vn * wt.nx; c.vy -= 2 * vn * wt.ny; } c.x = wt.x + wt.nx * 16; c.y = wt.y + wt.ny * 16; sparks(wt.x, wt.y, '#ffd34a', 2, 160); }
       if (!h || h.hp <= 0 || c.t > 14) { tcCoins.splice(i, 1); continue; }
-      if (c.sp > 300 && !c.gold && o && o.hp > 0 && Math.hypot(o.x - c.x, o.y - c.y) <= R + 14) {
+      if (c.sp > 300 && !c.gold && o && o.hp > 0 && Math.hypot(o.x - c.x, o.y - c.y) <= rOf(o) + 14) {
         tcCoins.splice(i, 1);
         var dm = c.dia ? TC_DIA_DMG : TC_DMG, r = applyDamage(o, dm, { src: h });
         sfxTcHit();
@@ -8588,7 +8596,7 @@ var DM = (function () {
     if (a.st === 'dash') {
       a.dt -= dt; f.vx = a.ax * SPD(); f.vy = a.ay * SPD(); f.ang = Math.atan2(a.ay, a.ax); f.inv = Math.max(f.inv, 0.02);
       a.ts -= dt; if (a.ts <= 0) { a.ts = 0.025; trail.push({ x: f.x, y: f.y, i: f.i, life: 0.22, ux: a.ax, uy: a.ay }); }
-      var sg = wseg(f, INNER, R + wlen(f)), p = segCircle(sg, d.x, d.y, R + W.rapier.width / 2);
+      var sg = wseg(f, INNER, R + wlen(f)), p = segCircle(sg, d.x, d.y, rOf(d) + W.rapier.width / 2);
       if (p && !a.hit) {
         a.hit = true;
         var dm = damageOf(f), r = applyDamage(d, dm, { src: f });
@@ -9240,7 +9248,7 @@ var DM = (function () {
   function slSpiritStep(c, o, own, dt) {
     var dx = o.x - c.x, dy = o.y - c.y, dl = Math.hypot(dx, dy) || 1, sp = SPD() * 0.85, k = Math.min(1, 3 * dt);
     c.vx += (dx / dl * sp - c.vx) * k; c.vy += (dy / dl * sp - c.vy) * k;
-    if (c.born <= 0 && c.cool <= 0 && dl < 2 * R + 4) {
+    if (c.born <= 0 && c.cool <= 0 && dl < R + rOf(o) + 4) {
       c.cool = 0.8; var r = applyDamage(o, 4, { src: own });
       if (r) { own.hits++; o.flash = 0.12; floater(o.x, Math.max(60, o.y - R - 12), '-' + r.dmg, '#bfe8ff', 40); sparks((c.x + o.x) / 2, (c.y + o.y) / 2, '#bfe8ff', 10, 340); ring((c.x + o.x) / 2, (c.y + o.y) / 2, R * 1.2, '#bfe8ff', 0.25); playHit(false); }
     }
@@ -9289,14 +9297,14 @@ var DM = (function () {
       e = slArr[i]; e.life += dt; e.tr.unshift({ x: e.x, y: e.y }); if (e.tr.length > 9) e.tr.pop(); e.x += e.vx * dt; e.y += e.vy * dt;
       if (e.own.hp <= 0 || e.x < -60 || e.y < -60 || e.x > F + 60 || e.y > F + 60 || e.life > 2) { slArr.splice(i, 1); continue; }
       tl = fkTargets(e.own);
-      for (j = 0; j < tl.length; j++) if (tl[j].hp > 0 && Math.hypot(tl[j].x - e.x, tl[j].y - e.y) < R + 8) { slArrowHit(e, tl[j]); slArr.splice(i, 1); break; }
+      for (j = 0; j < tl.length; j++) if (tl[j].hp > 0 && Math.hypot(tl[j].x - e.x, tl[j].y - e.y) < rOf(tl[j]) + 8) { slArrowHit(e, tl[j]); slArr.splice(i, 1); break; }
     }
     for (i = slFx.length - 1; i >= 0; i--) {
       e = slFx[i]; var f = e.own, op = fighters[1 - f.i];
       if (f.hp <= 0 && e.k !== 'fin') { slFx.splice(i, 1); continue; }
       if (e.k === 'wave') {
         e.t += dt; e.r += 1150 * dt;
-        if (op.hp > 0 && !e.hit[op.i] && Math.abs(Math.hypot(op.x - e.x, op.y - e.y) - e.r) < R + 30) {
+        if (op.hp > 0 && !e.hit[op.i] && Math.abs(Math.hypot(op.x - e.x, op.y - e.y) - e.r) < rOf(op) + 30) {
           e.hit[op.i] = 1; var rw = applyDamage(op, 6, { src: f });
           if (rw) { f.hits++; op.flash = 0.2; floater(op.x, Math.max(60, op.y - R - 14), '-' + rw.dmg, '#9fb4ff', 48); }
           slpStart(op, 6, f); shake = Math.max(shake, 0.6);
@@ -9308,7 +9316,7 @@ var DM = (function () {
         if (e.w > 0) { e.w -= dt; continue; }
         e.s += 1050 * dt; e.tr.unshift({ x: e.x, y: e.y }); if (e.tr.length > 7) e.tr.pop();
         if (Math.random() < dt * 70) slPar(e.x + (Math.random() - 0.5) * 220, e.y + (Math.random() - 0.5) * 220, -e.dx * 120 + (Math.random() - 0.5) * 120, -e.dy * 120 + (Math.random() - 0.5) * 120, 0.7, Math.random() < 0.5 ? '#fff3c4' : '#ffe9a0', 3 + Math.random() * 4); e.x = e.sx + e.dx * e.s; e.y = e.sy + e.dy * e.s;
-        if (op.hp > 0 && !e.hit[op.i] && Math.hypot(op.x - e.x, op.y - e.y) < 150 + R * 0.5) {
+        if (op.hp > 0 && !e.hit[op.i] && Math.hypot(op.x - e.x, op.y - e.y) < 150 + rOf(op) * 0.5) {
           e.hit[op.i] = 1; var dm = Math.max(1, Math.round(op.hp / 5)), rc = applyDamage(op, dm, { src: f });
           if (rc) { f.hits++; op.flash = 0.25; floater(op.x, Math.max(60, op.y - R - 14), '-' + rc.dmg, '#ffe9a0', 60); sparks(op.x, op.y, '#ffe9a0', 24, 640); sparks(op.x, op.y, '#ffffff', 12, 460); ring(op.x, op.y, R * 2.8, '#ffe9a0', 0.4); ring(op.x, op.y, R * 1.5, '#ffffff', 0.25); for (var sl2 = 0; sl2 < 3; sl2++) pushSlash({ x: op.x, y: op.y, ang: e.ang + Math.PI / 2 + (sl2 - 1) * 0.25, len: 200 + sl2 * 60, delay: sl2 * 0.02, age: 0, p: false, col: sl2 % 2 ? '#ffffff' : '#ffe9a0' }); shake = Math.max(shake, 0.9); critFl = Math.max(critFl, 0.12); if (fxOn && !demo) hitStopT = Math.max(hitStopT, 0.08); sfxSlSlash(); playHit(true); }
         }
@@ -9695,8 +9703,8 @@ var DM = (function () {
     }
     /* 재능2: 근접 대처 */
     if (f.trait === 2) {
-      if (a.sw) { a.sw.t += dt; if (!a.sw.hit && a.sw.t >= 0.1) { a.sw.hit = true; if (Math.hypot(op.x - f.x, op.y - f.y) <= 2 * R + AM_STAFF * 0.7 + 40) { var r = applyDamage(op, 2, { src: f }), ux = op.x - f.x, uy = op.y - f.y, ul = Math.hypot(ux, uy) || 1; op.kvx = ux / ul * 2300; op.kvy = uy / ul * 2300; op.kT = 0.35; sparks(op.x, op.y, '#c9a3ff', 12, 460); ring(op.x, op.y, R * 1.8, '#ffffff', 0.25); shake = Math.max(shake, 0.4); sfxMrHit(); if (r) { f.hits++; op.flash = 0.12; floater(op.x, Math.max(60, op.y - R - 14), '-' + r.dmg, C.p[f.i], 46); } } } if (a.sw.t >= 0.32) a.sw = null; }
-      else if (a.mcd <= 0 && !a.st && f.stun <= 0 && f.frozen <= 0 && Math.hypot(op.x - f.x, op.y - f.y) <= 2 * R + AM_NEAR) {
+      if (a.sw) { a.sw.t += dt; if (!a.sw.hit && a.sw.t >= 0.1) { a.sw.hit = true; if (Math.hypot(op.x - f.x, op.y - f.y) <= R + rOf(op) + AM_STAFF * 0.7 + 40) { var r = applyDamage(op, 2, { src: f }), ux = op.x - f.x, uy = op.y - f.y, ul = Math.hypot(ux, uy) || 1; op.kvx = ux / ul * 2300; op.kvy = uy / ul * 2300; op.kT = 0.35; sparks(op.x, op.y, '#c9a3ff', 12, 460); ring(op.x, op.y, R * 1.8, '#ffffff', 0.25); shake = Math.max(shake, 0.4); sfxMrHit(); if (r) { f.hits++; op.flash = 0.12; floater(op.x, Math.max(60, op.y - R - 14), '-' + r.dmg, C.p[f.i], 46); } } } if (a.sw.t >= 0.32) a.sw = null; }
+      else if (a.mcd <= 0 && !a.st && f.stun <= 0 && f.frozen <= 0 && Math.hypot(op.x - f.x, op.y - f.y) <= R + rOf(op) + AM_NEAR) {
         if (Math.random() < 0.5) { a.sw = { t: 0, hit: false, sg: Math.random() < 0.5 ? 1 : -1 }; a.mcd = AM_MCD; snd(function (c, t) { noise(c, t, 0.15, 0.2, 3000); tone(c, t, 'sawtooth', 400, 1200, 0.12, 0.08); }); } else a.mcd = 0.7;
       }
     }
@@ -9716,7 +9724,7 @@ var DM = (function () {
       o.tr.unshift({ x: o.x, y: o.y }); if (o.tr.length > 10) o.tr.pop();
       if (Math.random() < 0.5) particles.push({ x: o.x, y: o.y, vx: (Math.random() - 0.5) * 50, vy: (Math.random() - 0.5) * 50, life: 0.35, max: 0.35, color: Math.random() < 0.5 ? AM_SP[o.k].c : AM_SP[o.k].c2, size: 3 + Math.random() * 4 });
       var tl = fkTargets(f), hit = null;
-      for (var j = 0; j < tl.length; j++) if (tl[j].hp > 0 && Math.hypot(tl[j].x - o.x, tl[j].y - o.y) < R + 12) { hit = tl[j]; break; }
+      for (var j = 0; j < tl.length; j++) if (tl[j].hp > 0 && Math.hypot(tl[j].x - o.x, tl[j].y - o.y) < rOf(tl[j]) + 12) { hit = tl[j]; break; }
       if (hit && phase === 'playing') { amApply(f, hit, o.k); amOrbs.splice(i, 1); continue; }
       if (o.x < -60 || o.x > F + 60 || o.y < -60 || o.y > F + 60) amOrbs.splice(i, 1);
     }
@@ -9861,7 +9869,7 @@ var DM = (function () {
     if (!d || d.hp <= 0) { a.cut = null; f.inv = 0; return; }
     var dx = d.x - f.x, dy = d.y - f.y, dist = Math.hypot(dx, dy) || 1, ux = dx / dist, uy = dy / dist; f.ang = Math.atan2(dy, dx);
     if (c.st === 'dash') {
-      var stop = 2 * R + 6, step = Math.min(Math.max(0, dist - stop), 3800 * dt);
+      var stop = R + rOf(d) + 6, step = Math.min(Math.max(0, dist - stop), 3800 * dt);
       f.x += ux * step; f.y += uy * step; wallBounce(f);
       c.tr -= dt; if (c.tr <= 0) { c.tr = 0.018; trail.push({ x: f.x, y: f.y, i: f.i, life: 0.34, ux: ux, uy: uy }); if (Math.random() < 0.3) mrFeather(f.x + (Math.random() - 0.5) * R, f.y + (Math.random() - 0.5) * R, (Math.random() - 0.5) * 120, (Math.random() - 0.5) * 120, 1, 0.9); sparks(f.x, f.y, '#7b3fe4', 2, 260); sparks(f.x, f.y, '#c4122f', 1, 200); }
       if (step <= 0.01 || c.t > 0.8) { mrFx.push({ k: 'dash', x0: c.x0, y0: c.y0, x1: f.x, y1: f.y, t: 0, life: 0.5 }); c.st = 'slash'; c.t = 0; c.n = 0; c.ts = [0, 0.15, 0.32]; c.sd = 1; ring(f.x, f.y, R * 2.6, '#c4122f', 0.3); }
@@ -10152,7 +10160,7 @@ var DM = (function () {
           for (var j = 0; j < tl.length; j++) {
             var tg = tl[j]; if (tg.hp <= 0 || h.cd > 0) continue;
             var sx = hx - tx0, sy = hy - ty0, sl = sx * sx + sy * sy, u = Math.max(0, Math.min(1, ((tg.x - tx0) * sx + (tg.y - ty0) * sy) / sl)), px = tx0 + sx * u, py = ty0 + sy * u;
-            if (Math.hypot(tg.x - px, tg.y - py) <= R + h.hw * 0.6) {
+            if (Math.hypot(tg.x - px, tg.y - py) <= rOf(tg) + h.hw * 0.6) {
               h.cd = 0.7; var rs = applyDamage(tg, h.dm * a.d, { src: f });
               sparks(tg.x, tg.y, '#ffe9a0', 18, 520); ring(tg.x, tg.y, R * 2.4, '#ffd34a', 0.35); shake = Math.max(shake, 0.45); if (rs) playHit(false);
               pushSlash({ x: tg.x, y: tg.y, ang: h.a + Math.PI / 2, len: R * (2.4 + h.dm * 0.8), delay: 0, age: 0, p: h.dm >= 3, col: i === 2 ? '#ffb92a' : '#fff3b0' });
@@ -10191,7 +10199,7 @@ var DM = (function () {
       if (!ar.tr) ar.tr = []; ar.tr.unshift({ x: ar.x, y: ar.y }); if (ar.tr.length > 16) ar.tr.pop();
       if (Math.random() < 0.6) particles.push({ x: ar.x, y: ar.y, vx: (Math.random() - 0.5) * 40, vy: (Math.random() - 0.5) * 40, life: 0.3, max: 0.3, color: Math.random() < 0.5 ? '#fff3b0' : '#ffd34a', size: 3 + Math.random() * 4 });
       var tl = fkTargets(f), hit = null;
-      for (j = 0; j < tl.length; j++) if (tl[j].hp > 0 && Math.hypot(tl[j].x - ar.x, tl[j].y - ar.y) < R + 12) { hit = tl[j]; break; }
+      for (j = 0; j < tl.length; j++) if (tl[j].hp > 0 && Math.hypot(tl[j].x - ar.x, tl[j].y - ar.y) < rOf(tl[j]) + 12) { hit = tl[j]; break; }
       if (hit && phase === 'playing') {
         var rs = applyDamage(hit, ar.dmg, { src: f }); sparks(hit.x, hit.y, '#fff3b0', 16, 520); sparks(hit.x, hit.y, '#ffd34a', 8, 380); ring(hit.x, hit.y, R * 2, '#ffd34a', 0.3); shake = Math.max(shake, 0.25); sfxCrTick(true);
         if (rs) { f.hits++; hit.flash = 0.12; floater(hit.x, Math.max(60, hit.y - R - 14), '-' + rs.dmg + rs.note, C.p[f.i], 40); playHit(false); }
@@ -10206,7 +10214,7 @@ var DM = (function () {
         var tl2 = fkTargets(w.own);
         for (j = 0; j < tl2.length; j++) {
           var tg = tl2[j]; if (tg.hp <= 0 || w.hit[tg.i + '_' + j]) continue;
-          if (Math.abs(Math.hypot(tg.x - w.x, tg.y - w.y) - w.r) <= R + 28) {
+          if (Math.abs(Math.hypot(tg.x - w.x, tg.y - w.y) - w.r) <= rOf(tg) + 28) {
             w.hit[tg.i + '_' + j] = 1; var r2 = applyDamage(tg, w.dmg, { src: w.own });
             haltTarget(tg, CR_WAVE_STUN); if (r2) playHit(false); sparks(tg.x, tg.y, '#ffffff', 26, 700); ring(tg.x, tg.y, R * 3, '#ffd34a', 0.45); shake = Math.max(shake, 0.7); critFl = Math.max(critFl, 0.3);
             if (r2) { w.own.hits++; tg.flash = 0.16; floater(tg.x, Math.max(60, tg.y - R - 14), '-' + r2.dmg + r2.note, C.p[w.own.i], 56); }
@@ -10490,7 +10498,7 @@ var DM = (function () {
       var p = chProj[i], h = fighters[p.own]; if (!h) { chProj.splice(i, 1); continue; }
       var dx = p.tx - p.x, dy = p.ty - p.y, dl = Math.hypot(dx, dy), st = CH_DISH_SPD * dt; p.t += dt; p.rot += dt * 16;
       var land = dl <= st, hitT = null, tg = fkTargets(h);
-      for (var q = 0; q < tg.length; q++) if (tg[q].hp > 0 && Math.hypot(tg[q].x - p.x, tg[q].y - p.y) <= R + 22) { hitT = tg[q]; break; }
+      for (var q = 0; q < tg.length; q++) if (tg[q].hp > 0 && Math.hypot(tg[q].x - p.x, tg[q].y - p.y) <= rOf(tg[q]) + 22) { hitT = tg[q]; break; }
       if (!land && !hitT) { p.x += dx / dl * st; p.y += dy / dl * st; continue; }
       if (land && !hitT) { p.x = p.tx; p.y = p.ty; }
       chProj.splice(i, 1);
@@ -10837,7 +10845,7 @@ var DM = (function () {
       var dx = op.x - f.x, dy = op.y - f.y, dl = Math.hypot(dx, dy) || 1;
       f.vx = dx / dl * SPD(); f.vy = dy / dl * SPD(); a.aim = Math.atan2(dy, dx);
       a.mt = (a.mt || 0) - dt; if (a.mt <= 0) { a.mt = 0.07; trail.push({ x: f.x, y: f.y, i: f.i, life: 0.3, ux: f.vx / SPD(), uy: f.vy / SPD() }); if (Math.random() < 0.22) fkMark(f.x + (Math.random() - 0.5) * 30, f.y + (Math.random() - 0.5) * 30, a.aim + (Math.random() - 0.5) * 0.3, 'gouge', 0.9, 90 + Math.random() * 30); }
-      if (dl <= 2 * R + 6) { a.st = 'idle'; a.t = fkPer(f); a.e = 0; fkTouchSkipLick(f, op); }
+      if (dl <= R + rOf(op) + 6) { a.st = 'idle'; a.t = fkPer(f); a.e = 0; fkTouchSkipLick(f, op); }
       else if (a.e > 2.2) { a.st = 'idle'; a.t = fkPer(f); a.e = 0; }
     } else if (a.st === 'gut') {
       var gp = Math.min(1, a.e / FK_GUT_T), amp = 1.5 + 6 * gp;
@@ -10862,7 +10870,7 @@ var DM = (function () {
       g = fkGlobs[i]; g.life += dt; g.x += g.vx * dt; g.y += g.vy * dt; g.rot += dt * 12;
       if (Math.random() < 0.5) particles.push({ x: g.x, y: g.y, vx: (Math.random() - 0.5) * 60, vy: (Math.random() - 0.5) * 60, life: 0.25, max: 0.25, color: g.kind === 'blood' ? (Math.random() < 0.5 ? '#c01428' : '#7a0a14') : (g.mad ? (Math.random() < 0.5 ? '#b36bff' : '#5a1f8a') : (Math.random() < 0.5 ? '#b6d63a' : '#7ea01f')), size: 4 + Math.random() * 5 });
       var hit = null; tl = fkTargets(g.src);
-      for (j = 0; j < tl.length; j++) if (tl[j].hp > 0 && Math.hypot(tl[j].x - g.x, tl[j].y - g.y) < R + (g.big ? 10 : 6)) { hit = tl[j]; break; }
+      for (j = 0; j < tl.length; j++) if (tl[j].hp > 0 && Math.hypot(tl[j].x - g.x, tl[j].y - g.y) < rOf(tl[j]) + (g.big ? 10 : 6)) { hit = tl[j]; break; }
       if (hit && phase === 'playing') {
         var gcol = g.kind === 'blood' ? '#c01428' : (g.mad ? '#b36bff' : '#9dc12a'), gcol2 = g.kind === 'blood' ? '#7a0a14' : (g.mad ? '#5a1f8a' : '#6a8a18');
         sfxFkSplat(); hit.flash = 0.12; shake = Math.max(shake, 0.2);
@@ -10888,7 +10896,7 @@ var DM = (function () {
       p.tick += dt;
       if (p.tick >= 1) {
         p.tick -= 1; tl = fkTargets(p.src);
-        for (j = 0; j < tl.length; j++) if (tl[j].hp > 0 && Math.hypot(tl[j].x - p.x, tl[j].y - p.y) < cr + R * 0.4) { var rr = applyDamage(tl[j], p.mad ? 5 : 1, { dot: true, src: p.src }); if (rr) { floater(tl[j].x, Math.max(60, tl[j].y - R - 10), '-' + rr.dmg, p.mad ? '#b36bff' : '#9dc12a', 36, tl[j]); sparks(tl[j].x, tl[j].y, p.mad ? '#b36bff' : '#9dc12a', 6, 220); } }
+        for (j = 0; j < tl.length; j++) if (tl[j].hp > 0 && Math.hypot(tl[j].x - p.x, tl[j].y - p.y) < cr + rOf(tl[j]) * 0.4) { var rr = applyDamage(tl[j], p.mad ? 5 : 1, { dot: true, src: p.src }); if (rr) { floater(tl[j].x, Math.max(60, tl[j].y - R - 10), '-' + rr.dmg, p.mad ? '#b36bff' : '#9dc12a', 36, tl[j]); sparks(tl[j].x, tl[j].y, p.mad ? '#b36bff' : '#9dc12a', 6, 220); } }
       }
     }
     /* 흔적 */
@@ -11129,7 +11137,7 @@ var DM = (function () {
       r.done = true; r.s = 0.8;
       var sh = fighters[r.o], def = fighters[1 - r.o];
       sparks(r.x, r.y, '#d8f08a', 4, 190); sparks(r.x, r.y, '#8a6a3a', 3, 130); ring(r.x, r.y, RB_RAIN_HITR * 0.9, '#b8e04a', 0.2); sfxRainLand();
-      if (def.hp > 0 && Math.hypot(def.x - r.x, def.y - r.y) < R + RB_RAIN_HITR) {
+      if (def.hp > 0 && Math.hypot(def.x - r.x, def.y - r.y) < rOf(def) + RB_RAIN_HITR) {
         var res = applyDamage(def, RB_RAIN_DMG, { src: sh });
         if (res) {
           sparks(r.x, r.y, C.p[sh.i], 10, 300); sparks(r.x, r.y, '#ffffff', 6, 240); ring(r.x, r.y, R * 1.8, C.p[sh.i], 0.3);
@@ -11366,7 +11374,7 @@ var DM = (function () {
         a.x += c.ux * mv; a.y += c.uy * mv; a.ang = Math.atan2(c.uy, c.ux);
         trail.push({ x: a.x, y: a.y, i: a.i, life: 0.35, ux: c.ux, uy: c.uy });
         var pr = (d.x - a.x) * c.ux + (d.y - a.y) * c.uy;
-        if (!c.hitDone && pr <= 0) {
+        if (!c.hitDone && pr <= rOf(d) - R) {
           c.hitDone = true;
           var r = applyDamage(d, M_PIERCE_DMG, { src: a });
           var sa = Math.atan2(c.uy, c.ux);
@@ -11378,7 +11386,7 @@ var DM = (function () {
           floater(d.x, Math.max(70, d.y - R - 10), '-' + (r ? r.dmg + r.note : 0), '#38d9c0', 84);
         }
         if (pushIn(a, true).length) { c.hitDone = true; pr = -9999; }
-        if (c.hitDone && pr < -(2 * R + 40)) { c.stage = 'after'; c.t = 0.6; c.burst = false; }
+        if (c.hitDone && pr < -(R + rOf(d) + 40)) { c.stage = 'after'; c.t = 0.6; c.burst = false; }
       }
     } else {
       c.t -= dt;
@@ -11417,7 +11425,7 @@ var DM = (function () {
       trail.push({ x: a.x, y: a.y, i: a.i, life: 0.3, ux: uxI, uy: uyI });
       a.x += uxI * mvI; a.y += uyI * mvI; a.ang = Math.atan2(uyI, uxI);
       var prI = (d.x - a.x) * uxI + (d.y - a.y) * uyI;
-      if (!c.hitDone && prI <= 0) {
+      if (!c.hitDone && prI <= rOf(d) - R) {
         c.hitDone = true;
         var rI = applyDamage(d, IAI_DMG, { src: a });
         var sa = Math.atan2(uyI, uxI);
@@ -11428,7 +11436,7 @@ var DM = (function () {
         floater(d.x, Math.max(70, d.y - R - 10), '-' + (rI ? rI.dmg + rI.note : 0), C.gold, 78);
       }
       if (pushIn(a, true).length) { c.hitDone = true; prI = -9999; }
-      if (c.hitDone && prI < -(2 * R + 8)) { c.stage = 'slash'; c.t = 0.45; }
+      if (c.hitDone && prI < -(R + rOf(d) + 8)) { c.stage = 'slash'; c.t = 0.45; }
     } else if (c.stage === 'dash') {
       var dx = d.x - a.x, dy = d.y - a.y, dist = Math.hypot(dx, dy) || 1, gap = dist - R - rOf(d), mv = DASH_SPEED * dt;
       var ux = dx / dist, uy = dy / dist;
@@ -11468,7 +11476,7 @@ var DM = (function () {
         cine = null;
       } else if (c.t <= 0) {
         d.vx = c.ux * SPD(); d.vy = c.uy * SPD(); a.vx = -c.ux * SPD(); a.vy = -c.uy * SPD();
-        a.x = d.x - c.ux * (2 * R + 6); a.y = d.y - c.uy * (2 * R + 6);
+        a.x = d.x - c.ux * (R + rOf(d) + 6); a.y = d.y - c.uy * (R + rOf(d) + 6);
         pushIn(a, false);
         a.latch = true; d.latch = true; a.cool = 0.3; d.cool = 0.3; clashCool = 0.3; a.parries = 0;
         cine = null;
@@ -11943,7 +11951,7 @@ var DM = (function () {
       var o = fighters[1 - d.owner], h = fighters[d.owner];
       if (Math.random() < dt * 14 && asFx.length < 300) { var ra = Math.random() * TAU, rr = Math.random() * d.r; asFx.push({ k: 'flake', x: d.x + Math.cos(ra) * rr, y: d.y + Math.sin(ra) * rr, vx: (Math.random() - 0.5) * 30, vy: -10 - Math.random() * 30, t: 0, life: 0.7 + Math.random() * 0.6, r: 3 + Math.random() * 6, rot: Math.random() * TAU, vr: (Math.random() - 0.5) * 4, gold: false }); }
       if (!o || o.hp <= 0 || !h || phase !== 'playing') continue;
-      if (Math.hypot(o.x - d.x, o.y - d.y) < d.r + R * 0.4) {
+      if (Math.hypot(o.x - d.x, o.y - d.y) < d.r + rOf(o) * 0.4) {
         o.dustT = 0.3; d.tk += dt;
         if (d.tk >= 1.0 && d.dmg < 5) { d.tk -= 1.0; var res = applyDamage(o, 1, { src: h, dot: true }); if (res) { d.dmg += 1; floater(o.x, Math.max(60, o.y - R - 14), '-1', '#b9b7c6', 30, o); sparks(o.x, o.y, '#9a98a8', 4, 160); } }
       }
@@ -17552,7 +17560,7 @@ var DM = (function () {
   $('#bxOk').addEventListener('click', boxNext);
   window.__acct = acct;
   window.__news = { own: function (v) { news.own = !!v; newsUi(true); }, set: function (t) { newsSet(t, 1); newsUi(true); } };
-  window.__jb = { pj: function () { return rgPj.map(function (q) { return [Math.round(q.x), Math.round(q.y), !!q.stay, Math.round(Math.hypot(q.vx, q.vy))]; }); }, mk: function () { return rgMk.map(function (q) { return [Math.round(q.x), Math.round(q.y), q.r]; }); }, own: function (t) { eco.own[t] = 1; }, bbg: function () { return { on: bbg.on, mode: bbg.mode, six: bbg.six, rage: bbg.rage }; }, pick: function (t) { sel[0].type = t; sel[0].trait = 0; sel[0].spells = []; sync(); }, step: function (n, dt) { for (var i = 0; i < n; i++) update(dt || 1 / 60); }, types: function () { return Object.keys(W); }, force: function (id) { var f = fighters[1], L = JB_LV[jbRun.lv], sv = L.sk; L.sk = [id]; f.rg.last = ''; f.rg.sk = null; rgStart(f, fighters[0], L); L.sk = sv; }, run: function () { return jbRun; }, f: function () { return fighters; }, F: function () { return F; }, eco: function () { return jbSync(); }, kill: function (k) { fighters[k].hp = 0; }, T: function () { return jbT(); }, setT: function (v) { if (jbRun) jbRun.acc = v - matchT; }, hurtArm: function (k, n) { var a = fighters[1].rg; a.am[k] = Math.max(0, a.am[k] - n); if (a.am[k] <= 0) rgBreak(fighters[1], k); } };
+  window.__jb = { go: function () { start(); }, pick2: function (t) { sel[1].type = t; sel[1].trait = 0; sel[1].spells = []; sync(); }, cl: function () { return clones; }, spB: function () { blackSpawnClones(fighters[0]); }, spG: function (n) { for (var i = 0; i < (n || 2); i++) { var p = pwPos(); pwGhost(fighters[0], p.x, p.y, 0); } }, bossPos: function (x, y) { fighters[1].x = x; fighters[1].y = y; }, pj: function () { return rgPj.map(function (q) { return [Math.round(q.x), Math.round(q.y), !!q.stay, Math.round(Math.hypot(q.vx, q.vy))]; }); }, mk: function () { return rgMk.map(function (q) { return [Math.round(q.x), Math.round(q.y), q.r]; }); }, own: function (t) { eco.own[t] = 1; }, bbg: function () { return { on: bbg.on, mode: bbg.mode, six: bbg.six, rage: bbg.rage }; }, pick: function (t) { sel[0].type = t; sel[0].trait = 0; sel[0].spells = []; sync(); }, step: function (n, dt) { for (var i = 0; i < n; i++) update(dt || 1 / 60); }, types: function () { return Object.keys(W); }, force: function (id) { var f = fighters[1], L = JB_LV[jbRun.lv], sv = L.sk; L.sk = [id]; f.rg.last = ''; f.rg.sk = null; rgStart(f, fighters[0], L); L.sk = sv; }, run: function () { return jbRun; }, f: function () { return fighters; }, F: function () { return F; }, eco: function () { return jbSync(); }, kill: function (k) { fighters[k].hp = 0; }, T: function () { return jbT(); }, setT: function (v) { if (jbRun) jbRun.acc = v - matchT; }, hurtArm: function (k, n) { var a = fighters[1].rg; a.am[k] = Math.max(0, a.am[k] - n); if (a.am[k] <= 0) rgBreak(fighters[1], k); } };
   window.__boss = { run: function () { return bossRun; }, kill: function (k) { fighters[k].hp = 0; }, open: bossOpen, week: bossWeek, sync: bossSync };
   window.__eco = { mk: makeIcon, force: ecoForce, get: function () { return eco; }, roll: boxRoll, push: function (t) { eco.box.push(t); ecoSave(); ecoUi(); }, done: ecoMatchDone, reset: function () { ecoGot = false; } };
   $('#hmAv').addEventListener('click', function () { audio(); if (homeTabCur !== 'me') { uiTick(); homeTab('me'); } });
@@ -18116,15 +18124,18 @@ var DM = (function () {
     else rgSkill(f, o, L, dt);
   }
   function rgSwingHit(f, k, s) {
-    var o = fighters[1 - f.i], rr = rOf(f), dx = o.x - f.x, dy = o.y - f.y, dl = Math.hypot(dx, dy) || 1, p = rgPlate(f, k);
+    var rr = rOf(f), p = rgPlate(f, k);
     shake = Math.max(shake, 0.35); sfxRgSmash(false); ring(p.x, p.y, R * 1.6, '#e0904a', 0.22); sparks(p.x, p.y, '#ffb26a', 12, 420);
     rgCrack(p.x, p.y, R * 1.3, 4); rgDebris(p.x, p.y, 4, 380); if (fxOn && !demo) hitStopT = Math.max(hitStopT, 0.05);
-    if (o.hp <= 0 || dl > rr + JB_REACH + 70) return;
-    var ux = dx / dl, uy = dy / dl, res = applyDamage(o, rgDmg(f, 10), { src: f });
-    if (!res) return;
-    o.flash = 0.16; o.kvx = ux * 2000; o.kvy = uy * 2000; o.kT = 0.5; addRust(o, f, 0.25);
-    ring(o.x, o.y, R * 2.2, '#ffe0b0', 0.25); sparks(o.x, o.y, '#ffe0b0', 14, 520); sparks(o.x, o.y, '#b5651d', 10, 380); shake = Math.max(shake, 0.6); vib(40); rgZoom(o.x, o.y, 0.07, 0.3); if (fxOn && !demo) hitStopT = Math.max(hitStopT, 0.07);
-    floater(o.x, Math.max(60, o.y - R - 16), '-' + res.dmg + res.note, '#ffd9a8', 56);
+    fkTargets(f).forEach(function (o) {   /* 상대 본체 + 상대의 분신·소환체 모두 맞는다 */
+      var dx = o.x - f.x, dy = o.y - f.y, dl = Math.hypot(dx, dy) || 1;
+      if (o.hp <= 0 || dl > rr + JB_REACH + 70) return;
+      var ux = dx / dl, uy = dy / dl, res = applyDamage(o, rgDmg(f, 10), { src: f });
+      if (!res) return;
+      o.flash = 0.16; o.kvx = ux * 2000; o.kvy = uy * 2000; o.kT = 0.5; addRust(o, f, 0.25);
+      ring(o.x, o.y, R * 2.2, '#ffe0b0', 0.25); sparks(o.x, o.y, '#ffe0b0', 14, 520); sparks(o.x, o.y, '#b5651d', 10, 380); shake = Math.max(shake, 0.6); vib(40); rgZoom(o.x, o.y, 0.07, 0.3); if (fxOn && !demo) hitStopT = Math.max(hitStopT, 0.07);
+      floater(o.x, Math.max(60, o.y - R - 16), '-' + res.dmg + res.note, '#ffd9a8', 56);
+    });
   }
   function rgTouch(h, o) {
     if (h.type !== 'rgiant' || h.hp <= 0 || o.hp <= 0 || phase !== 'playing' || h.i === o.i) return;
@@ -18165,10 +18176,12 @@ var DM = (function () {
       if (sk.t >= 1.2 && !sk.ok) {
         sk.ok = true; ring(sk.x, sk.y, sk.r * 1.15, '#ffb340', 0.45); ring(sk.x, sk.y, sk.r * 0.6, '#ffffff', 0.3); sparks(sk.x, sk.y, '#b5651d', 26, 620); sparks(sk.x, sk.y, '#ffd9a8', 12, 420);
         shake = Math.max(shake, 1.0); sfxRgStomp(); vib(60); rgCrack(sk.x, sk.y, sk.r * 1.1, 9); rgDebris(sk.x, sk.y, 12, 620); ring(sk.x, sk.y, sk.r * 1.6, '#c9a070', 0.6); rgZoom(sk.x, sk.y, 0.09, 0.4); if (fxOn && !demo) hitStopT = Math.max(hitStopT, 0.08);
-        if (o.hp > 0 && Math.hypot(o.x - sk.x, o.y - sk.y) <= sk.r + R * 0.4) {
-          var res = applyDamage(o, rgDmg(f, L.st[0]), { src: f });
-          if (res) { stunTarget(o, L.st[1]); o.flash = 0.2; floater(o.x, Math.max(60, o.y - R - 16), '-' + res.dmg + res.note, '#ffd9a8', 62); }
-        }
+        fkTargets(f).forEach(function (t) {
+          if (t.hp > 0 && Math.hypot(t.x - sk.x, t.y - sk.y) <= sk.r + rOf(t) * 0.4) {
+            var res = applyDamage(t, rgDmg(f, L.st[0]), { src: f });
+            if (res) { stunTarget(t, L.st[1]); t.flash = 0.2; floater(t.x, Math.max(60, t.y - R - 16), '-' + res.dmg + res.note, '#ffd9a8', 62); }
+          }
+        });
       }
       if (sk.t >= 1.6) rgEndSk(f, L);
     } else if (sk.id === 'shard') {
@@ -18188,10 +18201,13 @@ var DM = (function () {
         sk.gt += dt; f.ang = Math.atan2(sk.uy, sk.ux); shake = Math.max(shake, 0.2);
         sk.gh = (sk.gh || 0) - dt; if (sk.gh <= 0) { sk.gh = 0.05; rgFx.push({ k: 'ghost', t: 0, life: 0.28, x: f.x, y: f.y, r: rr, rot: a.rot }); }
         if (Math.random() < dt * 40) sparks(f.x - sk.ux * rr * 0.8, f.y - sk.uy * rr * 0.8, '#b5651d', 2, 260);
-        if (!sk.hit && o.hp > 0 && Math.hypot(o.x - f.x, o.y - f.y) < rr * 0.8 + R) {
-          sk.hit = true; var r2 = applyDamage(o, rgDmg(f, L.roll), { src: f });
-          if (r2) { o.flash = 0.2; o.kvx = sk.ux * 3200; o.kvy = sk.uy * 3200; o.kT = 0.5; stunTarget(o, 0.5); floater(o.x, Math.max(60, o.y - R - 16), '-' + r2.dmg + r2.note, '#ffd9a8', 62); ring(o.x, o.y, R * 2.6, '#ffe0b0', 0.3); sparks(o.x, o.y, '#ffb26a', 22, 640); shake = Math.max(shake, 0.8); vib(60); }
-        }
+        sk.hl = sk.hl || [];
+        fkTargets(f).forEach(function (t) {   /* 질주에 치이는 것: 상대 본체 + 분신·소환체 (각자 한 번씩) */
+          if (sk.hl.indexOf(t) >= 0 || t.hp <= 0 || Math.hypot(t.x - f.x, t.y - f.y) >= rr * 0.8 + R) return;
+          sk.hl.push(t); if (t === o) sk.hit = true;
+          var r2 = applyDamage(t, rgDmg(f, L.roll), { src: f });
+          if (r2) { t.flash = 0.2; t.kvx = sk.ux * 3200; t.kvy = sk.uy * 3200; t.kT = 0.5; stunTarget(t, 0.5); floater(t.x, Math.max(60, t.y - R - 16), '-' + r2.dmg + r2.note, '#ffd9a8', 62); ring(t.x, t.y, R * 2.6, '#ffe0b0', 0.3); sparks(t.x, t.y, '#ffb26a', 22, 640); shake = Math.max(shake, 0.8); vib(60); }
+        });
         var atWall = f.x - rr <= 4 || f.x + rr >= F - 4 || f.y - rr <= 4 || f.y + rr >= F - 4;
         if (atWall || sk.gt > 2.6) {   /* 벽쿵: 2초 기절 */
           var wx = Math.max(0, Math.min(F, f.x + sk.ux * rr)), wy = Math.max(0, Math.min(F, f.y + sk.uy * rr));
@@ -18214,7 +18230,7 @@ var DM = (function () {
         if (!sk.wh && m.t >= m.warn - 0.35) { sk.wh = 1; sfxRgFall(); }
         if (!m.fell && m.t >= m.warn) {
           m.fell = true; m.age = 0; ring(m.x, m.y, m.r * 1.5, '#ff7a3a', 0.35); ring(m.x, m.y, m.r * 0.8, '#ffffff', 0.22); sparks(m.x, m.y, '#b5651d', 16, 520); sparks(m.x, m.y, '#ffd9a8', 6, 360); shake = Math.max(shake, 0.4); sfxRgSmash(false); rgCrack(m.x, m.y, m.r * 1.1, 6); rgDebris(m.x, m.y, 6, 480);
-          if (o.hp > 0 && Math.hypot(o.x - m.x, o.y - m.y) <= m.r + R * 0.5) { var r3 = applyDamage(o, rgDmg(f, 10), { src: f }); if (r3) { o.flash = 0.16; floater(o.x, Math.max(60, o.y - R - 16), '-' + r3.dmg + r3.note, '#ffd9a8', 52); } }
+          fkTargets(f).forEach(function (t) { if (t.hp > 0 && Math.hypot(t.x - m.x, t.y - m.y) <= m.r + rOf(t) * 0.5) { var r3 = applyDamage(t, rgDmg(f, 10), { src: f }); if (r3) { t.flash = 0.16; floater(t.x, Math.max(60, t.y - R - 16), '-' + r3.dmg + r3.note, '#ffd9a8', 52); } } });
         }
         if (m.fell) { m.age += dt; if (m.age > 0.5) { rgMk.splice(q, 1); continue; } }
         live++;
@@ -18237,6 +18253,8 @@ var DM = (function () {
         var p = segCircle(wseg(o, INNER, R + wlen(o)), s.x, s.y, s.r + W[o.type].width / 2);
         if (p) { sparks(s.x, s.y, '#ffd36a', 10, 380); sparks(s.x, s.y, '#ffffff', 4, 260); ring(s.x, s.y, R * 1.1, '#ffd36a', 0.18); rgPj.splice(i, 1); playHit(false); continue; }
       }
+      var cl0 = null; for (var ci = 0; ci < clones.length; ci++) if (clones[ci].i === o.i && clones[ci].hp > 0 && Math.hypot(clones[ci].x - s.x, clones[ci].y - s.y) < R + s.r) { cl0 = clones[ci]; break; }
+      if (cl0) { rgPj.splice(i, 1); var rc = applyDamage(cl0, s.dmg, { src: b }); if (rc) { cl0.flash = 0.12; sparks(s.x, s.y, '#ffb26a', 10, 420); floater(cl0.x, Math.max(60, cl0.y - R - 16), '-' + rc.dmg + rc.note, '#ffd9a8', 40); playHit(false); } continue; }
       if (Math.hypot(o.x - s.x, o.y - s.y) < R + s.r) {
         rgPj.splice(i, 1);
         var res = applyDamage(o, s.dmg, { src: b });
@@ -18484,13 +18502,13 @@ var DM = (function () {
   function jbClose() { $('#jbInfo').hidden = true; $('#jbOv').hidden = true; $('#hmInv').hidden = true; boxPause = homeTabCur !== 'play'; dotSync(); }
   function jbRender() {
     var j = jbSync(), h = '', best = j.bt[jbSelLv];
-    h += '<div class="jbhero"><img alt="" src="' + rgIcon() + '"><div><b>녹슨 거인</b><small>폐허를 지키는 쇠 덩어리. 장갑을 부수면 몸으로 부딪쳐 와요.</small></div></div>';
+    h += '<div class="jbhero"><div class="jbim"><img alt="" src="' + rgIcon() + '"></div><div class="jbtx"><b>녹슨 거인</b><small>폐허를 지키는 고대의 쇠 덩어리.</small></div>' +
+      '<ul class="jbwn"><li>-파상풍 공격 주의</li><li>-넉백,기절,업화,수면,파상풍 면역 주의</li></ul></div>';
     h += '<h4>난이도</h4>';
     JB_LV.forEach(function (L, i) {
       var lk = i > j.u, rw = JB_RW[i], tx = tkName(rw[0], rw[1]);
-      h += '<button type="button" class="jblv' + (i === jbSelLv ? ' sel' : '') + (lk ? ' lk' : '') + '" data-lv="' + i + '" style="--lc:' + L.c + ';--i:' + i + '"><span class="jbn">' + L.n + (j.cl[i] ? ' · 격파 ' + j.cl[i] + '회' : '') + '</span>' +
-        '<span class="jbi">체력 ' + L.hp + ' · 장갑 2×' + L.arm + ' · 기술 ' + L.sk.length + '개 · 광폭화 ' + jbFmt(L.rage) + '</span>' +
-        '<span class="jbr">' + (lk ? '잠김 · ' + JB_LV[i - 1].n + '을(를) 격파하면 열려요' : '첫 격파 보상 · ' + tx + ' ×1 · ' + (j.rw[i] ? '받음' : '미수령') + (j.bt[i] ? ' · 최단 ' + jbFmt(j.bt[i]) : '')) + '</span></button>';
+      h += '<button type="button" class="jblv' + (i === jbSelLv ? ' sel' : '') + (lk ? ' lk' : '') + '" data-lv="' + i + '" style="--lc:' + L.c + ';--i:' + i + '"><i class="jbt" aria-hidden="true"><s' + (i >= 0 ? ' class="on"' : '') + '></s><s' + (i >= 1 ? ' class="on"' : '') + '></s><s' + (i >= 2 ? ' class="on"' : '') + '></s></i><span class="jbbd"><span class="jbn">' + L.n + (j.cl[i] ? ' · 격파 ' + j.cl[i] + '회' : '') + '</span>' +
+        '<span class="jbr">' + (lk ? '잠김 · ' + JB_LV[i - 1].n + '을(를) 격파하면 열려요' : '첫 격파 보상 · ' + tx + ' ×1 · ' + (j.rw[i] ? '받음' : '미수령') + (j.bt[i] ? ' · 최단 ' + jbFmt(j.bt[i]) : '')) + '</span></span></button>';
     });
     h += '<h4>공용 스펠 (무제한)</h4><div class="jbfs">' + ['chase', 'dodge'].map(function (k) { return '<button type="button" data-fs="' + k + '" aria-pressed="' + (j.fs === k) + '"><b>' + SPELL[k].n + '</b><br>' + SPELL[k].d.replace(/ · \d+회$/, '') + '</button>'; }).join('') + '</div>';
     $('#jbBody').innerHTML = h; $('#jbBody').scrollTop = 0;
