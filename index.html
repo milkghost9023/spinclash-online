@@ -1096,7 +1096,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v610</span>
+      <span class="verTag">v612</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -15803,9 +15803,9 @@ var DM = (function () {
   }
   /* ═══════ 레드닷(빨간 점) ═══════
      홈 아래 5개 탭 + 세로줄 7개 버튼. 자동 조건(보스전 등)이거나 설정의 테스트 스위치가 켜져 있으면 뜬다 */
-  var DOT_KEYS = [['shop', '상점'], ['col', '컬렉션'], ['play', '대전'], ['rank', '랭킹'], ['me', '프로필'], ['진보스전', '진보스전'], ['보스전', '보스전'], ['승부장', '승부장'], ['메일함', '메일함'], ['보관함', '보관함'], ['소셜', '소셜'], ['길드', '길드']];
+  var DOT_KEYS = [['shop', '상점'], ['col', '컬렉션'], ['play', '대전'], ['rank', '랭킹'], ['me', '프로필'], ['진보스전', '진보스전'], ['보스전', '보스전'], ['타임어택', '타임어택'], ['승부장', '승부장'], ['메일함', '메일함'], ['보관함', '보관함'], ['소셜', '소셜'], ['길드', '길드']];
   var dotTest = {};
-  function dotAuto(k) { try { if (k === '메일함') return mailOpenN() > 0; if (k === '보스전') { var b = bossSync(); return !b.sn || !b.ch; } } catch (e) {} return false; }   /* 이번 주 보스전을 아직 안 열어 봤거나, 도전 보상을 아직 못 받았으면 */
+  function dotAuto(k) { try { if (k === '메일함') return mailOpenN() > 0; if (k === '보스전') { var b = bossSync(); return !b.sn || !b.ch; } if (k === '진보스전') { var j = jbSync(), lv; for (lv = 0; lv <= j.u; lv++) if (!j.rw[lv]) return true; return false; } if (k === '타임어택') return taList().length === 0; } catch (e) {} return false; }   /* 이번 주 보스전을 아직 안 열어 봤거나, 도전 보상을 아직 못 받았으면 */
   function dotEl(k) { return document.querySelector(/[가-힣]/.test(k) ? '#home .hsb[data-soon="' + k + '"]' : '#home .hnav button[data-hn="' + k + '"]'); }
   function dotSync() {
     DOT_KEYS.forEach(function (d) {
@@ -15881,7 +15881,7 @@ var DM = (function () {
   function bossLeftTxt() { var left = Math.floor((bossWeek() + 1) * 7 - 3) - bossDayKst(); return left <= 1 ? '오늘까지' : left + '일 남음'; }
   function bossStage(i) { return i === 0 ? '노재능' : '재능 ' + i + ' · ' + W[BOSS_TYPE].traits[i - 1].name; }
   function bossOpen() { audio(); tk.mode = 'list'; $('#mailOv').hidden = true; $('#taOv').hidden = true; $('#jbOv').hidden = true; $('#tkOv').hidden = true; $('#hmInv').hidden = false; $('#bsInfo').hidden = true; $('#bossOv').hidden = false; boxPause = true; bossSync().sn = 1; ecoSave(); dotSync(); bossSnow(); bossRender(); sfxBossOpen(); }
-  function bossClose() { $('#bsInfo').hidden = true; $('#bossOv').hidden = true; $('#hmInv').hidden = true; boxPause = homeTabCur !== 'play'; }
+  function bossClose() { $('#bsInfo').hidden = true; $('#bossOv').hidden = true; $('#hmInv').hidden = true; boxPause = homeTabCur !== 'play'; dotSync(); }
   function bossRender() {
     var b = bossSync(), ri = RAR_INFO[RAR[BOSS_TYPE]], nm = W[BOSS_TYPE].name, h = '', i;
     $('#bsHd').style.setProperty('--rc', ri.c); $('#bsImg').src = makeIcon(BOSS_TYPE); $('#bsRp').textContent = ri.n; $('#bsLeft').textContent = bossLeftTxt();
@@ -16544,7 +16544,7 @@ var DM = (function () {
     screenName = name; if (name !== 'battle') jbWide(false); document.body.classList.remove('bossBt'); document.body.classList.remove('jbBt'); bbgStop();
     colShow(false);
     var title = name === 'title', select = name === 'select', battle = name === 'battle', cls = name === 'cls', spec = name === 'spec', home = name === 'home';
-    $('#home').hidden = !home;
+    $('#home').hidden = !home; if (home) { try { dotSync(); } catch (e) {} }
     $('#titleOv').hidden = !title; $('#topBar').hidden = title || home; $('#hudBars').hidden = title || home || cls || spec;
     if (title || home) bgmStart(); else bgmStop();
     hintSync();
@@ -17552,7 +17552,7 @@ var DM = (function () {
   $('#bxOk').addEventListener('click', boxNext);
   window.__acct = acct;
   window.__news = { own: function (v) { news.own = !!v; newsUi(true); }, set: function (t) { newsSet(t, 1); newsUi(true); } };
-  window.__jb = { own: function (t) { eco.own[t] = 1; }, bbg: function () { return { on: bbg.on, mode: bbg.mode, six: bbg.six, rage: bbg.rage }; }, pick: function (t) { sel[0].type = t; sel[0].trait = 0; sel[0].spells = []; sync(); }, step: function (n, dt) { for (var i = 0; i < n; i++) update(dt || 1 / 60); }, types: function () { return Object.keys(W); }, force: function (id) { var f = fighters[1], L = JB_LV[jbRun.lv], sv = L.sk; L.sk = [id]; f.rg.last = ''; f.rg.sk = null; rgStart(f, fighters[0], L); L.sk = sv; }, run: function () { return jbRun; }, f: function () { return fighters; }, F: function () { return F; }, eco: function () { return jbSync(); }, kill: function (k) { fighters[k].hp = 0; }, T: function () { return jbT(); }, setT: function (v) { if (jbRun) jbRun.acc = v - matchT; }, hurtArm: function (k, n) { var a = fighters[1].rg; a.am[k] = Math.max(0, a.am[k] - n); if (a.am[k] <= 0) rgBreak(fighters[1], k); } };
+  window.__jb = { pj: function () { return rgPj.map(function (q) { return [Math.round(q.x), Math.round(q.y), !!q.stay, Math.round(Math.hypot(q.vx, q.vy))]; }); }, mk: function () { return rgMk.map(function (q) { return [Math.round(q.x), Math.round(q.y), q.r]; }); }, own: function (t) { eco.own[t] = 1; }, bbg: function () { return { on: bbg.on, mode: bbg.mode, six: bbg.six, rage: bbg.rage }; }, pick: function (t) { sel[0].type = t; sel[0].trait = 0; sel[0].spells = []; sync(); }, step: function (n, dt) { for (var i = 0; i < n; i++) update(dt || 1 / 60); }, types: function () { return Object.keys(W); }, force: function (id) { var f = fighters[1], L = JB_LV[jbRun.lv], sv = L.sk; L.sk = [id]; f.rg.last = ''; f.rg.sk = null; rgStart(f, fighters[0], L); L.sk = sv; }, run: function () { return jbRun; }, f: function () { return fighters; }, F: function () { return F; }, eco: function () { return jbSync(); }, kill: function (k) { fighters[k].hp = 0; }, T: function () { return jbT(); }, setT: function (v) { if (jbRun) jbRun.acc = v - matchT; }, hurtArm: function (k, n) { var a = fighters[1].rg; a.am[k] = Math.max(0, a.am[k] - n); if (a.am[k] <= 0) rgBreak(fighters[1], k); } };
   window.__boss = { run: function () { return bossRun; }, kill: function (k) { fighters[k].hp = 0; }, open: bossOpen, week: bossWeek, sync: bossSync };
   window.__eco = { mk: makeIcon, force: ecoForce, get: function () { return eco; }, roll: boxRoll, push: function (t) { eco.box.push(t); ecoSave(); ecoUi(); }, done: ecoMatchDone, reset: function () { ecoGot = false; } };
   $('#hmAv').addEventListener('click', function () { audio(); if (homeTabCur !== 'me') { uiTick(); homeTab('me'); } });
@@ -17743,7 +17743,7 @@ var DM = (function () {
     if (b) taCount($('#taBn'), b.c, 800, false);
   }
   function taOpen() { tk.mode = 'list'; $('#tkOv').hidden = true; $('#bossOv').hidden = true; $('#mailOv').hidden = true; $('#jbOv').hidden = true; $('#hmInv').hidden = false; $('#taInfo').hidden = true; $('#taOv').hidden = false; boxPause = true; taRender(); sfxTaOpen(); }
-  function taClose() { taTm++; $('#taInfo').hidden = true; $('#taOv').hidden = true; $('#jbOv').hidden = true; $('#hmInv').hidden = true; boxPause = homeTabCur !== 'play'; }
+  function taClose() { taTm++; $('#taInfo').hidden = true; $('#taOv').hidden = true; $('#jbOv').hidden = true; $('#hmInv').hidden = true; boxPause = homeTabCur !== 'play'; dotSync(); }
   function taGo() {
     if (net.on || bossRun || tut.on) return;
     taRun = { bk: JSON.stringify(sel), n: 0 }; taClose(); taDummy(); showScreen('select'); sync();
@@ -17830,7 +17830,7 @@ var DM = (function () {
       s.textContent = winner === -1 ? '동시에 쓰러졌어요 · 다시 도전해요' : '더미 체력이 ' + Math.max(0, fighters[1].hp) + ' 남았어요 · 다시 도전해요'; return;
     }
     var c = Math.max(1, Math.round(matchT * 100)), d = new Date(), l = taList().slice(), prev = l.length ? l[0].c : null, e = { c: c, ty: sel[0].type, d: (d.getMonth() + 1) + '/' + d.getDate() };
-    l.push(e); l.sort(function (a, b) { return a.c - b.c; }); var rank = l.indexOf(e) + 1; eco.ta = l.slice(0, 10); ecoSave(); taLastC = c;
+    l.push(e); l.sort(function (a, b) { return a.c - b.c; }); var rank = l.indexOf(e) + 1; eco.ta = l.slice(0, 10); ecoSave(); dotSync(); taLastC = c;
     var gi = taGrade(c), g = TA_GR[gi], nb = prev === null || c < prev, sec = c / 100, hits = r.hits || 0;
     t.style.color = nb ? '#ffd23a' : 'var(--p1)'; t.textContent = nb ? 'NEW RECORD!' : '클리어!'; s.textContent = '';
     var rk = rank <= 10 ? '내 기록 <b>' + rank + '위</b>' + (rank >= 2 && rank <= 3 ? ' · 톱3!' : '') : '10위 밖이라 기록에는 안 남아요';
@@ -17861,9 +17861,9 @@ var DM = (function () {
      기록은 지금은 이 기기(eco.jb)에 저장한다 = 베타. 수치는 플레이 테스트로 조정할 제안값 */
   var JB_SEASON = 1, JB_TIME = 360, JB_BAN = ['freak', 'selene', 'chef'], JB_REACH = 150;
   var JB_LV = [
-    { n: '쉬움', c: '#7fd96a', hp: 100, arm: 10, rage: 270, sk: ['stomp', 'shard'], int: 6, st: [12, 0.5], sh: [6, 3], roll: 0, fl: '폐허를 지키던 쇳덩이가 눈을 떴다.' },
-    { n: '보통', c: '#ffb340', hp: 200, arm: 20, rage: 240, sk: ['stomp', 'shard', 'roll'], int: 5, st: [18, 0.8], sh: [8, 4], roll: 18, fl: '녹슬어도 힘은 그대로다. 굴러오면 피해라.' },
-    { n: '어려움', c: '#ff5a3a', hp: 300, arm: 30, rage: 210, sk: ['stomp', 'shard', 'roll', 'rebar'], int: 4, st: [25, 1.0], sh: [12, 5], roll: 20, fl: '철근이 비처럼 쏟아진다. 한순간도 방심하지 마라.' }
+    { n: 'Easy', c: '#7fd96a', hp: 100, arm: 10, rage: 270, sk: ['stomp', 'shard'], int: 6, st: [12, 0.5], sh: [6, 3], roll: 0, fl: '폐허를 지키던 쇳덩이가 눈을 떴다.' },
+    { n: 'Normal', c: '#ffb340', hp: 200, arm: 20, rage: 240, sk: ['stomp', 'shard', 'roll'], int: 5, st: [18, 0.8], sh: [8, 4], roll: 18, fl: '녹슬어도 힘은 그대로다. 굴러오면 피해라.' },
+    { n: 'Hard', c: '#ff5a3a', hp: 300, arm: 30, rage: 210, sk: ['stomp', 'shard', 'roll', 'rebar'], int: 4, st: [25, 1.0], sh: [12, 5], roll: 20, fl: '철근이 비처럼 쏟아진다. 한순간도 방심하지 마라.' }
   ];
   var JB_RW = [['spl', 1], ['tal', 2], ['chr', 3]];   /* 첫 격파 보상: 희귀 스펠 · 초희귀 재능 · 영웅 캐릭터 선택권 */
   var RG_MS = [[0.66, '금이 간다…', '#ffb340'], [0.33, '코어가 달아오른다!', '#ff7a3a'], [0.12, '비틀거린다!', '#ff4a2a']];
@@ -17996,7 +17996,7 @@ var DM = (function () {
     if (d.hp <= 0) return;
     var fr = d.hp / (d.maxHp || 1);
     while (a.ms < RG_MS.length && fr <= RG_MS[a.ms][0]) {
-      var m = RG_MS[a.ms]; floater(d.x, Math.max(70, d.y - rr - 50), m[1], m[2], 58); ring(d.x, d.y, rr * 1.5, m[2], 0.5); sparks(d.x, d.y, m[2], 18, 520);
+      var m = RG_MS[a.ms]; ring(d.x, d.y, rr * 1.5, m[2], 0.5); sparks(d.x, d.y, m[2], 18, 520);
       rgCrack(d.x, d.y, rr * 1.1, 6); shake = Math.max(shake, 0.6); sfxRgMile(a.ms); rgDebris(d.x, d.y, 8, 560); a.ms++;
     }
   }
@@ -18145,18 +18145,19 @@ var DM = (function () {
     else if (id === 'shard') { a.sk = { id: id, t: 0, ok: false }; banners.push({ i: f.i, text: '파편 사출!', color: '#ff9a3a', life: 1.1, max: 1.1 }); sfxRgWarn(); sfxRgRattle(); }
     else if (id === 'roll') { a.sk = { id: id, t: 0, st: 'aim', ux: 1, uy: 0, hit: false, gt: 0 }; banners.push({ i: f.i, text: '녹슨 질주!', color: '#ff7a3a', life: 1.2, max: 1.2 }); sfxRgWarn(); sfxRgCharge(); }
     else {
-      var n = 5 + Math.floor(Math.random() * 3); a.sk = { id: 'rebar', t: 0 }; rgMk.length = 0;
+      var n = 12; a.sk = { id: 'rebar', t: 0 }; rgMk.length = 0;   /* 12개: 7개는 상대 주변(첫 번째는 정확히 상대 위치), 5개는 필드 전체 완전 랜덤 */
       for (q = 0; q < n; q++) {
-        var mx = o.x, my = o.y;
-        if (q) { var an = Math.random() * TAU, dd = 120 + Math.random() * 320; mx = Math.max(110, Math.min(F - 110, o.x + Math.cos(an) * dd)); my = Math.max(110, Math.min(F - 110, o.y + Math.sin(an) * dd)); }
-        rgMk.push({ x: mx, y: my, t: -(q * 0.1 + Math.random() * 0.2), warn: 1.0, r: 82, fell: false, age: 0 });
+        var mx = o.x, my = o.y, dl0 = -(q * 0.1 + Math.random() * 0.2);
+        if (q >= 7) { mx = 110 + Math.random() * (F - 220); my = 110 + Math.random() * (F - 220); dl0 = -Math.random() * 1.0; }
+        else if (q) { var an = Math.random() * TAU, dd = 120 + Math.random() * 320; mx = Math.max(110, Math.min(F - 110, o.x + Math.cos(an) * dd)); my = Math.max(110, Math.min(F - 110, o.y + Math.sin(an) * dd)); }
+        rgMk.push({ x: mx, y: my, t: dl0, warn: 1.0, r: 96, fell: false, age: 0 });
       }
       banners.push({ i: f.i, text: '철근 낙하!', color: '#ff5a3a', life: 1.1, max: 1.1 }); sfxRgWarn();
     }
   }
   function rgEndSk(f, L) { var a = f.rg; a.sk = null; a.skT = L.int * (a.rage ? 0.5 : 1); }
   function rgSkill(f, o, L, dt) {
-    var a = f.rg, sk = a.sk, rr = rOf(f), q;
+    var a = f.rg, sk = a.sk, rr = rOf(f), q, k2;
     sk.t += dt;
     if (sk.id === 'stomp') {
       if (sk.t < 1.2 && Math.random() < dt * 22) { var da = Math.random() * TAU, dd = Math.random() * sk.r; sparks(sk.x + Math.cos(da) * dd, sk.y + Math.sin(da) * dd, '#9a7a52', 1, 90); }
@@ -18191,11 +18192,18 @@ var DM = (function () {
           sk.hit = true; var r2 = applyDamage(o, rgDmg(f, L.roll), { src: f });
           if (r2) { o.flash = 0.2; o.kvx = sk.ux * 3200; o.kvy = sk.uy * 3200; o.kT = 0.5; stunTarget(o, 0.5); floater(o.x, Math.max(60, o.y - R - 16), '-' + r2.dmg + r2.note, '#ffd9a8', 62); ring(o.x, o.y, R * 2.6, '#ffe0b0', 0.3); sparks(o.x, o.y, '#ffb26a', 22, 640); shake = Math.max(shake, 0.8); vib(60); }
         }
-        if (f.x - rr <= 4 || f.x + rr >= F - 4 || f.y - rr <= 4 || f.y + rr >= F - 4 || sk.gt > 2.6) {   /* 벽쿵: 2초 기절 */
+        var atWall = f.x - rr <= 4 || f.x + rr >= F - 4 || f.y - rr <= 4 || f.y + rr >= F - 4;
+        if (atWall || sk.gt > 2.6) {   /* 벽쿵: 2초 기절 */
           var wx = Math.max(0, Math.min(F, f.x + sk.ux * rr)), wy = Math.max(0, Math.min(F, f.y + sk.uy * rr));
           ring(wx, wy, R * 3.4, '#ffb340', 0.45); ring(wx, wy, R * 1.8, '#ffffff', 0.3); sparks(wx, wy, '#b5651d', 30, 700); sparks(wx, wy, '#ffd9a8', 12, 480);
           shake = Math.max(shake, 1.0); sfxRgSmash(true); if (fxOn && !demo) hitStopT = Math.max(hitStopT, 0.1); vib(70);
-          floater(F / 2, 330, '벽에 쾅!', '#ffb340', 66); rgCrack(wx, wy, R * 3.4, 10); rgDebris(wx, wy, 16, 760); rgZoom(wx, wy, 0.12, 0.6);
+          rgCrack(wx, wy, R * 3.4, 10); rgDebris(wx, wy, 16, 760); rgZoom(wx, wy, 0.12, 0.6);
+          if (atWall && jbRun && jbRun.lv === 2) {   /* Hard: 벽에 박으면 녹 파편 2개가 튀어 필드에 남는다 */
+            var ba = Math.atan2(CX - wy, CX - wx);
+            for (q = 0; q < 2; q++) { var sa = ba + (q ? 1 : -1) * (0.35 + Math.random() * 0.45), ss = 650 + Math.random() * 350; rgPj.push({ x: wx + Math.cos(sa) * 40, y: wy + Math.sin(sa) * 40, vx: Math.cos(sa) * ss, vy: Math.sin(sa) * ss, r: 24, dmg: rgDmg(f, L.sh[1]), life: 5, rot: Math.random() * TAU, stay: true }); }
+            for (q = rgPj.length - 1, k2 = 0; q >= 0; q--) if (rgPj[q].stay && ++k2 > 8) rgPj.splice(q, 1);
+            sparks(wx, wy, '#ffb26a', 14, 560);
+          }
           a.stag = 2; f.stun = Math.max(f.stun, 2); f.shk = true; f.mst = false; rgEndSk(f, L);
         }
       }
@@ -18218,10 +18226,14 @@ var DM = (function () {
   function rgPjStep(dt) {
     var o = fighters[0], b = fighters[1], i;
     for (i = rgPj.length - 1; i >= 0; i--) {
-      var s = rgPj[i]; s.x += s.vx * dt; s.y += s.vy * dt; s.life -= dt; s.rot += dt * 9;
-      if (s.life <= 0 || s.x < -60 || s.x > F + 60 || s.y < -60 || s.y > F + 60) { rgPj.splice(i, 1); continue; }
+      var s = rgPj[i], rest = false; s.x += s.vx * dt; s.y += s.vy * dt; s.rot += dt * 9;
+      if (s.stay) {   /* 벽쿵 파편: 미끄러지다 멈추고, 필드에 남는다 (멈춘 뒤에는 쳐낼 수 없고 닿으면 터진다) */
+        var sp0 = Math.hypot(s.vx, s.vy), fk = Math.max(0, 1 - 3.2 * dt); s.vx *= fk; s.vy *= fk; if (sp0 < 30) { s.vx = 0; s.vy = 0; s.rot -= dt * 9; }
+        s.x = Math.max(30, Math.min(F - 30, s.x)); s.y = Math.max(30, Math.min(F - 30, s.y)); rest = !s.vx && !s.vy;
+      } else s.life -= dt;
+      if (!s.stay && s.life <= 0 || s.x < -60 || s.x > F + 60 || s.y < -60 || s.y > F + 60) { rgPj.splice(i, 1); continue; }
       if (o.hp <= 0) continue;
-      if (!(o.stun > 0 || o.frozen > 0) && !unarmed(o) && !isBow(o) && !isGd(o)) {
+      if (!rest && !(o.stun > 0 || o.frozen > 0) && !unarmed(o) && !isBow(o) && !isGd(o)) {
         var p = segCircle(wseg(o, INNER, R + wlen(o)), s.x, s.y, s.r + W[o.type].width / 2);
         if (p) { sparks(s.x, s.y, '#ffd36a', 10, 380); sparks(s.x, s.y, '#ffffff', 4, 260); ring(s.x, s.y, R * 1.1, '#ffd36a', 0.18); rgPj.splice(i, 1); playHit(false); continue; }
       }
@@ -18376,12 +18388,13 @@ var DM = (function () {
         var q = Math.min(1, Math.max(0, m.t / m.warn));
         ctx.save(); ctx.fillStyle = 'rgba(255,70,40,' + (0.10 + 0.2 * q) + ')'; ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, TAU); ctx.fill();
         ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(255,122,58,0.95)'; ctx.setLineDash([14, 10]); ctx.lineDashOffset = -now / 30; ctx.beginPath(); ctx.arc(m.x, m.y, m.r, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
-        var by = m.y - 40 - (1 - q) * (1 - q) * 900;   /* 떨어지는 철근 */
-        ctx.fillStyle = '#8a5430'; ctx.strokeStyle = C.edge; ctx.lineWidth = 4; ctx.beginPath(); ctx.rect(m.x - 10, by - 150, 20, 150); ctx.fill(); ctx.stroke();
-        ctx.fillStyle = '#d9a066'; ctx.beginPath(); ctx.rect(m.x - 14, by - 10, 28, 10); ctx.fill(); ctx.stroke(); ctx.restore();
+        var by = m.y - 40 - (1 - q) * (1 - q) * 1100;   /* 떨어지는 철근 (크게) */
+        ctx.fillStyle = '#8a5430'; ctx.strokeStyle = C.edge; ctx.lineWidth = 5; ctx.beginPath(); ctx.rect(m.x - 17, by - 270, 34, 270); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = '#b5703a'; ctx.fillRect(m.x - 17, by - 270, 9, 270);
+        ctx.fillStyle = '#d9a066'; ctx.beginPath(); ctx.rect(m.x - 25, by - 18, 50, 18); ctx.fill(); ctx.stroke(); ctx.restore();
       } else {
         var fq = 1 - m.age / 0.5; ctx.save(); ctx.globalAlpha = Math.max(0, fq); ctx.fillStyle = '#5a3418'; ctx.strokeStyle = C.edge; ctx.lineWidth = 4;
-        ctx.beginPath(); ctx.rect(m.x - 10, m.y - 90, 20, 100); ctx.fill(); ctx.stroke(); ctx.restore();
+        ctx.beginPath(); ctx.rect(m.x - 17, m.y - 170, 34, 180); ctx.fill(); ctx.stroke(); ctx.restore();
       }
     }
     for (i = 0; i < rgPj.length; i++) {   /* 녹슨 파편 */
@@ -18453,8 +18466,8 @@ var DM = (function () {
     return '<p><b>녹슨 거인</b>은 언제든 도전할 수 있는 <b>상시 보스</b>예요. 훨씬 넓은 필드에서 거인 하나를 상대해요.</p>' +
       '<h5>싸우는 방법</h5><ul class="ul"><li>내 캐릭터 <b>3명이 이어서</b> 싸워요. 쓰러지면 다음 캐릭터를 골라 나와요.</li><li>쓴 캐릭터는 다시 못 쓰고, 거인의 <b>체력과 장갑은 그대로</b> 이어져요.</li><li>교대로 나온 캐릭터는 <b>3초 동안 무적</b>이에요.</li><li>재능은 쓸 수 있어요. 스펠은 <b>2개 + 공용 스펠 1개(추적·회피, 무제한)</b>예요.</li></ul>' +
       '<h5>제한 시간</h5><p>전투는 최대 <b>6분</b>이에요. 컷인과 캐릭터 고르는 시간은 안 세요. 시간이 다 되면 실패예요. 난이도마다 정해진 시간이 지나면 거인이 <b>광폭화</b>해요.</p>' +
-      '<h5>녹슨 거인</h5><ul class="ul"><li>양옆의 <b>장갑 2개</b>가 먼저 피해를 받아요. 공격한 쪽의 장갑이 맞고, 그쪽이 깨졌으면 몸이 맞아요. 장갑은 재생하지 않아요.</li><li>장갑이 있는 동안은 가까이 가면 <b>장갑을 휘둘러요</b> (피해 10, 넉백, 녹슮).</li><li>장갑이 둘 다 깨지면 <b>몸으로 부딪쳐요</b>. 대신 움직임이 빨라져요.</li><li>기술: 발구르기 · 녹슨 파편 · 구르기 돌진(Medium~) · 철근 낙하(Hard). 경고 표시가 먼저 떠요.</li></ul>' +
-      '<h5>난이도와 보상</h5><ul class="ul"><li><b>Easy</b>는 처음부터 열려 있고, <b>Medium</b>은 Easy를, <b>Hard</b>는 Medium을 격파하면 열려요.</li><li>첫 격파 보상은 난이도마다 <b>한 번</b>이에요: Easy 희귀 스펠 선택권 · Medium 초희귀 재능 선택권 · Hard 영웅 캐릭터 선택권.</li><li>하루 보상은 없고, 도전 횟수는 <b>무제한</b>이에요. 실패해도 바로 다시 도전해요.</li><li>거인이 다시 돌아오는 시즌에는 <b>첫 격파 보상이 초기화</b>돼요.</li></ul>' +
+      '<h5>녹슨 거인</h5><ul class="ul"><li>양옆의 <b>장갑 2개</b>가 먼저 피해를 받아요. 공격한 쪽의 장갑이 맞고, 그쪽이 깨졌으면 몸이 맞아요. 장갑은 재생하지 않아요.</li><li>장갑이 있는 동안은 가까이 가면 <b>장갑을 휘둘러요</b> (피해 10, 넉백, 녹슮).</li><li>장갑이 둘 다 깨지면 <b>몸으로 부딪쳐요</b>. 대신 움직임이 빨라져요.</li><li>기술: 발구르기 · 녹슨 파편 · 구르기 돌진(Normal~) · 철근 낙하(Hard). 경고 표시가 먼저 떠요.</li></ul>' +
+      '<h5>난이도와 보상</h5><ul class="ul"><li><b>Easy</b>는 처음부터 열려 있고, <b>Normal</b>은 Easy를, <b>Hard</b>는 Normal을 격파하면 열려요.</li><li>첫 격파 보상은 난이도마다 <b>한 번</b>이에요: Easy 희귀 스펠 선택권 · Normal 초희귀 재능 선택권 · Hard 영웅 캐릭터 선택권.</li><li>하루 보상은 없고, 도전 횟수는 <b>무제한</b>이에요. 실패해도 바로 다시 도전해요.</li><li>거인이 다시 돌아오는 시즌에는 <b>첫 격파 보상이 초기화</b>돼요.</li></ul>' +
       '<h5>쓸 수 없는 캐릭터</h5><p>상대 현재 체력에 비례해 피해를 주는 <b>괴인 · 셀레네 · 셰프</b>는 쓸 수 없어요. 앞으로 나올 비슷한 캐릭터도 같아요.</p>' +
       '<h5>알아두기</h5><p>베타 동안은 기록과 보상이 이 기기에만 저장돼요.</p>';
   }
@@ -18468,7 +18481,7 @@ var DM = (function () {
     tk.mode = 'list'; $('#tkOv').hidden = true; $('#bossOv').hidden = true; $('#mailOv').hidden = true; $('#taOv').hidden = true; $('#hmInv').hidden = false; $('#jbOv').hidden = false; boxPause = true;
     $('#jbInfo').hidden = true; var j = jbSync(); if (jbSelLv > j.u) jbSelLv = j.u; jbRender(); sfxRgOpen();
   }
-  function jbClose() { $('#jbInfo').hidden = true; $('#jbOv').hidden = true; $('#hmInv').hidden = true; boxPause = homeTabCur !== 'play'; }
+  function jbClose() { $('#jbInfo').hidden = true; $('#jbOv').hidden = true; $('#hmInv').hidden = true; boxPause = homeTabCur !== 'play'; dotSync(); }
   function jbRender() {
     var j = jbSync(), h = '', best = j.bt[jbSelLv];
     h += '<div class="jbhero"><img alt="" src="' + rgIcon() + '"><div><b>녹슨 거인</b><small>폐허를 지키는 쇠 덩어리. 장갑을 부수면 몸으로 부딪쳐 와요.</small></div></div>';
