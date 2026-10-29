@@ -92,8 +92,8 @@ function specStatus(room, only) {
 /* 접속 중인 사람 수: 페이지를 열어 둔 연결(hi 를 보낸 연결)만 센다. 변할 때마다 0.6초 모아서 한 번에 알린다 */
 let countT = null, lastCount = -1;
 function onlineCount() { let n = 0; wss.clients.forEach((w) => { if (w._pres) n++; }); return n; }
-/* 제작자 전용 접속자 목록: [닉네임, 상태] 만 보낸다 (상태는 각 사람의 화면이 알려 준 값: home 홈 · mm 대전 매칭 중 · prep 대전 준비중 · fight 대전중 · custom 방 만들어서 하는 중 · spec 관전 중 · off 오프라인) */
-const PST_OK = new Set(['home', 'mm', 'prep', 'fight', 'custom', 'spec', 'off']);
+/* 제작자 전용 접속자 목록: [닉네임, 상태] 만 보낸다 (상태는 각 사람의 화면이 알려 준 값: home 홈 · mm 대전 매칭 중 · prep 대전 준비중 · fight 대전중 · custom 방 만들어서 하는 중 · spec 관전 중 · boss 보스전 중 · jb 진보스전 중 · ta 타임어택 중 · off 오프라인) */
+const PST_OK = new Set(['home', 'mm', 'prep', 'fight', 'custom', 'spec', 'boss', 'jb', 'ta', 'off']);
 function sendPlist(w) {
   const l = []; wss.clients.forEach((c) => { if (c._pres && l.length < 300) l.push([c._pn || '손님', c._ps || 'home']); });
   rawSend(w, { t: 'plist', l });
