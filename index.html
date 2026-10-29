@@ -1121,7 +1121,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v627</span>
+      <span class="verTag">v628</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -17922,7 +17922,7 @@ var DM = (function () {
     { n: 'Easy', c: '#7fd96a', hp: 100, arm: 10, rage: 270, sk: ['stomp', 'shard'], int: 6, st: [12, 0.5], sh: [6, 3], roll: 0, fl: '폐허를 지키던 쇳덩이가 눈을 떴다.' },
     { n: 'Normal', c: '#ffb340', hp: 200, arm: 20, rage: 240, sk: ['stomp', 'shard', 'roll'], int: 5, st: [18, 0.8], sh: [8, 4], roll: 18, fl: '녹슬어도 힘은 그대로다. 굴러오면 피해라.' },
     { n: 'Hard', c: '#ff5a3a', hp: 300, arm: 30, rage: 210, sk: ['stomp', 'shard', 'roll', 'rebar'], int: 4, st: [25, 1.0], sh: [12, 5], roll: 20, fl: '철근이 비처럼 쏟아진다. 한순간도 방심하지 마라.' },
-    { n: 'Extreme', c: '#e0143c', hp: 400, arm: 45, rage: 180, sk: ['stomp', 'shard', 'roll', 'rebar', 'whirl'], int: 3, st: [32, 1.2], sh: [16, 6], roll: 26, rb: 18, rbd: 14, ct: 12, wh: 12, wr: 170, wt: 2.4, fl: '철근이 하늘을 덮는다. 이건 시험이 아니라 처형이다.' }
+    { n: 'Extreme', c: '#e0143c', hp: 400, arm: 60, rage: 180, sk: ['stomp', 'shard', 'roll', 'rebar', 'whirl'], int: 3, st: [32, 1.2], sh: [16, 6], roll: 26, rb: 18, rbd: 14, ct: 12, wh: 12, wr: 170, wt: 2.4, wrs: 0.5, wbl: 12, fl: '철근이 하늘을 덮는다. 이건 시험이 아니라 처형이다.' }
   ];
   var JB_RW = [['spl', 1], ['tal', 2], ['chr', 3], ['chr', 5]];   /* 첫 격파 보상: 희귀 스펠 · 초희귀 재능 · 영웅 캐릭터 선택권 */
   var RG_MS = [[0.66, '금이 간다…', '#ffb340'], [0.33, '코어가 달아오른다!', '#ff7a3a'], [0.12, '비틀거린다!', '#ff4a2a']];
@@ -18215,7 +18215,7 @@ var DM = (function () {
     if (id === 'stomp') { a.sk = { id: id, t: 0, x: o.x, y: o.y, r: R * 2.6, ok: false }; banners.push({ i: f.i, text: '발구르기!', color: '#ffb340', life: 1.1, max: 1.1 }); sfxRgWarn(); sfxRgWind(); }
     else if (id === 'shard') { a.sk = { id: id, t: 0, ok: false }; banners.push({ i: f.i, text: '파편 사출!', color: '#ff9a3a', life: 1.1, max: 1.1 }); sfxRgWarn(); sfxRgRattle(); }
     else if (id === 'roll') { a.sk = { id: id, t: 0, st: 'aim', ux: 1, uy: 0, hit: false, gt: 0 }; banners.push({ i: f.i, text: '녹슨 질주!', color: '#ff7a3a', life: 1.2, max: 1.2 }); sfxRgWarn(); sfxRgCharge(); }
-    else if (id === 'whirl') { a.sk = { id: id, t: 0, ok: false }; banners.push({ i: f.i, text: '회전 분쇄!', color: '#ff4a2a', life: 1.2, max: 1.2 }); sfxRgWarn(); sfxRgCharge(); }
+    else if (id === 'whirl') { a.sk = { id: id, t: 0, ok: false, sp: rgBroken(f) }; banners.push({ i: f.i, text: '회전 분쇄!', color: '#ff4a2a', life: 1.2, max: 1.2 }); sfxRgWarn(); sfxRgCharge(); }
     else {
       var n = L.rb || 12, nn = Math.round(n * 7 / 12); a.sk = { id: 'rebar', t: 0 }; rgMk.length = 0;   /* 12개: 7개는 상대 주변(첫 번째는 정확히 상대 위치), 5개는 필드 전체 완전 랜덤 */
       for (q = 0; q < n; q++) {
@@ -18300,7 +18300,7 @@ var DM = (function () {
           if (wdl > wr + rOf(t) * 0.4 || t.rgwc > 0) return;
           var rw = applyDamage(t, rgDmg(f, L.wh || 12), { src: f });
           t.rgwc = 0.7;
-          if (rw) { t.flash = 0.2; t.kvx = wdx / wdl * 2600; t.kvy = wdy / wdl * 2600; t.kT = 0.45; stunTarget(t, 0.3); ring(t.x, t.y, R * 2.4, '#ffe0b0', 0.28); sparks(t.x, t.y, '#ffb26a', 18, 560); shake = Math.max(shake, 0.6); sfxRgSmash(false); vib(40); floater(t.x, Math.max(60, t.y - R - 16), '-' + rw.dmg + rw.note, '#ffd9a8', 58); }
+          if (rw) { if (sk.sp) { if (t === o) { bldAdd(t, L.wbl || 12, f); floater(t.x, Math.max(60, t.y + R + 10), '출혈', '#e0343c', 34); } sparks(t.x, t.y, '#c4161c', 10, 420); } else if (t === o) addRust(t, f, L.wrs || 0.5); t.flash = 0.2; t.kvx = wdx / wdl * 2600; t.kvy = wdy / wdl * 2600; t.kT = 0.45; stunTarget(t, 0.3); ring(t.x, t.y, R * 2.4, '#ffe0b0', 0.28); sparks(t.x, t.y, '#ffb26a', 18, 560); shake = Math.max(shake, 0.6); sfxRgSmash(false); vib(40); floater(t.x, Math.max(60, t.y - R - 16), '-' + rw.dmg + rw.note, '#ffd9a8', 58); }
         });
         if (sk.t >= 0.9 + (L.wt || 2.4)) {   /* 끝: 어지러워서 잠깐 멈춘다 (공격할 기회) */
           ring(f.x, f.y, rr * 1.6, '#ffb340', 0.5); sparks(f.x, f.y, '#b5651d', 24, 600); shake = Math.max(shake, 0.7); sfxRgSmash(true);
@@ -18484,7 +18484,11 @@ var DM = (function () {
       ctx.save(); ctx.fillStyle = 'rgba(255,70,40,' + (sk.t < 0.9 ? 0.08 + 0.16 * wp + 0.04 * wpl : 0.18 + 0.05 * wpl) + ')'; ctx.beginPath(); ctx.arc(b.x, b.y, wR, 0, TAU); ctx.fill();
       ctx.setLineDash([26, 16]); ctx.lineDashOffset = -now / 25; ctx.lineWidth = 8; ctx.strokeStyle = C.edge; ctx.beginPath(); ctx.arc(b.x, b.y, wR, 0, TAU); ctx.stroke();
       ctx.lineWidth = 4; ctx.strokeStyle = '#ff7a3a'; ctx.beginPath(); ctx.arc(b.x, b.y, wR, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
-      if (sk.t >= 0.9) { ctx.lineCap = 'round'; for (i = 0; i < 3; i++) { var ba2 = now / 90 + i * TAU / 3; ctx.lineWidth = 16; ctx.strokeStyle = 'rgba(255,226,170,0.55)'; ctx.beginPath(); ctx.arc(b.x, b.y, wR * 0.86, ba2, ba2 + 0.9); ctx.stroke(); ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.beginPath(); ctx.arc(b.x, b.y, wR * 0.86, ba2 + 0.1, ba2 + 0.8); ctx.stroke(); } }
+      if (sk.sp) {   /* 장갑이 없을 때: 몸에서 가시가 돋아 함께 돈다 */
+        var sg = Math.min(1, sk.t / 0.6), spA = a.rot * 1.0, sn = 8, sr0 = rr * 0.9, sr1 = rr + (wR - rr) * 0.92 * sg;
+        ctx.lineJoin = 'round'; ctx.strokeStyle = C.edge; ctx.lineWidth = 5;
+        for (i = 0; i < sn; i++) { var sa2 = spA + i * TAU / sn, cx0 = Math.cos(sa2), cy0 = Math.sin(sa2), px0 = -cy0, py0 = cx0, bw = 20; ctx.fillStyle = i % 2 ? '#8a5430' : '#a9663a'; ctx.beginPath(); ctx.moveTo(b.x + cx0 * sr0 + px0 * bw, b.y + cy0 * sr0 + py0 * bw); ctx.lineTo(b.x + cx0 * sr1, b.y + cy0 * sr1); ctx.lineTo(b.x + cx0 * sr0 - px0 * bw, b.y + cy0 * sr0 - py0 * bw); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.fillStyle = 'rgba(220,40,50,0.7)'; ctx.beginPath(); ctx.moveTo(b.x + cx0 * (sr1 - 46) + px0 * 6, b.y + cy0 * (sr1 - 46) + py0 * 6); ctx.lineTo(b.x + cx0 * sr1, b.y + cy0 * sr1); ctx.lineTo(b.x + cx0 * (sr1 - 46) - px0 * 6, b.y + cy0 * (sr1 - 46) - py0 * 6); ctx.closePath(); ctx.fill(); }
+      } else if (sk.t >= 0.9) { ctx.lineCap = 'round'; for (i = 0; i < 3; i++) { var ba2 = now / 90 + i * TAU / 3; ctx.lineWidth = 16; ctx.strokeStyle = 'rgba(255,226,170,0.55)'; ctx.beginPath(); ctx.arc(b.x, b.y, wR * 0.86, ba2, ba2 + 0.9); ctx.stroke(); ctx.lineWidth = 6; ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.beginPath(); ctx.arc(b.x, b.y, wR * 0.86, ba2 + 0.1, ba2 + 0.8); ctx.stroke(); } }
       ctx.restore();
     }
     if (sk && sk.id === 'roll' && sk.st === 'aim') {   /* 질주 경고: 거인이 달릴 길 */
@@ -18580,7 +18584,7 @@ var DM = (function () {
     { n: 'Easy', c: '#7fd96a', hp: 150, rg: 1, rcap: 0.6, rage: 270, sk: ['spit', 'pounce'], int: 6, ct: 1.3333, sp: [3, 3], pd: 10, pst: 0.7, pl: 0, cap: 6, sw: 0, fl: '숲 깊은 곳에서 거대한 점액 덩어리가 눈을 떴다.' },
     { n: 'Normal', c: '#ffb340', hp: 200, rg: 1, rcap: 0.6, rage: 240, sk: ['spit', 'pounce', 'puddle'], int: 5, ct: 1.6667, sp: [3, 4], pd: 13, pst: 0.85, pl: 3, cap: 8, sw: 1, fl: '쪼개 놓아도 소용없다. 하나하나가 다시 자란다.' },
     { n: 'Hard', c: '#ff5a3a', hp: 300, rg: 2, rcap: 0.6, rage: 210, sk: ['spit', 'pounce', 'puddle', 'tide'], int: 4, ct: 2, sp: [5, 4], pd: 20, td: 16, pst: 1.0, pl: 4, cap: 8, sw: 1, fl: '왕관 쓴 점액이 필드를 뒤덮는다. 오래 끌수록 불어난다.' },
-    { n: 'Extreme', c: '#e0143c', hp: 400, rg: 3, rcap: 0.6, rage: 180, sk: ['spit', 'pounce', 'puddle', 'tide', 'burst'], int: 3, ct: 2.6667, bm: 6, bn: [12, 3], sp: [6, 5], pd: 25, pst: 1.2, pl: 5, cap: 10, sw: 1, td: 20, tn: 2, fl: '필드가 점액으로 뒤덮인다. 해일이 연달아 덮친다.' }
+    { n: 'Extreme', c: '#e0143c', hp: 500, rg: 3, rcap: 0.6, rage: 180, sk: ['spit', 'pounce', 'puddle', 'tide', 'burst'], int: 3, ct: 2.6667, bm: 6, bn: [12, 3], sp: [6, 5], pd: 25, pst: 1.2, pl: 5, cap: 10, sw: 1, td: 20, tn: 2, fl: '필드가 점액으로 뒤덮인다. 해일이 연달아 덮친다.' }
   ];
   var KS_RW = [['tal', 1], ['spl', 3], ['chr', 4], ['chr', 5]];   /* 첫 격파 보상: 희귀 재능 · 영웅 스펠 · 신화 캐릭터 선택권 */
   var ksG = null, ksArr = [], ksFx = [], ksSp = [], ksPd = [], ksDie = null, ksFl = 0, ksIconURL = '';
@@ -19268,7 +19272,7 @@ var DM = (function () {
     return '<p>언제든 도전할 수 있는 <b>상시 보스</b>가 둘 있어요: <b>녹슨 거인</b>과 <b>킹 그린 슬라임</b>. 훨씬 넓은 필드에서 보스 하나를 상대해요.</p>' +
       '<h5>싸우는 방법</h5><ul class="ul"><li>내 캐릭터 <b>3명이 이어서</b> 싸워요. 쓰러지면 다음 캐릭터를 골라 나와요.</li><li>쓴 캐릭터는 다시 못 쓰고, 보스의 <b>체력과 상태는 그대로</b> 이어져요.</li><li>교대로 나온 캐릭터는 <b>3초 동안 무적</b>이에요.</li><li>재능은 쓸 수 있어요. 스펠은 <b>2개 + 공용 스펠 1개(추적·회피, 캐릭터마다 10회)</b>예요.</li></ul>' +
       '<h5>제한 시간</h5><p>전투는 최대 <b>6분</b>이에요. 컷인과 캐릭터 고르는 시간은 안 세요. 시간이 다 되면 실패예요. 난이도마다 정해진 시간이 지나면 보스가 <b>광폭화</b>해요.</p>' +
-      '<h5>녹슨 거인</h5><ul class="ul"><li>양옆의 <b>장갑 2개</b>가 먼저 피해를 받아요. 공격한 쪽의 장갑이 맞고, 그쪽이 깨졌으면 몸이 맞아요. 장갑은 재생하지 않아요.</li><li>장갑이 있는 동안은 가까이 가면 <b>장갑을 휘둘러요</b> (피해 10, 넉백, 녹슮).</li><li>장갑이 둘 다 깨지면 <b>몸으로 부딪쳐요</b>. 대신 움직임이 빨라져요.</li><li>기술: 발구르기 · 녹슨 파편 · 구르기 돌진(Normal~) · 철근 낙하(Hard~) · 회전 분쇄(Extreme, 끝나면 어지러워서 멈춰요). 경고 표시가 먼저 떠요.</li></ul>' +
+      '<h5>녹슨 거인</h5><ul class="ul"><li>양옆의 <b>장갑 2개</b>가 먼저 피해를 받아요. 공격한 쪽의 장갑이 맞고, 그쪽이 깨졌으면 몸이 맞아요. 장갑은 재생하지 않아요.</li><li>장갑이 있는 동안은 가까이 가면 <b>장갑을 휘둘러요</b> (피해 10, 넉백, 녹슮).</li><li>장갑이 둘 다 깨지면 <b>몸으로 부딪쳐요</b>. 대신 움직임이 빨라져요.</li><li>기술: 발구르기 · 녹슨 파편 · 구르기 돌진(Normal~) · 철근 낙하(Hard~) · 회전 분쇄(Extreme: 장갑이 있으면 맞을 때 녹슮 게이지가 차고, 장갑이 없으면 가시가 돋아 출혈을 줘요. 끝나면 어지러워서 멈춰요). 경고 표시가 먼저 떠요.</li></ul>' +
       '<h5>킹 그린 슬라임</h5><ul class="ul"><li>몸집이 <b>체력에 비례</b>해요. 체력이 줄면 쪼그라들고, 접촉 피해도 몸집에 비례해요.</li><li><b>분열</b>: 체력이 (회복해서 오른 최고치의) <b>절반</b>까지 깎이면, 남은 체력을 반반 나눠 가진 채 둘로 쪼개져요. 쪼개진 조각도 같은 규칙이라 <b>최소 4마리</b>까지 늘어나요.</li><li><b>자동 회복</b>: 슬라임마다 초당 조금씩 회복해요. 맞아도 멈추지 않지만, 상태이상에 걸리면 회복하지 못해요. 작은 조각이 회복해서 커지면 또 쪼개질 수 있어요.</li><li>몸 하나하나가 따로 맞아요. <b>마지막 한 마리</b>까지 쓰러뜨려야 격파예요.</li><li>기술: 점액 뱉기 · 덮치기 · 끈적 웅덩이(Normal~) · 점액 해일(Hard~, 안전한 줄 하나만 비어 있어요) · 점액 폭발(Extreme, 슬라임 전부가 사방으로 점액을 터뜨려요). 경고 표시가 먼저 떠요.</li><li>기절·수면·넉백은 안 먹혀요.</li></ul>' +
       '<h5>난이도와 보상</h5><ul class="ul"><li>난이도마다 <b>Easy</b>는 처음부터 열려 있고, <b>Normal</b>은 Easy를, <b>Hard</b>는 Normal을, <b>Extreme</b>은 Hard를 격파하면 열려요. Extreme은 체력·피해·기술 속도가 훨씬 높은 최고 난이도예요.</li><li>첫 격파 보상은 난이도마다 <b>한 번</b>이에요 (거인: 희귀 스펠 · 초희귀 재능 · 영웅 캐릭터 · 전설 캐릭터 / 슬라임: 희귀 재능 · 영웅 스펠 · 신화 캐릭터 · 전설 캐릭터 선택권).</li><li>하루 보상은 없고, 도전 횟수는 <b>무제한</b>이에요. 실패해도 바로 다시 도전해요.</li><li>보스가 다시 돌아오는 시즌에는 <b>첫 격파 보상이 초기화</b>돼요.</li></ul>' +
       '<h5>쓸 수 없는 캐릭터</h5><p>상대 현재 체력에 비례해 피해를 주는 <b>괴인 · 셀레네 · 셰프</b>는 쓸 수 없어요. 앞으로 나올 비슷한 캐릭터도 같아요.</p>' +
