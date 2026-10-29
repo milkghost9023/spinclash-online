@@ -1121,7 +1121,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v624</span>
+      <span class="verTag">v625</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -16163,6 +16163,7 @@ var DM = (function () {
     if (it.k === 'coin' || it.k === 'gem') { var gm = it.k === 'gem'; return { g: gm ? 4 : 3, c: gm ? '#35b8f2' : '#ffc61a', name: (gm ? '다이아 ×' : '코인 ×') + it.n.toLocaleString(), rar: '재화', sub: '', tag: 'GET!', dup: false, img: boxText(it).img }; }
     if (it.k === 'tok') { g = RAR[it.t] || 0; return { g: g, c: RAR_INFO[g].c, name: W[it.t].name + ' 토큰', rar: (it.rnd ? '무작위 ' : '') + RAR_INFO[g].n + ' 토큰', sub: '×' + it.n + ' 받았어요', tag: '×' + it.n, dup: false, img: boxText(it).img }; }
     if (it.k === 'stok') { g = it.g; return { g: g, c: RAR_INFO[g].c, name: '공유 ' + RAR_INFO[g].n + ' 토큰', rar: '공유 토큰', sub: '×' + it.n + ' · 같은 등급 캐릭터 아무에게나 써요', tag: '×' + it.n, dup: false, img: stokImg(g) }; }
+    if (it.k === 'bxm') { g = it.t + 1; return { g: g, c: RAR_INFO[g].c, name: '확정 ' + RAR_INFO[g].n + ' 상자', rar: '상자', sub: '홈의 상자에서 열어요', tag: '×' + it.n, dup: false, img: boxImg() }; }
     if (it.k === 'tkt') { g = it.g; return { g: g, c: RAR_INFO[g].c, name: tkName(it.kind, it.g), rar: '선택권', sub: '보관함에서 써요', tag: '×' + (it.n || 1), dup: false, img: tkImg(it.kind, it.g) }; }
     if (it.k === 'pass') { var P = SH_PASS[it.lv]; return { g: it.lv === 2 ? 5 : 3, c: P.c, name: P.n, rar: '패스', sub: '상자 하루 ' + ecoCap() + (it.lv === 2 ? '개' : '판') + ' · 일일 로그인 보상', tag: 'NEW!', dup: false, img: 'data:image/svg+xml,' + encodeURIComponent(shPassSvg(P.c).replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"')) }; }
     return null;
@@ -17679,6 +17680,8 @@ var DM = (function () {
   var MAILS = [
     { id: 'dl', t: '다운로드 감사 보상', m: '다운로드 해주셔서 감사합니다아..!', give: [{ k: 'rchr', g: 0 }, { k: 'coin', n: 1000 }, { k: 'gem', n: 100 }] },
     { id: 'nb', t: '뉴비 정착 지원', m: '어서오시오, 용사여...', give: [{ k: 'rchr', g: 1 }, { k: 'tkt', kind: 'spl', g: 1, n: 1 }, { k: 'coin', n: 500 }, { k: 'gem', n: 100 }] },
+    { id: 'y27', t: '다가오는 2027', m: '젠장 우리 또 늙는다ㅠㅠ', give: [{ k: 'tkt', kind: 'chr', g: 3, n: 1 }, { k: 'tkt', kind: 'tal', g: 3, n: 1 }, { k: 'tkt', kind: 'spl', g: 3, n: 1 }, { k: 'coin', n: 2027 }] },
+    { id: 'bt', t: '보스전, 진보스전 베타 업데이트 기념', m: '이래도 태고는 못 얻죠?ㅋㅋ', give: [{ k: 'rtok', g: 6, n: 5 }, { k: 'stok', g: 5, n: 20 }, { k: 'box', t: 4, n: 3 }] },
     { id: 'tu', t: '튜토리얼 완료 보상', m: '오오..! 강함의 기운이 느껴지는데요?', cond: function () { return !!(tutS && tutS.r); }, give: [{ k: 'tkt', kind: 'spl', g: 0, n: 2 }, { k: 'coin', n: 500 }, { k: 'gem', n: 30 }] }
   ];
   function mailList() { return (MAILS || []).filter(function (m) { return !m.cond || m.cond(); }); }
@@ -17690,6 +17693,9 @@ var DM = (function () {
   }
   function mailChip(it) {
     if (it.k === 'rchr') return { img: tkImg('chr', it.g), tx: '무작위 ' + RAR_INFO[it.g].n + ' 캐릭터권' };
+    if (it.k === 'rtok') return { img: stokImg(it.g), tx: '무작위 ' + RAR_INFO[it.g].n + ' 토큰 ×' + it.n };
+    if (it.k === 'stok') return { img: stokImg(it.g), tx: '공유 ' + RAR_INFO[it.g].n + ' 토큰 ×' + it.n };
+    if (it.k === 'box') return { img: boxImg(), tx: '확정 ' + RAR_INFO[it.t + 1].n + ' 상자 ×' + it.n };
     if (it.k === 'coin') return { img: COIN_IMG, tx: '코인 ×' + it.n.toLocaleString() };
     if (it.k === 'gem') return { img: GEM_IMG, tx: '다이아 ×' + it.n.toLocaleString() };
     return { img: tkImg(it.kind, it.g), tx: tkName(it.kind, it.g) + ' ×' + (it.n || 1) };
@@ -17723,6 +17729,9 @@ var DM = (function () {
     list.forEach(function (m) {
       m.give.forEach(function (g) {
         if (g.k === 'rchr') { var it = { k: 'chr', t: mailPickChr(g.g) }; boxApply(it); out.push(it); }   /* 바로 적용해서 같은 번에 받는 다음 캐릭터와 겹치지 않게 */
+        else if (g.k === 'rtok') { var rt = { k: 'tok', t: pickChar(g.g), n: g.n, rnd: true }; boxApply(rt); out.push(rt); }
+        else if (g.k === 'stok') { var st = { k: 'stok', g: g.g, n: g.n }; boxApply(st); out.push(st); }
+        else if (g.k === 'box') { for (var bi = 0; bi < g.n; bi++) eco.box.push(g.t); out.push({ k: 'bxm', t: g.t, n: g.n }); }
         else if (g.k === 'coin') coin += g.n;
         else if (g.k === 'gem') gem += g.n;
         else if (g.k === 'tkt') { var key = g.kind + ':' + g.g; tkm[key] = (tkm[key] || 0) + (g.n || 1); }
