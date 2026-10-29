@@ -954,6 +954,18 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
 :is(#hmCol, #hmInv) .csh .st { display: flex; align-items: center; gap: 6px; margin-top: 4px; font: 800 12px 'Noto Sans KR', sans-serif; color: var(--hmu); }
 :is(#hmCol, #hmInv) .csh .st .rp { padding: 1px 6px; border-radius: 5px; border: 2px solid var(--ink); background: var(--rc); color: #fff; font: 900 11px 'Noto Sans KR', sans-serif; text-shadow: 0 1px 0 rgba(0,0,0,0.55); }
 :is(#hmCol, #hmInv) .csx { position: absolute; right: 0; top: 0; width: 32px; height: 32px; padding: 0; border-radius: 8px; border: 3px solid var(--ink); background: linear-gradient(var(--hb1), var(--hb2)); color: #fff; font-weight: 900; font-size: 15px; }
+#hmInv #tkBody { padding: 3px 3px 4px; }   /* 선택 테두리(바깥 링)가 스크롤 영역에 잘리지 않게 */
+/* 컬렉션 캐릭터 창: 토큰 현황 (전용 + 공유 = 합계, 교환 가능 여부) */
+:is(#hmCol, #hmInv) .cstk { flex: none; display: flex; flex-direction: column; gap: 4px; padding: 5px; border-radius: 10px; background: var(--hdeep); border: 2px solid var(--hbd); }
+:is(#hmCol, #hmInv) .cstk .tr { display: flex; align-items: stretch; gap: 4px; }
+:is(#hmCol, #hmInv) .cstk .tc { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 0; padding: 3px 2px 2px; border-radius: 7px; background: var(--hrow); border: 2px solid var(--hbd); }
+:is(#hmCol, #hmInv) .cstk .tc small { display: flex; align-items: center; gap: 3px; font: 800 10px 'Noto Sans KR', sans-serif; color: var(--hmu); white-space: nowrap; }
+:is(#hmCol, #hmInv) .cstk .tc small img { width: 14px; height: 14px; }
+:is(#hmCol, #hmInv) .cstk .tc small i { width: 12px; height: 12px; border-radius: 50%; background: var(--rc); border: 2px solid var(--ink); box-sizing: border-box; }
+:is(#hmCol, #hmInv) .cstk .tc b { font: 900 17px/1.15 'Noto Sans KR', sans-serif; color: var(--htx); }
+:is(#hmCol, #hmInv) .cstk .tc.sum { border-color: var(--hac2); }
+:is(#hmCol, #hmInv) .cstk .tc.sum b { color: var(--hac2); }
+:is(#hmCol, #hmInv) .cstk .op { flex: none; align-self: center; font: 900 15px 'Noto Sans KR', sans-serif; color: var(--hmu); }
 :is(#hmCol, #hmInv) .csd { flex: none; margin: 0; font: 600 12.5px/1.5 'Noto Sans KR', sans-serif; color: var(--htx); }
 :is(#hmCol, #hmInv) .css { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
 :is(#hmCol, #hmInv) .css h4 { margin: 6px 0 2px; font: 900 13px 'Noto Sans KR', sans-serif; color: var(--hac2); }
@@ -1054,7 +1066,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
 :is(#hmCol, #hmInv) .tkc img { width: 46px; height: 46px; }
 :is(#hmCol, #hmInv) .tkc b { max-width: 100%; font: 900 12px 'Noto Sans KR', sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 :is(#hmCol, #hmInv) .tkc small { font: 700 10px 'Noto Sans KR', sans-serif; color: var(--hmu); }
-:is(#hmCol, #hmInv) .tkc.sel, #hmCol .ctl.sel { border-color: var(--hac2); box-shadow: 0 0 0 2px var(--hac2); }
+:is(#hmCol, #hmInv) .tkc.sel, #hmCol .ctl.sel, :is(#hmCol, #hmInv) .csc.sel { border-color: var(--hac2); box-shadow: 0 0 0 2px var(--hac2); }
 :is(#hmCol, #hmInv) .tkc.has small { color: #ffd23a; }
 :is(#hmCol, #hmInv) .ctl.own { opacity: 0.55; }
 :is(#hmCol, #hmInv) .tkh { display: flex; align-items: center; gap: 8px; margin-top: 4px; font: 900 13px 'Noto Sans KR', sans-serif; }
@@ -1104,7 +1116,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v616</span>
+      <span class="verTag">v618</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -1197,6 +1209,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
         <div class="csp" role="dialog" aria-label="캐릭터 정보">
           <div class="csh" id="csHead"><span class="im"><img id="csImg" alt="" width="66" height="66"></span><div><div class="tx nm" id="csNm"></div><div class="st" id="csSt"></div></div><button type="button" class="csx" id="csX" aria-label="닫기">✕</button></div>
           <p class="csd" id="csDesc"></p>
+          <div class="cstk" id="csTk" aria-label="토큰"></div>
           <div class="css"><h4>재능</h4><div id="csTal" style="display:flex;flex-direction:column;gap:6px"></div><h4>스펠</h4><div class="csg" id="csSpl"></div></div>
           <div class="csa"><div class="at" id="csAt"></div><button type="button" id="csBuy"></button></div>
         </div>
@@ -1693,7 +1706,7 @@ var DM = (function () {
     , giant: { name: '자이언트', len: 0, width: 0, omega: 0, desc: '체력 200, 몸집이 크다. 접촉 시 남은 체력에 비례한 피해(1~10), 간격 5초. 체력이 줄수록 작아진다',
       traits: [{ name: '초거대', desc: '체력 250으로 시작. 최대 피해 13, 몸집도 더 크다' },
                { name: '강력한 펀치', desc: '접촉 시 1/3 확률로 2배 피해 + 벽쿵' }] }
-    , beast: { name: '야수', len: 0, width: 0, omega: 0, desc: '접촉 시 물어뜯어 피해 2 + 출혈 3, 간격 0.5초. 출혈 중인 적을 물면 핥아서 체력 2 회복. 출혈 중인 적에게 이속 +20%. 6초마다 도약해 물기(피해 4 + 출혈 6)',
+    , beast: { name: '야수', len: 0, width: 0, omega: 0, desc: '접촉 시 물어뜯어 피해 2 + 출혈 3, 간격 0.5초. 출혈 중인 적을 물면 핥아서 체력 1 회복. 출혈 중인 적에게 이속 +20%. 6초마다 도약해 물기(피해 4 + 출혈 6)',
       traits: [{ name: '상처 찢기', desc: '출혈이 10 이상인 적을 물면 1/3 확률로 과출혈 10을 입힌다' },
                { name: '광폭 사냥', desc: '상대 또는 자신의 체력이 50이 될 때마다 도약 쿨타임 1.5초 감소 (중첩)' }] }
     , gumiho: { name: '구미호', len: 0, width: 0, omega: 0, desc: '부채를 든 채 상대를 바라본다. 접근하는 적에게 확률로 바람을 날려 살짝 밀어낸다. 1초마다 여우불꽃(화상). 6초마다 불타는 바닥 · 업화의 여우불 · 간 빼먹기 중 하나를 시전한다',
@@ -5895,7 +5908,7 @@ var DM = (function () {
   }
   function ignite(d) {
     if (d.type === 'extg') { d.burn = 0; return; }
-    d.burnLv = d.burnLv === 0 ? 1 : Math.min(d.type === 'rgiant' ? 2 : 3, d.burnLv + 1); d.burnT = BURN_TIME; d.burnAcc = 0;
+    d.burnLv = d.burnLv === 0 ? 1 : Math.min(d.type === 'rgiant' ? 1 : 3, d.burnLv + 1); d.burnT = BURN_TIME; d.burnAcc = 0;
     var col = FLAME[d.burnLv];
     sparks(d.x, d.y, col[0], 26, 460); sparks(d.x, d.y, col[1], 18, 360);
     floater(d.x, Math.max(60, d.y - R - 30), ['', '화상', '푸른 불꽃!', '업화!'][d.burnLv], col[1], 64 + 6 * d.burnLv);
@@ -7463,7 +7476,7 @@ var DM = (function () {
     }
   }
   /* ---------- 야수 ---------- */
-  var BS_DMG = 2, BS_BLD = 3, BS_CD = 0.5, BS_LICK = 2, BS_LEAP_PER = 6, BS_LEAP_T = 0.4, BS_LEAP_MUL = 2.4, BS_LEAP_DMG = 4, BS_LEAP_BLD = 6, BS_SCENT = 1.2, BS_HUNT_HP = 50, BS_HUNT_RED = 1.5, BS_BIG = 10, BS_OB = 10;
+  var BS_DMG = 2, BS_BLD = 3, BS_CD = 0.5, BS_LICK = 1, BS_LEAP_PER = 6, BS_LEAP_T = 0.4, BS_LEAP_MUL = 2.4, BS_LEAP_DMG = 4, BS_LEAP_BLD = 6, BS_SCENT = 1.2, BS_HUNT_HP = 50, BS_HUNT_RED = 1.5, BS_BIG = 10, BS_OB = 10;
   function bsInit(f) { return f.bst || (f.bst = { tcd: 0, leap: 0, lcd: 3, jaw: 0, hit: false, lick: 0, ts: 0, ang: 0 }); }
   function bsStk(f) { var a = f.bst; return f.trait === 2 && a ? (a.s1 ? 1 : 0) + (a.s2 ? 1 : 0) : 0; }
   function bsPer(f) { return Math.max(1, BS_LEAP_PER - BS_HUNT_RED * bsStk(f)); }
@@ -7594,7 +7607,7 @@ var DM = (function () {
     return false;
   }
   function gmHit(ar, def, sh) {
-    if (ar.pur) { if (def.type !== 'extg') { def.burnLv = Math.max(def.burnLv || 0, 2); ignite(def); } } else addBurn(def, sh, ar.bn);
+    if (ar.pur) { if (def.type !== 'extg') { def.burnLv = Math.max(def.burnLv || 0, def.type === 'rgiant' ? 1 : 2); ignite(def); } } else addBurn(def, sh, ar.bn);
     var col = ar.pur ? '#b36bff' : '#ff8a3d';
     ring(ar.x, ar.y, R * (ar.pur ? 2.6 : 1.4), col, ar.pur ? 0.4 : 0.22); sparks(ar.x, ar.y, col, ar.pur ? 24 : 8, ar.pur ? 520 : 260); sparks(ar.x, ar.y, '#ffd34a', ar.pur ? 10 : 4, 300);
     if (ar.pur) { shake = Math.max(shake, 0.45); ring(ar.x, ar.y, R * 1.4, '#ffffff', 0.2); }
@@ -14855,7 +14868,7 @@ var DM = (function () {
           r.sig = sig;
           r.hexw.innerHTML = spHex(k, true);
           r.nm.textContent = S.n;
-          var ph = ''; for (var q = 0; q < S.uses; q++) ph += '<i' + (q < used ? ' class="off"' : '') + '></i>'; if (sp.inf) ph = '<b>∞</b>';
+          var ph = ''; for (var q = 0; q < S.uses; q++) ph += '<i' + (q < used ? ' class="off"' : '') + '></i>'; if (sp.max) ph = '<b>' + sp.left + '/' + sp.max + '</b>';
           r.pips.innerHTML = ph;
           r.b.disabled = off && !on;
           r.b.classList.toggle('wait', wait && !off);
@@ -16226,6 +16239,13 @@ var DM = (function () {
         (o ? '<span class="rp">' + ri.n + '</span>' : '<span class="cp"><i style="width:' + Math.min(100, tk / cost * 100) + '%"></i><span>' + tk + ' / ' + cost + '</span></span>') + (nw ? '<span class="nw">NEW</span>' : '') + '</button>';
     }).join('');
   }
+  function colTkPanel(t) {
+    var ri = RAR_INFO[RAR[t] || 0], own = eco.tok[t] || 0, sh = colShr(t), sum = own + sh;
+    $('#csTk').style.setProperty('--rc', ri.c);
+    $('#csTk').innerHTML = '<div class="tr"><div class="tc"><small><img src="' + colIcon(t) + '" alt="">' + W[t].name + ' 토큰</small><b>' + own + '</b></div><span class="op">+</span>' +
+      '<div class="tc"><small><i></i>' + ri.n + ' 공유 토큰</small><b>' + sh + '</b></div><span class="op">=</span>' +
+      '<div class="tc sum"><small>쓸 수 있는 토큰</small><b>' + sum + '</b></div></div>';
+  }
   function colSheet(t, keepItem) {
     var w = W[t], ri = RAR_INFO[RAR[t]], o = charOwned(t);
     if (col.t !== t || !keepItem) col.item = null;
@@ -16233,7 +16253,7 @@ var DM = (function () {
     var sh = $('#colSheet'); sh.hidden = false; sh.style.setProperty('--rc', ri.c);
     $('#csHead').classList.toggle('lock', !o); $('#csHead').style.setProperty('--rc', ri.c);
     $('#csImg').src = colIcon(t); $('#csNm').textContent = w.name;
-    $('#csSt').innerHTML = '<span class="rp">' + ri.n + '</span><span>' + (o ? '보유 중' : '미보유 · 토큰 ' + colTokTx(t) + ' / ' + TOK_COST.chr) + '</span>';
+    $('#csSt').innerHTML = '<span class="rp">' + ri.n + '</span><span>' + (o ? '보유 중' : '미보유') + '</span>'; colTkPanel(t);
     $('#csDesc').textContent = w.desc;
     $('#csTal').innerHTML = w.traits.length ? w.traits.map(function (tr, i) {
       var has = talOwned(t, i), sel = col.item && col.item.k === 'tal' && col.item.i === i;
@@ -16254,7 +16274,7 @@ var DM = (function () {
     else { have = splOwned(t, it.s); name = SPELL[it.s].n; desc = SPELL[it.s].d; }
     bt.hidden = kind === 'chr' && o; bt.dataset.k = kind;
     if (have) { at.innerHTML = '<b>' + name + '</b>\n' + desc; bt.hidden = true; return; }
-    at.innerHTML = '<b>' + name + '</b> · 토큰 ' + colTokTx(t) + ' / ' + cost + '\n' + desc;
+    at.innerHTML = '<b>' + name + '</b> · 토큰 ' + cost + '개 필요\n' + desc;
     bt.hidden = false;
     if (kind !== 'chr' && !o) { bt.textContent = '캐릭터 먼저'; bt.disabled = true; }
     else if (tk < cost) { bt.textContent = '토큰 부족'; bt.disabled = true; }
@@ -18013,8 +18033,9 @@ var DM = (function () {
     h += '<div class="rgdust">'; for (q = 0; q < 16; q++) h += '<i style="left:' + Math.round(Math.random() * 100) + '%;--k:' + q + ';--s:' + (4 + Math.round(Math.random() * 6)) + 'px"></i>';
     return h + '</div>';
   }
+  var JB_FS_N = 10;
   function jbPlayerInit(f) {
-    f.sps.push({ k: jbRun.fs, left: 1, inf: true });   /* 공용 스펠: 추적/회피 중 하나, 무제한 */
+    f.sps.push({ k: jbRun.fs, left: JB_FS_N, max: JB_FS_N });   /* 공용 스펠: 추적/회피 중 하나, 캐릭터마다 10회 */
     if (jbRun.used.length) f.inv = 3;   /* 교대로 들어온 캐릭터는 3초 무적 */
   }
   function rgDmg(f, n) { return Math.round(n * (f.rg && f.rg.rage ? 1.3 : 1)); }
@@ -18482,7 +18503,7 @@ var DM = (function () {
   function jbInfoHtml() {
     var j = jbSync();
     return '<p><b>녹슨 거인</b>은 언제든 도전할 수 있는 <b>상시 보스</b>예요. 훨씬 넓은 필드에서 거인 하나를 상대해요.</p>' +
-      '<h5>싸우는 방법</h5><ul class="ul"><li>내 캐릭터 <b>3명이 이어서</b> 싸워요. 쓰러지면 다음 캐릭터를 골라 나와요.</li><li>쓴 캐릭터는 다시 못 쓰고, 거인의 <b>체력과 장갑은 그대로</b> 이어져요.</li><li>교대로 나온 캐릭터는 <b>3초 동안 무적</b>이에요.</li><li>재능은 쓸 수 있어요. 스펠은 <b>2개 + 공용 스펠 1개(추적·회피, 무제한)</b>예요.</li></ul>' +
+      '<h5>싸우는 방법</h5><ul class="ul"><li>내 캐릭터 <b>3명이 이어서</b> 싸워요. 쓰러지면 다음 캐릭터를 골라 나와요.</li><li>쓴 캐릭터는 다시 못 쓰고, 거인의 <b>체력과 장갑은 그대로</b> 이어져요.</li><li>교대로 나온 캐릭터는 <b>3초 동안 무적</b>이에요.</li><li>재능은 쓸 수 있어요. 스펠은 <b>2개 + 공용 스펠 1개(추적·회피, 캐릭터마다 10회)</b>예요.</li></ul>' +
       '<h5>제한 시간</h5><p>전투는 최대 <b>6분</b>이에요. 컷인과 캐릭터 고르는 시간은 안 세요. 시간이 다 되면 실패예요. 난이도마다 정해진 시간이 지나면 거인이 <b>광폭화</b>해요.</p>' +
       '<h5>녹슨 거인</h5><ul class="ul"><li>양옆의 <b>장갑 2개</b>가 먼저 피해를 받아요. 공격한 쪽의 장갑이 맞고, 그쪽이 깨졌으면 몸이 맞아요. 장갑은 재생하지 않아요.</li><li>장갑이 있는 동안은 가까이 가면 <b>장갑을 휘둘러요</b> (피해 10, 넉백, 녹슮).</li><li>장갑이 둘 다 깨지면 <b>몸으로 부딪쳐요</b>. 대신 움직임이 빨라져요.</li><li>기술: 발구르기 · 녹슨 파편 · 구르기 돌진(Normal~) · 철근 낙하(Hard). 경고 표시가 먼저 떠요.</li></ul>' +
       '<h5>난이도와 보상</h5><ul class="ul"><li><b>Easy</b>는 처음부터 열려 있고, <b>Normal</b>은 Easy를, <b>Hard</b>는 Normal을 격파하면 열려요.</li><li>첫 격파 보상은 난이도마다 <b>한 번</b>이에요: Easy 희귀 스펠 선택권 · Normal 초희귀 재능 선택권 · Hard 영웅 캐릭터 선택권.</li><li>하루 보상은 없고, 도전 횟수는 <b>무제한</b>이에요. 실패해도 바로 다시 도전해요.</li><li>거인이 다시 돌아오는 시즌에는 <b>첫 격파 보상이 초기화</b>돼요.</li></ul>' +
@@ -18503,14 +18524,14 @@ var DM = (function () {
   function jbRender() {
     var j = jbSync(), h = '', best = j.bt[jbSelLv];
     h += '<div class="jbhero"><div class="jbim"><img alt="" src="' + rgIcon() + '"></div><div class="jbtx"><b>녹슨 거인</b><small>폐허를 지키는 고대의 쇠 덩어리.</small></div>' +
-      '<ul class="jbwn"><li>-파상풍 공격 주의</li><li>-넉백,기절,업화,수면,파상풍 면역 주의</li></ul></div>';
+      '<ul class="jbwn"><li>-파상풍 공격 주의</li><li>-넉백,기절,푸른 불꽃,업화,수면,파상풍 면역 주의</li></ul></div>';
     h += '<h4>난이도</h4>';
     JB_LV.forEach(function (L, i) {
       var lk = i > j.u, rw = JB_RW[i], tx = tkName(rw[0], rw[1]);
       h += '<button type="button" class="jblv' + (i === jbSelLv ? ' sel' : '') + (lk ? ' lk' : '') + '" data-lv="' + i + '" style="--lc:' + L.c + ';--i:' + i + '"><i class="jbt" aria-hidden="true"><s' + (i >= 0 ? ' class="on"' : '') + '></s><s' + (i >= 1 ? ' class="on"' : '') + '></s><s' + (i >= 2 ? ' class="on"' : '') + '></s></i><span class="jbbd"><span class="jbn">' + L.n + (j.cl[i] ? ' · 격파 ' + j.cl[i] + '회' : '') + '</span>' +
         '<span class="jbr">' + (lk ? '잠김 · ' + JB_LV[i - 1].n + '을(를) 격파하면 열려요' : '첫 격파 보상 · ' + tx + ' ×1 · ' + (j.rw[i] ? '받음' : '미수령') + (j.bt[i] ? ' · 최단 ' + jbFmt(j.bt[i]) : '')) + '</span></span></button>';
     });
-    h += '<h4>공용 스펠 (무제한)</h4><div class="jbfs">' + ['chase', 'dodge'].map(function (k) { return '<button type="button" data-fs="' + k + '" aria-pressed="' + (j.fs === k) + '"><b>' + SPELL[k].n + '</b><br>' + SPELL[k].d.replace(/ · \d+회$/, '') + '</button>'; }).join('') + '</div>';
+    h += '<h4>공용 스펠 (캐릭터마다 10회)</h4><div class="jbfs">' + ['chase', 'dodge'].map(function (k) { return '<button type="button" data-fs="' + k + '" aria-pressed="' + (j.fs === k) + '"><b>' + SPELL[k].n + '</b><br>' + SPELL[k].d.replace(/ · \d+회$/, '') + '</button>'; }).join('') + '</div>';
     $('#jbBody').innerHTML = h; $('#jbBody').scrollTop = 0;
     var lk2 = jbSelLv > j.u; $('#jbAt').innerHTML = lk2 ? '아직 잠겨 있어요' : '<b>' + JB_LV[jbSelLv].n + '</b> · 도전 횟수 무제한'; $('#jbGo').disabled = lk2;
   }
