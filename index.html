@@ -1121,7 +1121,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v629</span>
+      <span class="verTag">v633</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -16970,8 +16970,8 @@ var DM = (function () {
   function netOnMsg(m) {
     switch (m.t) {
       case 'pong': { net.lastPong = Date.now(); if (!m.c) break; var r = performance.now() - m.c; net.rtts.push(r); if (net.rtts.length > 5) net.rtts.shift(); var s = 0; net.rtts.forEach(function (x) { s += x; }); net.rtt = Math.round(s / net.rtts.length); break; }
-      case 'created': net.mmRoom = !!m.mm; net.code = m.code; net.me = 0; net.peerHere = false; net.mode = modeOf(m.mode); net.tok = String(m.tok || ''); net.roomName = roomClean(m.name); net.hadPeer = false; net.sentType = null; netListStop(); netEnterSelect(); break;
-      case 'joined': net.mmRoom = !!m.mm; net.code = m.code; net.me = 1; net.peerHere = true; net.sentType = null; net.mode = modeOf(m.mode); net.tok = String(m.tok || ''); net.roomName = roomClean(m.name); net.hadPeer = true; net.pj = null; netListStop(); netEnterSelect(); if (m.mm) netNotify('상대를 찾았어요!', true); break;
+      case 'created': if (m.mm && !(net.ws && net.ws.isAi)) aiStreakSet(null); net.mmRoom = !!m.mm; net.code = m.code; net.me = 0; net.peerHere = false; net.mode = modeOf(m.mode); net.tok = String(m.tok || ''); net.roomName = roomClean(m.name); net.hadPeer = false; net.sentType = null; netListStop(); netEnterSelect(); break;
+      case 'joined': if (m.mm && !(net.ws && net.ws.isAi)) aiStreakSet(null); net.mmRoom = !!m.mm; net.code = m.code; net.me = 1; net.peerHere = true; net.sentType = null; net.mode = modeOf(m.mode); net.tok = String(m.tok || ''); net.roomName = roomClean(m.name); net.hadPeer = true; net.pj = null; netListStop(); netEnterSelect(); if (m.mm) netNotify('상대를 찾았어요!', true); break;
       case 'mmq': if (mm.on && !net.on) $('#mmTxt').textContent = '상대를 찾는 중…'; break;
       case 'mmx': if (mm.on && !net.on && m.ok) aiStart(); break;
       case 'sjoined': net.pj = null; netListStop(); netSpecEnter(m); break;
@@ -17435,8 +17435,8 @@ var DM = (function () {
     }
   }
   $('#spLeave').addEventListener('click', netLeave);
-  /* ═══════ 매칭: 13~17초 동안 상대를 찾고, 못 찾으면 이 기기 안에서 AI와 클래식 대전 ═══════ */
-  var MM_MIN = 13000, MM_MAX = 17000, AI_PICK_MS = 45000;
+  /* ═══════ 매칭: 7~17초 동안 상대를 찾고, 못 찾으면 이 기기 안에서 AI와 클래식 대전 ═══════ */
+  var MM_MIN = 7000, MM_MAX = 17000, AI_PICK_MS = 45000;
   var mm = { on: false, t: 0, tick: 0, t0: 0, ack: 0, ms: 0 };
   function mmStop() { mm.on = false; if (mm.t) clearTimeout(mm.t); if (mm.tick) clearInterval(mm.tick); if (mm.ack) clearTimeout(mm.ack); mm.t = mm.tick = mm.ack = 0; }
   function mmUi() {
@@ -17445,7 +17445,7 @@ var DM = (function () {
   function mmStart() {
     mmStop(); var nk = nickRead(); net.mmRoom = false;
     netShow('mm'); mm.on = true; mm.t0 = Date.now(); $('#mmTxt').textContent = '상대를 찾는 중…'; mmUi();
-    mm.ms = MM_MIN + Math.floor(Math.random() * (MM_MAX - MM_MIN + 1)); mm.tick = setInterval(mmUi, 250); mm.t = setTimeout(mmTimeout, mm.ms);   /* 13~17초 사이 무작위로 AI 연결 */
+    mm.ms = MM_MIN + Math.floor(Math.random() * (MM_MAX - MM_MIN + 1)); mm.tick = setInterval(mmUi, 250); mm.t = setTimeout(mmTimeout, mm.ms);   /* 7~17초 사이 무작위로 AI 연결 */
     netConnect(function () { netSend({ t: 'mm', tk: acct.tk, ver: VER, nick: nk }); });
   }
   function mmTimeout() {
@@ -17459,9 +17459,28 @@ var DM = (function () {
     mmStop(); netShow('menu');
   }
   /* AI 닉네임: 1/2 확률로 아래 목록 중 하나, 나머지 1/2은 계정 없는 사람처럼 '손님1234' (내 닉네임과 같으면 다시 뽑음) */
-  var AI_NICKS = ['감자튀김', '저점매수', 'diii', '공쭈님', '리모컨잃어버림', 'jdrheksk', '검성', '주몽', 'ㅈ꼭지', 'ㅋㅋㅋㅋㅋ', 'ohohoh', 'Faaah'];
+  var AI_NICKS = ['감자튀김', '저점매수', 'diii', '공쭈님', '리모컨잃어버림', 'jdrheksk', '검성', '주몽', 'ㅈ꼭지', 'ㅋㅋㅋㅋㅋ', 'ohohoh', 'Faaah',
+    '야르렁 야르렁', '질것같으면 개추ㅋㅋ', 'No.1', '비수가 날아와', '소나기처럼', '똥마렵다', '앙앙앙앙앙', '개못해ㅋ', 'ㅅㅅ', '요가 달인', '셧업 말포이', '카사노바', '강남건물주', '한방컷ㅋ', '호머심슨', '검객',
+    '진보스전 올클리어', '월척이구나', '일반충', '백전백승', '살아남았다는건', '순쇠고기패티'];
+  /* 조건이 붙은 AI: all = 세 칸 모두 그 등급(5 = 전설) · has = 그 캐릭터를 한 칸에 무조건 포함 · fix = [캐릭터, 재능 번호(0이면 무작위)] 세 칸 고정 */
+  var AI_SPEC = {
+    '질것같으면 개추ㅋㅋ': { all: 5 }, '개못해ㅋ': { all: 5 },
+    '비수가 날아와': { has: 'tactician' }, '강남건물주': { has: 'tycoon' },
+    '한방컷ㅋ': { fix: [['giant', 2], ['vampire', 1], ['sniper', 2]] },
+    '검객': { fix: [['ronin', 0], ['hyup', 0], ['master', 0]] },
+    '검성': { pool: ['katana', 'sword', 'dark', 'master', 'ronin', 'hyup'] }, '주몽': { pool: ['bow', 'elf', 'greatbow'] },
+    '진보스전 올클리어': { rng: [4, 5] }, '월척이구나': { has: 'angler' }, '일반충': { all: 0 }, '살아남았다는건': { rng: [3, 5] }, '순쇠고기패티': { rng: [2, 4] },
+    '백전백승': { fix: [['fighter', 1], ['tycoon', 2], ['sulnyeo', 1]], sp: ['heal', 'guard'] }
+  };   /* pool = 이 목록 안에서 세 칸 · rng = 칸마다 이 등급 범위 안에서 무작위 · sp = 모든 칸에 이 스펠 */
+  /* 네임드 AI(특색 있는 AI) 연속 만남: 한 번 만나면 다음 매칭에서 또 만날 확률 70% → 연속 3번째 30% → 연속 4번째 이후 10%. 사람과 매칭되거나 다른 AI를 만나면 끊긴다 */
+  var AI_RP = [0, 0.7, 0.3, 0.1];
+  function aiStreakGet() { try { var o = JSON.parse(localStorage.getItem('spinclash.aiq') || 'null'); return o && AI_SPEC[o.n] && o.c > 0 ? o : null; } catch (e) { return null; } }
+  function aiStreakSet(n, c) { try { if (n) localStorage.setItem('spinclash.aiq', JSON.stringify({ n: n, c: c })); else localStorage.removeItem('spinclash.aiq'); } catch (e) {} }
   function aiName(me) {
-    var n; do { n = Math.random() < 0.5 ? AI_NICKS[Math.floor(Math.random() * AI_NICKS.length)] : nickGuest(); } while (n === me);
+    var q = aiStreakGet(), n;
+    if (q && q.n !== me && Math.random() < AI_RP[Math.min(q.c, 3)]) { aiStreakSet(q.n, q.c + 1); return q.n; }
+    do { n = Math.random() < 0.5 ? AI_NICKS[Math.floor(Math.random() * AI_NICKS.length)] : nickGuest(); } while (n === me);
+    if (AI_SPEC[n]) aiStreakSet(n, q && q.n === n ? q.c + 1 : 1); else aiStreakSet(null);
     return n;
   }
   /* AI 상대의 덱: 내 덱의 같은 칸 캐릭터와 등급을 비교해서 정한다 (최대 전설, 태고는 안 나옴)
@@ -17474,22 +17493,27 @@ var DM = (function () {
     while (pk.length < 4) pk.push(ks.splice(Math.floor(Math.random() * ks.length), 1)[0]);
     return [[pk[0], pk[1]], [pk[2]], [pk[3]]].map(function (sp) { return netSane({ type: 'dummy', trait: 0, spells: sp, col: 'blue', dir: Math.floor(Math.random() * DIRS.length) }); });
   }
-  function aiBotDeck(mine) {
+  function aiBotDeck(mine, bn) {
     if (tut.on) return tutBotDeck();
+    var spec = AI_SPEC[bn] || {}, ppool = spec.pool ? spec.pool.slice() : null, fi = spec.has ? Math.floor(Math.random() * mine.length) : -1, fxT = -1;
     var usedT = {}, usedS = {}, out = [], r = Math.random() * 9, want = tut.on ? 0 : (r < 1 ? 3 : (r < 2 ? 2 : (r < 4 ? 1 : 0)));
     var cap = mine.map(function (d, i) { return i; }).filter(function (i) { return (RAR[mine[i].type] || 0) < AI_MAXG; });
     for (var q = cap.length - 1; q > 0; q--) { var z = Math.floor(Math.random() * (q + 1)), tmp = cap[q]; cap[q] = cap[z]; cap[z] = tmp; }
-    var hi = {}; cap.slice(0, want).forEach(function (i) { hi[i] = 1; });
+    var hi = {}; if (spec.has) usedT[spec.has] = 1; if (spec.fix) spec.fix.forEach(function (x) { usedT[x[0]] = 1; }); cap.slice(0, want).forEach(function (i) { hi[i] = 1; });
     mine.forEach(function (d, i) {
       var g0 = Math.min(AI_MAXG, RAR[d.type] || 0), g = g0;
-      if (hi[i]) g = Math.min(AI_MAXG, g0 + (Math.random() < 0.25 ? 2 : 1));
+      if (typeof spec.all === 'number') g = spec.all;
+      else if (spec.rng) g = spec.rng[0] + Math.floor(Math.random() * (spec.rng[1] - spec.rng[0] + 1));
+      else if (hi[i]) g = Math.min(AI_MAXG, g0 + (Math.random() < 0.25 ? 2 : 1));
       else if (g0 > 0 && Math.random() < 0.35) g = Math.max(0, g0 - (Math.random() < 0.25 ? 2 : 1));
       var pool = [];
       for (var k = g; k >= 0 && !pool.length; k--) pool = boxPool(k).filter(function (t) { return !usedT[t]; });   /* 그 등급에 남은 게 없으면 한 단계 아래에서 */
       var t = pool[Math.floor(Math.random() * pool.length)] || 'sword'; usedT[t] = 1;
+      if (spec.fix) t = spec.fix[i][0]; else if (i === fi) t = spec.has; else if (ppool) { var pi = Math.floor(Math.random() * ppool.length); t = ppool.splice(pi, 1)[0]; }
       var sp = SPELL_KEYS.filter(function (k) { return k !== 'none' && !usedS[k] && !(k === 'stack' && !stackable(t)); }), n = Math.min(2, (d.spells || []).length), pick = [];
       while (pick.length < n && sp.length) { var q2 = sp.splice(Math.floor(Math.random() * sp.length), 1)[0]; pick.push(q2); usedS[q2] = 1; }
-      out.push(netSane({ type: t, trait: Math.floor(Math.random() * (W[t].traits.length + 1)), dir: Math.floor(Math.random() * DIRS.length), spells: pick, col: 'blue' }));
+      if (spec.sp) pick = spec.sp.slice();
+      out.push(netSane({ type: t, trait: spec.fix && spec.fix[i][1] ? spec.fix[i][1] : Math.floor(Math.random() * (W[t].traits.length + 1)), dir: Math.floor(Math.random() * DIRS.length), spells: pick, col: 'blue' }));
     });
     return out;
   }
@@ -17519,7 +17543,7 @@ var DM = (function () {
     }
     function startClassic() {
       if (S.state !== 'lobby' || !S.deck || !S.ready) return;
-      S.bot = aiBotDeck(S.deck);
+      S.bot = aiBotDeck(S.deck, S.bn);
       S.cl = { decks: [S.deck, S.bot], used: [[false, false, false], [false, false, false]], res: [[null, null, null], [null, null, null]], wins: [0, 0], rd: 0, end: false, cur: null };
       S.state = 'cpick'; S.picks = [null, null];
       emit({ t: 'cstart', decks: clone(S.cl.decks), arena: S.arena, sd: S.sd, pt: AI_PICK_MS }); armPick();
@@ -17527,7 +17551,7 @@ var DM = (function () {
     function startFight() {
       if (S.pickT) { clearTimeout(S.pickT); S.pickT = 0; }
       var cl = S.cl, pk = S.picks.slice(); cl.used[0][pk[0]] = true; cl.used[1][pk[1]] = true; cl.rd++; S.picks = [null, null]; cl.cur = pk;
-      S.round++; S.state = 'play';
+      S.round++; S.state = 'play'; S.bb = null;
       emit({ t: 'start', seed: Math.floor(Math.random() * 4294967296), arena: S.arena, sd: S.sd, sel: clone([cl.decks[0][pk[0]], cl.decks[1][pk[1]]]), D: 4, round: S.round, pk: pk, rd: cl.rd, nm: [S.me, S.bn] });
     }
     function classicNext() {
@@ -17535,12 +17559,35 @@ var DM = (function () {
       S.state = 'cpick'; S.picks = [null, null]; S.rematch = false;
       emit({ t: 'cnext', rd: cl.rd, pt: AI_PICK_MS }); armPick();
     }
-    function botA() {   /* AI 스펠: 쓸 수 있을 때 가끔 */
-      var f = fighters[1]; if (!f || Math.random() > 0.03) return [];
-      var j = Math.random() < 0.5 ? 0 : 1, sp = f.sps && f.sps[j];
-      return sp && canCast(f, sp) ? [j] : [];
+    function botA() {   /* AI 스펠: 시작 직후엔 안 쓰고, 0.2초마다 상황(거리·체력·최근 피해)을 보고 스펠마다 쓸 만한 때에만 확률로 쓴다 */
+      var f = fighters[1], o = fighters[0]; if (!f || !o || f.hp <= 0 || o.hp <= 0 || !f.sps || !f.sps.length) return [];
+      var B = S.bb || (S.bb = { n: 0, start: 3.5 + Math.random() * 3, gap: 0, hh: [], last: {} });
+      B.n++; if (B.n % 12) return [];
+      var t = B.n / 60, mx = f.maxHp || 100, r = f.hp / mx, d = Math.hypot(o.x - f.x, o.y - f.y), ix, loss;
+      B.hh.push(f.hp); if (B.hh.length > 8) B.hh.shift(); loss = B.hh[0] - f.hp;   /* 최근 1.6초 동안 잃은 체력 */
+      if (t < B.start || t < B.gap || f.stun > 0 || f.frozen > 0) return [];
+      var order = f.sps.map(function (z, k) { return k; }); if (order.length > 1 && Math.random() < 0.5) order.reverse();
+      for (ix = 0; ix < order.length; ix++) {
+        var j = order[ix], sp = f.sps[j]; if (!canCast(f, sp)) continue;
+        var k = sp.k, p = 0, since = t - (B.last[k] || -99);
+        if (k === 'heal') p = (r <= (sp.left > 1 ? 0.65 : 0.45) && f.hp <= mx - 8) ? 0.5 : 0;
+        else if (k === 'guard') p = !(f.shield > 0) && ((d < 260 && (loss >= 5 || r <= 0.6)) || r <= 0.4) ? 0.5 : 0;
+        else if (k === 'endure') p = !f.endure && d < 230 && (r <= 0.75 || loss >= 4) ? 0.4 : 0;
+        else if (k === 'dodge') p = d < 240 && loss >= 3 && since > 2.5 ? 0.5 : 0;
+        else if (k === 'chase') p = d > 380 && since > 3.5 ? 0.3 : 0;
+        else if (k === 'haste') p = !(f.spdT > 0) && (d > 450 || (r <= 0.4 && d < 300)) ? 0.35 : 0;
+        else if (k === 'pull') p = d > 320 && d < 650 ? 0.25 : 0;
+        else if (k === 'med') p = !f.med && r <= 0.55 && d > 450 && loss < 2 ? 0.5 : 0;
+        else if (k === 'roar') p = d < 170 && (loss >= 3 || r <= 0.7) ? 0.5 : 0;
+        else if (k === 'vamp') p = !f.vamp && d < 260 && r <= 0.85 ? 0.4 : 0;
+        else if (k === 'bomb') p = !(f.bombT > 0) && d < 220 ? 0.35 : 0;
+        else if (k === 'stack') p = d < 250 && since > 4 ? 0.2 : 0;
+        else p = t > 10 ? 0.02 : 0;
+        if (p && Math.random() < p) { B.last[k] = t; B.gap = t + 1.2 + Math.random() * 1.5; return [j]; }
+      }
+      return [];
     }
-    var F = { readyState: 1,
+    var F = { readyState: 1, isAi: true,
       open: function () {
         later(function () {
           emit({ t: 'created', code: 'MATCH', idx: 0, mode: 'classic', name: '매칭', tok: '', mm: 1 });
@@ -17682,6 +17729,7 @@ var DM = (function () {
     { id: 'nb', t: '뉴비 정착 지원', m: '어서오시오, 용사여...', give: [{ k: 'rchr', g: 1 }, { k: 'tkt', kind: 'spl', g: 1, n: 1 }, { k: 'coin', n: 500 }, { k: 'gem', n: 100 }] },
     { id: 'y27', t: '다가오는 2027', m: '젠장 우리 또 늙는다ㅠㅠ', give: [{ k: 'tkt', kind: 'chr', g: 3, n: 1 }, { k: 'tkt', kind: 'tal', g: 3, n: 1 }, { k: 'tkt', kind: 'spl', g: 3, n: 1 }, { k: 'coin', n: 2027 }] },
     { id: 'bt', t: '보스전, 진보스전 베타 업데이트 기념', m: '이래도 태고는 못 얻죠?ㅋㅋ', give: [{ k: 'rtok', g: 6, n: 5 }, { k: 'stok', g: 5, n: 20 }, { k: 'box', t: 4, n: 3 }] },
+    { id: 'gf', t: '깜짝 선물', m: '베타버전 플레이 해주시는 분들에게 감사의 의미를', give: [{ k: 'box', t: 4, n: 10 }] },
     { id: 'tu', t: '튜토리얼 완료 보상', m: '오오..! 강함의 기운이 느껴지는데요?', cond: function () { return !!(tutS && tutS.r); }, give: [{ k: 'tkt', kind: 'spl', g: 0, n: 2 }, { k: 'coin', n: 500 }, { k: 'gem', n: 30 }] }
   ];
   function mailList() { return (MAILS || []).filter(function (m) { return !m.cond || m.cond(); }); }
