@@ -1157,7 +1157,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v640</span>
+      <span class="verTag">v641</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -18003,7 +18003,7 @@ var DM = (function () {
     else if (a === 'tchr') { var c = 0; Object.keys(W).forEach(function (t) { if (t !== 'dummy' && t !== 'rgiant' && t !== 'kslime' && t !== 'kraken' && !eco.own[t]) { eco.own[t] = 1; c++; } }); ownDone('캐릭터 ' + c + '명 해금'); }
     else if (a === 'ttal') { var tc = 0; Object.keys(W).forEach(function (t) { if (t === 'dummy' || !W[t].traits) return; W[t].traits.forEach(function (_, ti) { var k = t + ':' + ti; eco.tal[k] = (eco.tal[k] || 0) + 1; tc++; }); }); ownDone('재능 ' + tc + '개 +1'); }
     else if (a === 'tspl') { var sc = 0; Object.keys(W).forEach(function (t) { if (t === 'dummy') return; SPELL_KEYS.forEach(function (s) { if (s === 'none' || (s === 'stack' && !stackable(t))) return; var k = t + ':' + s; eco.spl[k] = (eco.spl[k] || 0) + 1; sc++; }); }); ownDone('스펠 ' + sc + '개 +1'); }
-    else if (a === 'tjb') { var j = jbSync(); j.u = 3; j.k.u = 3; ownDone('진보스전 두 보스 전 난이도 열림'); }
+    else if (a === 'tjb') { var j = jbSync(); j.u = 3; j.k.u = 3; if (j.q) j.q.u = 3; ownDone('진보스전 세 보스 전 난이도 열림'); }
     else if (a === 'trs') { if (!ownArm('trs')) return; eco.pk = {}; eco.sp = {}; eco.stok = {}; eco.pass = 0; eco.login = ''; eco.tk = {}; ownDone('구매 기록을 초기화했어요'); ownRender(); }
     else if (a === 'tfast') { try { if (aiFast()) localStorage.removeItem('spinclash.aifast'); else localStorage.setItem('spinclash.aifast', '1'); } catch (e) {} uiTick(); ownRender(); }
   }
