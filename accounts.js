@@ -338,6 +338,30 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
     }
     send(res, 200, { ok: true });
   }
+  /* 타임어택 랭킹: 로그인한 사람만 등록. 유저마다 최고 기록(c = 1/100초) 하나. 빠른 순 300명까지만 저장 */
+  async function taOut(u) {
+    const all = await metaGet('ta', {}); const ids = Object.keys(all);
+    const sorted = ids.sort((a, b) => all[a].c - all[b].c || all[a].at - all[b].at);
+    const top = sorted.slice(0, 50);
+    let nicks = {};
+    if (top.length) { const r = await q('SELECT id, nick FROM users WHERE id = ANY($1::int[])', [top.map((x) => +x)]); r.rows.forEach((x) => { nicks[x.id] = x.nick; }); }
+    const list = top.map((id, i) => ({ r: i + 1, n: nicks[id] || '?', c: all[id].c, ty: all[id].ty, me: !!u && String(u.id) === id })).filter((x) => x.n !== '?');
+    let mine = null;
+    if (u && all[String(u.id)]) mine = { r: sorted.indexOf(String(u.id)) + 1, c: all[String(u.id)].c, ty: all[String(u.id)].ty };
+    return { ok: true, list, mine, total: ids.length };
+  }
+  async function taSubmit(u, b, res) {
+    if (!rate('ta:' + u.id, 30, 60 * 1000)) return fail(res, 429, 'rate', '잠시 후에 다시 해 주세요');
+    const c = Math.floor(+b.c), ty = String(b.ty || '').replace(/[^a-z0-9_]/g, '').slice(0, 20);
+    if (!(c >= 50 && c <= 60000) || !ty) return fail(res, 400, 'ta', '기록이 올바르지 않아요');
+    const all = await metaGet('ta', {}), key = String(u.id), prev = all[key];
+    if (!prev || c < prev.c) {
+      all[key] = { c, ty, at: Date.now() };
+      const ids = Object.keys(all); if (ids.length > 300) { ids.sort((a, b2) => all[a].c - all[b2].c || all[a].at - all[b2].at).slice(300).forEach((k) => { delete all[k]; }); }
+      await metaSet('ta', all);
+    }
+    send(res, 200, await taOut(u));
+  }
   async function statsOut() {
     const S = await statsLoad(), jb = {};
     Object.keys(S.jb).forEach((k) => { const x = S.jb[k]; jb[k] = { a: x.a, w: x.w, p: x.u.size, cn: x.cn }; });
@@ -374,6 +398,7 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
       if (!A.enabled) { fail(res, 503, 'off', '계정 기능이 아직 꺼져 있어요'); return true; }
       if (req.method === 'GET' && p === '/api/email/verify') { await emailVerify(url, res); return true; }
       if (req.method === 'GET' && p === '/api/me') { const u = await userFromToken(bearer(req)); if (!u) fail(res, 401, 'auth', '로그인이 필요해요'); else send(res, 200, { ok: true, me: me(u), mail: A.mailOn }); return true; }
+      if (req.method === 'GET' && p === '/api/ta') { send(res, 200, await taOut(await userFromToken(bearer(req)))); return true; }
       if (req.method === 'GET' && p === '/api/notice') { send(res, 200, await noticeGet()); return true; }
       if (req.method === 'GET' && p === '/api/live') { const sy = await sysLoad(); send(res, 200, { ok: true, maint: sy.on, msg: sy.msg, mails: mailsActive(await metaGet('mails', [])) }); return true; }
       if (req.method !== 'POST') { fail(res, 405, 'method', '잘못된 요청이에요'); return true; }
@@ -389,6 +414,7 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
       switch (p) {
         case '/api/logout': await q('DELETE FROM sessions WHERE token_hash = $1 RETURNING 1', [sha(bearer(req))]); send(res, 200, { ok: true }); return true;
         case '/api/notice': await noticeSet(u, b, res); return true;
+        case '/api/ta': await taSubmit(u, b, res); return true;
         case '/api/own': await ownReq(u, b, res); return true;
         case '/api/nick': await setNick(u, b, res); return true;
         case '/api/coupon': await redeem(u, b, addr, res); return true;
