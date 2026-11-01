@@ -79,7 +79,7 @@ function isGhost(s) { return String(s == null ? '' : s).normalize('NFKC').replac
 function nickOf(s) { const n = cleanText(s, 10); if (isGhost(n) || accounts.nickTaken(n)) return '손님' + (1000 + crypto.randomInt(9000)); return n || ('손님' + (1000 + crypto.randomInt(9000))); }   // 가입자가 쓰는 닉네임을 손님이 따라 쓸 수 없다
 function namesOf(room) { return room.players.map((p) => (p ? p.nick : '')); }
 function sendNames(room) {
-  const o = { t: 'names', n: namesOf(room), sc: room.specs.length };
+  const o = { t: 'names', n: namesOf(room), sc: scOf(room) };
   room.players.forEach((p) => { if (p) rawSend(p.ws, o); }); room.specs.forEach((w) => rawSend(w, o));
 }
 /* 관전자에게 보내는 방 상태 (전투 중에는 'start' 메시지가 대신한다) */
@@ -90,12 +90,12 @@ function specStatus(room, only) {
   if (only) rawSend(only, o); else room.specs.forEach((w) => rawSend(w, o));
 }
 /* 접속 중인 사람 수: 페이지를 열어 둔 연결(hi 를 보낸 연결)만 센다. 변할 때마다 0.6초 모아서 한 번에 알린다 */
-let countT = null, lastCount = -1;
+let countT = null, lastCount = -1, pidSeq = 0;   // pidSeq: 접속 연결마다 붙는 번호 (제작자 솔로 전투 관전 신청용)
 function onlineCount() { let n = 0; wss.clients.forEach((w) => { if (w._pres) n++; }); return n; }
 /* 제작자 전용 접속자 목록: [닉네임, 상태] 만 보낸다 (상태는 각 사람의 화면이 알려 준 값: home 홈 · mm 대전 매칭 중 · prep 대전 준비중 · fight 대전중 · custom 방 만들어서 하는 중 · spec 관전 중 · boss 보스전 중 · jb 진보스전 중 · ta 타임어택 중 · off 오프라인) */
 const PST_OK = new Set(['home', 'mm', 'prep', 'fight', 'custom', 'spec', 'boss', 'jb', 'ta', 'off']);
 function sendPlist(w) {
-  const l = []; wss.clients.forEach((c) => { if (c._pres && l.length < 300) l.push([c._pn || '손님', c._ps || 'home']); });
+  const l = []; wss.clients.forEach((c) => { if (c._pres && l.length < 300) l.push([c._pn || '손님', c._ps || 'home', c._pid || 0]); });
   rawSend(w, { t: 'plist', l });
 }
 function schedCount() {
@@ -105,6 +105,13 @@ function schedCount() {
     if (n !== lastCount) { lastCount = n; const o = JSON.stringify({ t: 'online', n }); wss.clients.forEach((w) => { if (w._pres && w.readyState === 1) w.send(o); }); }
     wss.clients.forEach((w) => { if (w._psub && w.readyState === 1) sendPlist(w); });   // 목록을 열어 둔 제작자에게만
   }, 600);
+}
+/* 관전자 수: 제작자가 몰래 보는 것(_osp)은 세지 않는다 */
+function scOf(room) { return room.specs.filter((w) => !w._osp).length; }
+/* 점검 중이면 제작자가 아닌 사람은 매칭·방 만들기·참가가 막힌다 */
+function maintBlock(ws) {
+  if (!accounts.sys || !accounts.sys.on || ws._own) return false;
+  rawSend(ws, { t: 'err', c: 'maint', m: accounts.sys.msg || '지금은 점검 중이에요. 잠시 뒤에 다시 해 주세요' }); return true;
 }
 function pwOk(ws, r, m) {
   if (!r.pw) return true;
@@ -193,7 +200,7 @@ function startRound(room, sels, pk) {
 /* 재접속한 사람에게 보내는 방 상태 전체: 이걸로 화면을 다시 맞추고, 전투 중이면 입력 기록으로 처음부터 다시 계산한다 */
 function snapshot(r, idx) {
   const cl = r.cl;
-  const o = { t: 'resumed', idx, code: r.code, mode: r.mode, name: r.name, st: r.state, np: r.players[1 - idx] ? 1 : 0, n: namesOf(r), sc: r.specs.length,
+  const o = { t: 'resumed', idx, code: r.code, mode: r.mode, name: r.name, st: r.state, np: r.players[1 - idx] ? 1 : 0, n: namesOf(r), sc: scOf(r),
     ready: [!!(r.players[0] && r.players[0].ready), !!(r.players[1] && r.players[1].ready)], rematch: r.rematch.slice(), over: r.over.slice(), arena: r.arena, sd: r.sd !== false,
     cl: cl ? { decks: cl.decks, used: cl.used, res: cl.res, wins: cl.wins, rd: cl.rd, end: cl.end, cur: cl.cur, mypick: cl.picks[idx], opicked: cl.picks[1 - idx] !== null, dl: cl.dl ? Math.max(0, cl.dl - Date.now()) : 0 } : null,
     cres: r.lastCres || null };
@@ -241,13 +248,14 @@ wss.on('connection', (ws) => {
   }
   function run(m) {
     const room = ws._room;
+    if (m._u && m._u.owner) ws._own = true;
     if (ws._idx === -2 && m.t !== 'ping' && m.t !== 'leave' && m.t !== 'list') return;
     switch (m.t) {
       case 'ping': return relay(ws, { t: 'pong', c: m.c });
-      case 'hi': { if (!ws._pres) { ws._pres = true; rawSend(ws, { t: 'online', n: onlineCount() }); schedCount(); } const sv = serverVer(); if (sv && m.ver !== sv) rawSend(ws, { t: 'ver', v: sv }); return; }
+      case 'hi': { if (!ws._pid) ws._pid = ++pidSeq; if (!ws._pres) { ws._pres = true; rawSend(ws, { t: 'online', n: onlineCount() }); schedCount(); } const sv = serverVer(); if (sv && m.ver !== sv) rawSend(ws, { t: 'ver', v: sv }); return; }
       case 'who': {   // 접속자 목록용 닉네임: 로그인했으면 계정 닉네임, 아니면 손님 닉네임(가입자 닉네임은 못 따라 씀)
         const nw = Date.now(); if (nw - (ws._whoAt || 0) < 400) return; ws._whoAt = nw;
-        const fin = (u) => { ws._pn = u ? u.nick : nickOf(m.nick); schedCount(); };
+        const fin = (u) => { ws._pn = u ? u.nick : nickOf(m.nick); ws._own = !!(u && u.owner); schedCount(); };
         if (typeof m.tk === 'string' && m.tk && accounts.enabled) { accounts.userFromToken(m.tk).then((u) => fin(u), () => fin(null)); } else fin(null);
         return;
       }
@@ -258,8 +266,40 @@ wss.on('connection', (ws) => {
         accounts.userFromToken(m.tk).then((u) => { if (!u || !u.owner || ws.readyState !== 1) return; ws._psub = true; sendPlist(ws); }, () => {});
         return;
       }
+      case 'sw': {   // 제작자만: 그 사람의 솔로 전투(진보스전 등)를 몰래 관전 신청/해제. 서버는 기록을 그대로 전달만 한다 (재생은 제작자 기기에서)
+        if (!accounts.enabled || typeof m.tk !== 'string' || !m.tk) return;
+        const pid = m.id | 0;
+        accounts.userFromToken(m.tk).then((u) => {
+          if (!u || !u.owner || ws.readyState !== 1) return; ws._own = true;
+          let tg = null; wss.clients.forEach((c) => { if (c._pid === pid && c._pres && c !== ws) tg = c; });
+          if (m.off) { if (tg && tg._watch) { tg._watch.delete(ws); if (!tg._watch.size) rawSend(tg, { t: 'srec', on: 0 }); } return; }
+          if (!tg) return rawSend(ws, { t: 'sw', ok: 0 });
+          if (!tg._watch) tg._watch = new Set();
+          if (tg._watch.size >= 4 && !tg._watch.has(ws)) return rawSend(ws, { t: 'sw', ok: 0 });
+          tg._watch.add(ws); rawSend(tg, { t: 'srec', on: 1 }); rawSend(ws, { t: 'sw', ok: 1, id: pid, n: tg._pn || '손님' });
+        }, () => {});
+        return;
+      }
+      case 'sb': case 'sd': case 'se': {   // 구경당하는 쪽이 보내는 전투 기록 → 신청한 제작자들에게 그대로 전달
+        if (!ws._watch || !ws._watch.size) return;
+        const o = { t: m.t, n: ws._pn || '손님' };
+        if (m.t === 'sb') { if (!m.hdr || typeof m.hdr !== 'object') return; o.hdr = m.hdr; }
+        else if (m.t === 'sd') { if (!Array.isArray(m.dts) || m.dts.length > 600) return; o.from = m.from | 0; o.dts = m.dts.filter((x) => typeof x === 'number' && Number.isFinite(x)); o.ev = Array.isArray(m.ev) ? m.ev.slice(0, 400) : []; }
+        const str = JSON.stringify(o); ws._watch.forEach((w) => { if (w.readyState === 1) w.send(str); else ws._watch.delete(w); });
+        return;
+      }
+      case 'olist': {   // 제작자만: 지금 진행 중인 매칭 대전 목록 (몰래 관전용)
+        if (!accounts.enabled || typeof m.tk !== 'string' || !m.tk) return;
+        accounts.userFromToken(m.tk).then((u) => {
+          if (!u || !u.owner || ws.readyState !== 1) return; ws._own = true;
+          const l = []; rooms.forEach((r) => { if (!r.hidden || l.length >= 40) return; const a = r.players[0], b = r.players[1]; if (!a || !b) return; l.push({ c: r.code, a: a.nick, b: b.nick, st: r.state, rd: r.cl ? r.cl.rd : 0, w: r.cl ? r.cl.wins : [0, 0] }); });
+          rawSend(ws, { t: 'olist', l });
+        }, () => {});
+        return;
+      }
       case 'create': {
         if (room) return;
+        if (maintBlock(ws)) return;
         const code = newCode(); if (!code) return rawSend(ws, { t: 'err', m: '방을 만들 수 없어요' });
         if (!verOk(ws, m)) return;
         const mode = m.mode === 'classic' ? 'classic' : (m.mode === 'nospell' ? 'nospell' : 'single');
@@ -272,6 +312,7 @@ wss.on('connection', (ws) => {
       }
       case 'join': {
         if (room) return;
+        if (maintBlock(ws)) return;
         const code = String(m.code || '').toUpperCase().trim(); const r = rooms.get(code);
         if (!r) return rawSend(ws, { t: 'err', m: '그런 방이 없어요' });
         if (r.players[1]) return rawSend(ws, { t: 'err', m: '이미 가득 찬 방이에요' });
@@ -286,6 +327,7 @@ wss.on('connection', (ws) => {
       case 'mm': {   // 매칭: 대기열에 들어가 두 명이 모이면 클래식 방을 자동으로 연다 (방 목록에는 안 보이고 관전도 안 된다)
         if (room || ws._mm) return;
         if (!verOk(ws, m)) return;
+        if (maintBlock(ws)) return;
         ws._mm = { ws, nick: m._u ? m._u.nick : nickOf(m.nick), uid: m._u ? m._u.id : 0, at: Date.now() };
         mmQ.push(ws._mm); rawSend(ws, { t: 'mmq' });
         mmTry();
@@ -302,9 +344,11 @@ wss.on('connection', (ws) => {
         const code = String(m.code || '').toUpperCase().trim(); const r = rooms.get(code);
         if (!r) return rawSend(ws, { t: 'err', m: '그런 방이 없어요' });
         if (!verOk(ws, m)) return;
-        if (!r.spec) return rawSend(ws, { t: 'err', m: '관전을 허용하지 않는 방이에요' });
-        if (r.specs.length >= MAX_SPEC) return rawSend(ws, { t: 'err', m: '관전 자리가 가득 찼어요' });
-        if (!pwOk(ws, r, m)) return;
+        const osp = !!ws._own && !!m.osp;   // 제작자가 매칭 대전을 몰래 보는 경우: 관전 허용·인원 제한·비밀번호와 상관없이 들어가고, 관전자 수에도 안 센다
+        if (!r.spec && !osp) return rawSend(ws, { t: 'err', m: '관전을 허용하지 않는 방이에요' });
+        if (r.specs.length >= MAX_SPEC && !osp) return rawSend(ws, { t: 'err', m: '관전 자리가 가득 찼어요' });
+        if (!osp && !pwOk(ws, r, m)) return;
+        ws._osp = osp;
         ws._room = r; ws._idx = -2; ws._nick = m._u ? m._u.nick : nickOf(m.nick); r.specs.push(ws);
         rawSend(ws, { t: 'sjoined', code, mode: r.mode, name: r.name, n: namesOf(r) }); sendNames(r);
         if (r.state === 'play' && r.lastStart) rawSend(ws, Object.assign({}, r.lastStart, { nm: namesOf(r), log: r.log, li: r.lastIn }));
@@ -423,6 +467,8 @@ wss.on('connection', (ws) => {
   ws.on('close', () => {
     if (ws._iq && ws._iq.length) { const q = ws._iq; ws._iq = []; q.forEach((e) => handle(e.data)); }   // (지연 시뮬레이션용) 닫히기 전에 도착한 메시지를 먼저 처리
     if (ws._pres) schedCount();
+    if (ws._watch) { ws._watch.forEach((w) => rawSend(w, { t: 'se', n: ws._pn || '손님', gone: 1 })); ws._watch = null; }
+    wss.clients.forEach((c) => { if (c._watch && c._watch.delete(ws) && !c._watch.size) rawSend(c, { t: 'srec', on: 0 }); });
     if (ws._mm) { const qi = mmQ.indexOf(ws._mm); if (qi >= 0) mmQ.splice(qi, 1); ws._mm = null; }
     const room = ws._room; if (!room) return;
     if (ws._idx === -2) { room.specs = room.specs.filter((w) => w !== ws); sendNames(room); return; }

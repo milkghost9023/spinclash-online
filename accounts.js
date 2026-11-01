@@ -128,6 +128,7 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
     if (!A.enabled) { A.state = 'err'; console.log('[accounts] 꺼짐: DB에 연결하지 못했어요 –', lastErr && lastErr.message); return; }
     const prov = mailProvider(); A.mailOn = !!prov;
     console.log('[accounts] 켜짐 · 가입자 ' + nickKeys.size + '명 · 메일 ' + (prov || '꺼짐') + (env.OWNER_USERNAME ? ' · 제작자 아이디 설정됨' : ''));
+    sysLoad().catch(() => {}); const ts = setInterval(() => { sysLoad().catch(() => {}); }, 15000); ts.unref();
     const t = setInterval(() => { q('DELETE FROM sessions WHERE expires_at < now()').catch(() => {}); q('DELETE FROM user_tokens WHERE expires_at < now()').catch(() => {}); }, 30 * 60 * 1000); t.unref();
   };
   A.nickTaken = (nick) => nickKeys.has(normKey(nick));
@@ -235,7 +236,7 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
   function readBody(req) {
     return new Promise((resolve, reject) => {
       let n = 0; const ch = [];
-      req.on('data', (d) => { n += d.length; if (n > 4096) { reject(Object.assign(new Error('big'), { big: true })); req.destroy(); } else ch.push(d); });
+      req.on('data', (d) => { n += d.length; if (n > 16384) { reject(Object.assign(new Error('big'), { big: true })); req.destroy(); } else ch.push(d); });
       req.on('end', () => { try { const s = Buffer.concat(ch).toString('utf8'); resolve(s ? JSON.parse(s) : {}); } catch (e) { reject(Object.assign(new Error('json'), { json: true })); } });
       req.on('error', reject);
     });
@@ -247,23 +248,123 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
   }
   const isUniq = (e, name) => e && e.code === '23505' && (!name || String(e.constraint || e.message || '').indexOf(name) >= 0);
 
-  /* ── 공지(홈 화면 배너): 제작자 계정만 쓰고, 모두가 읽는다. app_meta 의 'notice' 에 JSON {t, at} 로 저장 ── */
-  const NOTICE_MAX = 200;
-  let noticeCache = null, noticeAt = 0;
-  async function noticeGet() {
-    if (noticeCache && Date.now() - noticeAt < 15000) return noticeCache;
-    const r = await q("SELECT v FROM app_meta WHERE k = 'notice'");
-    let v = { t: '', at: 0 };
-    if (r.rows[0]) { try { const j = JSON.parse(r.rows[0].v); if (j && typeof j.t === 'string') v = { t: j.t, at: +j.at || 0 }; } catch (e) {} }
-    noticeCache = v; noticeAt = Date.now(); return v;
+  /* ══════ 제작자 도구: app_meta 에 JSON 으로 저장 (공지 여러 개 · 서버 메일 · 점검 · 통계) ══════ */
+  const metaCache = new Map();
+  async function metaGet(k, def) {
+    const c = metaCache.get(k); if (c && Date.now() - c.at < 15000) return c.v;
+    const r = await q('SELECT v FROM app_meta WHERE k = $1', [k]); let v = def;
+    if (r.rows[0]) { try { v = JSON.parse(r.rows[0].v); } catch (e) {} }
+    metaCache.set(k, { v, at: Date.now() }); return v;
   }
-  async function noticeSet(u, b, res) {
+  async function metaSet(k, v) {
+    await q('INSERT INTO app_meta (k, v) VALUES ($1, $2) ON CONFLICT (k) DO UPDATE SET v = EXCLUDED.v', [k, JSON.stringify(v)]);
+    metaCache.set(k, { v, at: Date.now() });
+  }
+  const cleanTxt = (s2, n) => Array.from(String(s2 == null ? '' : s2).replace(/[​-‏‪-‮⁦-⁩﻿]/g, '').replace(/[\u0000-\u001f\u007f]+/g, ' ').replace(/\s+/g, ' ').trim()).slice(0, n).join('');
+  const toMs = (x) => { x = +x; return Number.isFinite(x) && x > 0 ? Math.floor(x) : 0; };
+  const newId = (pre) => pre + Date.now().toString(36) + crypto.randomBytes(2).toString('hex');
+
+  /* 공지: [{id, t, from, to, at}] 여러 개. 시작(from)·종료(to) 시각(ms, 0이면 제한 없음)이 맞는 것만 모두에게 보인다 */
+  const NOTICE_MAX = 200, NOTICE_N = 8;
+  async function noticesAll() {
+    let l = await metaGet('notices', null);
+    if (!Array.isArray(l)) { const o = await metaGet('notice', { t: '', at: 0 }); l = o && o.t ? [{ id: 'n0', t: o.t, from: 0, to: 0, at: o.at || 0 }] : []; }   // 예전 단일 공지
+    return l;
+  }
+  const noteActive = (l, now) => l.filter((x) => x.t && (!x.from || x.from <= now) && (!x.to || x.to > now));
+  const noticePub = (l) => { const a = noteActive(l, Date.now()); return { ok: true, t: a[0] ? a[0].t : '', at: a[0] ? a[0].at : 0, list: a.map((x) => ({ t: x.t, at: x.at })) }; };
+  async function noticeGet() { return noticePub(await noticesAll()); }
+  async function noticeSave(raw, res) {
+    const out = [];
+    (Array.isArray(raw) ? raw : []).slice(0, NOTICE_N).forEach((x) => {
+      const t = cleanTxt(x && x.t, NOTICE_MAX); if (!t) return;
+      out.push({ id: String((x && x.id) || '').slice(0, 20) || newId('n'), t, from: toMs(x && x.from), to: toMs(x && x.to), at: toMs(x && x.at) || Date.now() });
+    });
+    await metaSet('notices', out); send(res, 200, Object.assign(noticePub(out), { all: out }));
+  }
+  async function noticeSet(u, b, res) {   // 예전 방식(글 하나): 호환용
     if (!u.owner) return fail(res, 403, 'owner', '제작자 계정만 쓸 수 있어요');
-    const t = Array.from(String(b && b.t != null ? b.t : '').replace(/[\u200b-\u200f\u202a-\u202e\u2066-\u2069\ufeff]/g, '').replace(/[\u0000-\u001f\u007f]+/g, ' ').replace(/\s+/g, ' ').trim()).slice(0, NOTICE_MAX).join('');
-    const v = { t, at: t ? Date.now() : 0 };
-    await q("INSERT INTO app_meta (k, v) VALUES ('notice', $1) ON CONFLICT (k) DO UPDATE SET v = EXCLUDED.v", [JSON.stringify(v)]);
-    noticeCache = v; noticeAt = Date.now();
-    send(res, 200, { ok: true, t: v.t, at: v.at });
+    const t = cleanTxt(b && b.t, NOTICE_MAX);
+    return noticeSave(t ? [{ t, from: 0, to: 0, at: Date.now() }] : [], res);
+  }
+
+  /* 점검: 켜면 매칭·방 만들기·참가가 막힌다 (제작자는 제외) */
+  A.sys = { on: false, msg: '' };
+  async function sysLoad() { const v = await metaGet('sys', { on: false, msg: '' }); A.sys = { on: !!v.on, msg: cleanTxt(v.msg, 80) }; return A.sys; }
+
+  /* 서버 메일: 제작자가 앱에서 써서 모두에게 보낸다. give 는 허용된 종류만 */
+  const MAIL_N = 30;
+  function cleanGive(arr) {
+    const out = [], ni = (x, lo, hi) => { x = Math.floor(+x); return Number.isFinite(x) && x >= lo && x <= hi ? x : null; };
+    (Array.isArray(arr) ? arr : []).slice(0, 6).forEach((g) => {
+      if (!g || typeof g !== 'object') return;
+      let n, gr, t;
+      if (g.k === 'coin' && (n = ni(g.n, 1, 1000000)) !== null) out.push({ k: 'coin', n });
+      else if (g.k === 'gem' && (n = ni(g.n, 1, 100000)) !== null) out.push({ k: 'gem', n });
+      else if (g.k === 'box' && (t = ni(g.t, 0, 5)) !== null && (n = ni(g.n, 1, 100)) !== null) out.push({ k: 'box', t, n });
+      else if ((g.k === 'stok' || g.k === 'rtok') && (gr = ni(g.g, 0, 6)) !== null && (n = ni(g.n, 1, 200)) !== null) out.push({ k: g.k, g: gr, n });
+      else if (g.k === 'rchr' && (gr = ni(g.g, 0, 6)) !== null) out.push({ k: 'rchr', g: gr });
+      else if (g.k === 'tkt' && ['chr', 'tal', 'spl'].indexOf(g.kind) >= 0 && (gr = ni(g.g, 0, 6)) !== null && (n = ni(g.n, 1, 50)) !== null) out.push({ k: 'tkt', kind: g.kind, g: gr, n });
+    });
+    return out;
+  }
+  const mailsActive = (l) => l.filter((m) => !m.exp || m.exp > Date.now());
+
+  /* 통계: 진보스전 도전·클리어 · 캐릭터별 선택·승리(사람 매칭 h / AI 매칭 a). 메모리에 모았다가 20초마다 저장 */
+  let stats = null, statsDirty = false;
+  async function statsLoad() {
+    if (stats) return stats;
+    const v = await metaGet('stats', null) || {};
+    stats = { since: v.since || Date.now(), jb: {}, ch: v.ch || {} };
+    Object.keys(v.jb || {}).forEach((k) => { const o = v.jb[k]; stats.jb[k] = { a: o.a | 0, w: o.w | 0, cn: o.cn || [0, 0, 0], u: new Set(o.u || []) }; });
+    return stats;
+  }
+  function statsSave() { if (!stats || !statsDirty) return; statsDirty = false; const o = { since: stats.since, ch: stats.ch, jb: {} }; Object.keys(stats.jb).forEach((k) => { const x = stats.jb[k]; o.jb[k] = { a: x.a, w: x.w, cn: x.cn, u: Array.from(x.u).slice(0, 3000) }; }); metaSet('stats', o).catch(() => { statsDirty = true; }); }
+  setInterval(statsSave, 20000).unref();
+  async function reportIn(b, addr, res) {
+    if (!rate('rp:' + addr, 40, 60 * 1000)) return send(res, 200, { ok: true });
+    const S = await statsLoad(), win = !!b.win;
+    if (b.k === 'jb') {
+      const bi = Math.floor(+b.bi), lv = Math.floor(+b.lv), cn = Math.floor(+b.cn), id = String(b.id || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 24);
+      if (!(bi === 0 || bi === 1) || !(lv >= 0 && lv <= 3)) return send(res, 200, { ok: true });
+      const k = bi + '-' + lv, o = S.jb[k] || (S.jb[k] = { a: 0, w: 0, cn: [0, 0, 0], u: new Set() });
+      o.a++; if (win) { o.w++; if (cn >= 1 && cn <= 3) o.cn[cn - 1]++; if (id.length >= 6 && o.u.size < 3000) o.u.add(id); }
+      statsDirty = true;
+    } else if (b.k === 'mm') {
+      const my = String(b.my || ''); if (!/^[a-z0-9_]{2,24}$/.test(my)) return send(res, 200, { ok: true });
+      if (!S.ch[my] && Object.keys(S.ch).length >= 200) return send(res, 200, { ok: true });
+      const o = S.ch[my] || (S.ch[my] = { h: [0, 0], a: [0, 0] }), m = b.ai ? o.a : o.h; m[0]++; if (win) m[1]++;
+      statsDirty = true;
+    }
+    send(res, 200, { ok: true });
+  }
+  async function statsOut() {
+    const S = await statsLoad(), jb = {};
+    Object.keys(S.jb).forEach((k) => { const x = S.jb[k]; jb[k] = { a: x.a, w: x.w, p: x.u.size, cn: x.cn }; });
+    return { since: S.since, jb, ch: S.ch };
+  }
+
+  /* 제작자 전용 요청 하나로 모은다: POST /api/own {k: ...} */
+  async function ownReq(u, b, res) {
+    if (!u.owner) return fail(res, 403, 'owner', '제작자 계정만 쓸 수 있어요');
+    const k = String(b.k || '');
+    if (k === 'notices') return send(res, 200, { ok: true, all: await noticesAll() });
+    if (k === 'notices.set') return noticeSave(b.list, res);
+    if (k === 'mails') return send(res, 200, { ok: true, list: await metaGet('mails', []) });
+    if (k === 'mails.add') {
+      const t = cleanTxt(b.t, 30), m = cleanTxt(b.m, 120), give = cleanGive(b.give);
+      if (!t) return fail(res, 400, 'mail', '제목을 써 주세요');
+      if (!give.length) return fail(res, 400, 'mail', '보상을 하나 이상 넣어 주세요');
+      const days = Math.max(0, Math.min(365, Math.floor(+b.days) || 0)), l = (await metaGet('mails', [])).slice();
+      const mail = { id: newId('m'), t, m, give, at: Date.now(), exp: days ? Date.now() + days * 86400000 : 0 };
+      l.unshift(mail); await metaSet('mails', l.slice(0, MAIL_N)); return send(res, 200, { ok: true, mail, list: l.slice(0, MAIL_N) });
+    }
+    if (k === 'mails.del') { const l = (await metaGet('mails', [])).filter((x) => x.id !== String(b.id)); await metaSet('mails', l); return send(res, 200, { ok: true, list: l }); }
+    if (k === 'sys.set') { await metaSet('sys', { on: !!b.on, msg: cleanTxt(b.msg, 80) }); await sysLoad(); return send(res, 200, { ok: true, sys: A.sys }); }
+    if (k === 'sys') return send(res, 200, { ok: true, sys: await sysLoad() });
+    if (k === 'stats') return send(res, 200, Object.assign({ ok: true }, await statsOut()));
+    if (k === 'stats.reset') { stats = { since: Date.now(), jb: {}, ch: {} }; statsDirty = true; statsSave(); return send(res, 200, { ok: true }); }
+    return fail(res, 400, 'own', '알 수 없는 요청이에요');
   }
 
   A.handle = async function handle(req, res) {
@@ -273,7 +374,8 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
       if (!A.enabled) { fail(res, 503, 'off', '계정 기능이 아직 꺼져 있어요'); return true; }
       if (req.method === 'GET' && p === '/api/email/verify') { await emailVerify(url, res); return true; }
       if (req.method === 'GET' && p === '/api/me') { const u = await userFromToken(bearer(req)); if (!u) fail(res, 401, 'auth', '로그인이 필요해요'); else send(res, 200, { ok: true, me: me(u), mail: A.mailOn }); return true; }
-      if (req.method === 'GET' && p === '/api/notice') { const n = await noticeGet(); send(res, 200, { ok: true, t: n.t, at: n.at }); return true; }
+      if (req.method === 'GET' && p === '/api/notice') { send(res, 200, await noticeGet()); return true; }
+      if (req.method === 'GET' && p === '/api/live') { const sy = await sysLoad(); send(res, 200, { ok: true, maint: sy.on, msg: sy.msg, mails: mailsActive(await metaGet('mails', [])) }); return true; }
       if (req.method !== 'POST') { fail(res, 405, 'method', '잘못된 요청이에요'); return true; }
       const b = await readBody(req); const addr = ip(req);
       switch (p) {
@@ -281,11 +383,13 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
         case '/api/login': return await login(b, addr, res), true;
         case '/api/reset': return await resetReq(b, addr, req, res), true;
         case '/api/reset/confirm': return await resetConfirm(b, addr, res), true;
+        case '/api/report': return await reportIn(b, addr, res), true;
       }
       const u = await userFromToken(bearer(req)); if (!u) { fail(res, 401, 'auth', '로그인이 필요해요'); return true; }
       switch (p) {
         case '/api/logout': await q('DELETE FROM sessions WHERE token_hash = $1 RETURNING 1', [sha(bearer(req))]); send(res, 200, { ok: true }); return true;
         case '/api/notice': await noticeSet(u, b, res); return true;
+        case '/api/own': await ownReq(u, b, res); return true;
         case '/api/nick': await setNick(u, b, res); return true;
         case '/api/coupon': await redeem(u, b, addr, res); return true;
         case '/api/pw': await setPw(u, b, req, res); return true;

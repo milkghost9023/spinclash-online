@@ -354,6 +354,13 @@ body.online .ctrl { display: none; }
 #rcBar[hidden] { display: none; }
 #verBar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 46; padding: 12px; text-align: center; font: inherit; font-weight: 700; font-size: 14px; color: #fff; background: #d03a3a; border: 0; border-top: 3px solid #7a1a1a; }
 #verBar[hidden] { display: none; }
+#maintBar { position: fixed; left: 0; right: 0; top: 0; z-index: 45; padding: 8px 12px; text-align: center; font-weight: 800; font-size: 13px; color: #3a2600; background: #ffd23a; border-bottom: 3px solid #7a5a00; }
+#maintBar[hidden] { display: none; }
+#rpBar { position: fixed; left: 0; right: 0; top: 0; z-index: 47; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 6px 10px; font-weight: 800; font-size: 13px; color: #fff; background: rgba(20, 20, 40, 0.88); border-bottom: 3px solid #7b3fe4; }
+#rpBar[hidden] { display: none; }
+#rpBar button { min-height: 32px; padding: 0 12px; border: 2px solid #fff; border-radius: 6px; background: #d03a3a; color: #fff; font: 800 13px 'Noto Sans KR', sans-serif; }
+body.rpv #battle, body.rpv #topBar, body.rpv #over { pointer-events: none; }
+body.rpv #topBar { padding-top: 44px; }
 #clsTimer.bad { color: var(--p2); }
 #toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 40; max-width: calc(100vw - 32px); padding: 10px 16px; font-weight: 700; font-size: 14px; color: #fff; background: rgba(30, 140, 70, 0.95); border: 3px solid #0d4a25; border-radius: 22px; box-shadow: 0 4px 0 rgba(0,0,0,0.25); pointer-events: none; animation: toastIn 0.28s cubic-bezier(0.2, 1.6, 0.4, 1) both; text-align: center; overflow-wrap: anywhere; }
 #toast[hidden] { display: none; }
@@ -826,10 +833,34 @@ body.boss .chips button.us::after { content: '사용'; }
 @keyframes nwsMq { from { transform: translateX(var(--from, 100%)); } to { transform: translateX(var(--to, -100%)); } }
 #home .hnews .ed { flex: none; font-size: 12px; opacity: 0.8; }
 #home .hnews.empty .nt { opacity: 0.55; font-weight: 700; }
-#newsModal textarea { width: 100%; min-height: 96px; padding: 8px 10px; resize: none; border: 3px solid var(--line); border-radius: 4px; background: var(--card); color: var(--ink); font: 600 15px/1.45 'Noto Sans KR', sans-serif; }
-#newsModal .btn { min-height: 44px; font-size: 16px; }
-#newsModal .cnt { font: 700 12px 'Noto Sans KR', sans-serif; color: var(--muted); }
-#newsModal .hint { margin: 0; font-size: 13px; color: var(--muted); }
+#ownModal .sheet { max-height: calc(100dvh - 32px); display: flex; flex-direction: column; gap: 8px; }
+#ownTabs { display: flex; gap: 4px; }
+#ownTabs button { flex: 1 1 0; min-height: 40px; padding: 0 2px; border: 3px solid var(--line); border-radius: 4px; background: var(--card); color: var(--ink); font: 800 13px 'Noto Sans KR', sans-serif; }
+#ownTabs button[aria-pressed="true"] { background: var(--ink); color: var(--card); }
+#ownBody { flex: 1 1 auto; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; padding-right: 2px; }
+#ownBody .owh { margin: 0; font-size: 12.5px; color: var(--muted); line-height: 1.45; }
+#ownBody .owt { margin: 6px 0 0; font-size: 14px; }
+#ownBody .owc { display: flex; flex-direction: column; gap: 6px; padding: 8px; border: 3px solid var(--line); border-radius: 4px; background: var(--card); }
+#ownBody .owc small { font-size: 12px; color: var(--muted); overflow-wrap: anywhere; }
+#ownBody .owr { display: flex; gap: 6px; align-items: center; justify-content: space-between; }
+#ownBody .owr > * { min-width: 0; }
+#ownBody label { display: flex; flex-direction: column; gap: 2px; flex: 1 1 0; font-size: 11px; font-weight: 700; color: var(--muted); }
+#ownBody label.owl { flex-direction: row; align-items: center; gap: 8px; white-space: nowrap; }
+#ownBody label.owl select { width: auto; flex: 1 1 0; }
+#ownBody textarea, #ownBody input, #ownBody select { width: 100%; min-height: 38px; padding: 4px 8px; border: 3px solid var(--line); border-radius: 4px; background: var(--field, var(--card)); color: var(--ink); font: 600 14px 'Noto Sans KR', sans-serif; box-sizing: border-box; }
+#ownBody textarea { resize: none; min-height: 56px; }
+#ownBody input[type="number"] { flex: 2 1 0; }
+#ownBody .owb { flex: 1 1 0; white-space: nowrap; min-height: 40px; padding: 0 6px; border: 3px solid var(--line); border-radius: 4px; background: var(--card); color: var(--ink); font: 800 13px 'Noto Sans KR', sans-serif; }
+#ownBody .owb.pri { background: var(--p1, #3d8bff); color: #fff; }
+#ownBody .owb.x { flex: 0 0 auto; color: var(--p2, #d03a3a); }
+#ownBody .owb.arm { background: #d03a3a; color: #fff; }
+#ownBody .owb:disabled { opacity: 0.45; }
+#ownBody .owst { font-size: 12px; font-weight: 800; color: var(--muted); }
+#ownBody .owst.on { color: #2a9d4a; }
+#ownBody .gv select[data-f="k"] { flex: 1.5 1 0; }
+#ownBody .gv select[data-f="g"] { flex: 1.2 1 0; }
+#ownBody .gv input { flex: 0.9 1 0; }
+#ownBody .gv select, #ownBody .gv input { padding: 4px 4px; font-size: 13px; }
 #bossBar { display: flex; align-items: center; gap: 10px; margin: 0 0 10px; padding: 8px 10px; border: 3px solid var(--ink); border-radius: 12px; background: #dff3ff; color: var(--ink); }
 #bossBar[hidden] { display: none; }
 #bossBar img { flex: none; width: 46px; height: 46px; }
@@ -1086,6 +1117,8 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
   <div id="toast" hidden role="status" aria-live="polite"></div>
   <div id="rcBar" hidden role="status"></div>
   <button id="verBar" hidden type="button">새 버전이 나왔어요 · 눌러서 새로고침</button>
+  <div id="maintBar" hidden></div>
+  <div id="rpBar" hidden><span id="rpTx"></span><button type="button" id="rpX">나가기</button></div>
   <header class="top" id="topBar" hidden>
     <button class="btn small" id="homeBtn">← 홈</button>
     <h1 class="mini">스핀 클래시</h1>
@@ -1121,7 +1154,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v633</span>
+      <span class="verTag">v635</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -1235,6 +1268,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       <div class="chd"><div class="r1"><span class="tx ttl">프로필</span><span class="cnt">로그인 · 닉네임 · 쿠폰</span></div></div>
       <div class="shbody" id="meBody">
         <div class="meCard"><div class="meAv" id="meAv"></div><div class="meIn"><b id="meNick"></b><small id="meAcc"></small></div></div>
+      <div class="row" id="ownRow" hidden><span class="nm">제작자 허브<small>공지·메일·점검·통계·도구·관전</small></span><button type="button" class="tog" id="ownOpen">열기</button></div>
       <div class="row" id="accRow2" hidden><span class="nm">계정<small id="accInfo2"></small></span><button type="button" class="tog" id="accBtn2">열기</button></div>
       <div class="row"><span class="nm">닉네임<small id="nickMsg">온라인에서 상대·관전자에게 보여요</small><small class="cmdTag" id="cmdTag2" hidden>✦ 제작자 권한 · 닉네임 "유령" 사용 가능</small></span>
         <span class="cpn"><input id="nickSet" type="text" maxlength="10" autocomplete="off" spellcheck="false" placeholder="닉네임" aria-label="닉네임"><button type="button" class="tog" id="nickBtn">저장</button></span></div>
@@ -1418,6 +1452,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
     <div class="sheet" role="dialog" aria-label="접속 중인 사람">
       <h2 id="onlH">접속 중</h2>
       <div class="onlList" id="onlList"></div>
+      <button class="btn" id="onlOwn">🛠 제작자 허브</button>
       <button class="btn" id="onlClose">닫기</button>
     </div>
   </div>
@@ -1474,14 +1509,12 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       <button class="btn primary" id="closeSet">닫기</button>
     </div>
   </div>
-  <div class="modal" id="newsModal" hidden style="z-index:24">
-    <div class="sheet" role="dialog" aria-label="공지 쓰기">
-      <h2>공지 쓰기</h2>
-      <p class="hint">홈 화면 맨 위 배너에 모든 유저에게 보여요. 길면 옆으로 흘러가요. 비워서 올리면 배너가 사라져요.</p>
-      <textarea id="newsIn" maxlength="200" rows="4" placeholder="공지 내용 (최대 200자)" aria-label="공지 내용"></textarea>
-      <div class="row"><span class="cnt" id="newsCnt">0/200</span></div>
-      <div class="row"><button type="button" class="btn" id="newsDel">지우기</button><button type="button" class="btn primary" id="newsSave">올리기</button></div>
-      <button type="button" class="btn" id="newsX">닫기</button>
+  <div class="modal" id="ownModal" hidden style="z-index:25">
+    <div class="sheet" role="dialog" aria-label="제작자 허브">
+      <h2>제작자 허브</h2>
+      <div id="ownTabs"></div>
+      <div id="ownBody"></div>
+      <button type="button" class="btn" id="ownX">닫기</button>
     </div>
   </div>
   <div class="modal" id="helpModal" hidden style="z-index:21">
@@ -12805,6 +12838,8 @@ var DM = (function () {
     }
     if (net.on && winner >= 0) { if (net.spec) title = (net.names[winner] || 'P' + (winner + 1)) + ' 승리!'; else { title = winner === net.me ? '승리!' : '패배…'; sub = '상대: ' + (net.names[1 - net.me] ? net.names[1 - net.me] + ' · ' : '') + W[fighters[1 - net.me].type].name + ' · ' + sub; } }
     t.textContent = title; $('#overSub').textContent = sub;
+    if (rec) { rec.done = true; if (recWatch) recFlush(false); }
+    if (rpOn) { over.hidden = true; rpFin(); return; }   /* 제작자 몰래 관전 재생: 보상·기록은 건드리지 않는다 */
     over.hidden = false; $('#taRes').hidden = true; if (bossRun) bossFightDone(); else if (taRun) taDone(); else if (jbRun) jbFightDone(); else ecoMatchDone();
   }
 
@@ -15611,7 +15646,8 @@ var DM = (function () {
     if (net.on && net.st === 'play') netPump(dt);
     else if (net.on && net.st === 'splay') netSpecPump(dt);
     else if (fixedStep) { var ns = 0; stepAcc += dt; while (stepAcc >= STEP - 1e-9 && ns < 4) { update(STEP); stepAcc -= STEP; ns++; } if (ns === 4) stepAcc = 0; }
-    else update(dt);
+    else if (rp && rp.run) rpPump(dt);
+    else { if (rec && !rec.done) recDt(dt); update(dt); }
     draw(); hud();
   }
 
@@ -15861,14 +15897,15 @@ var DM = (function () {
     $('#dotAll').addEventListener('click', function () { var all = DOT_KEYS.every(function (d) { return dotTest[d[0]]; }); DOT_KEYS.forEach(function (d) { dotTest[d[0]] = !all; }); uiTick(); dotSync(); });
   })();
   /* ═══════ 홈 공지 배너 ═══════ 서버(/api/notice)에 한 개만 저장. 읽기는 누구나, 쓰기는 제작자 계정만(서버가 다시 확인한다) */
-  var news = { t: '', at: 0, tm: 0, sig: '', own: false };
-  try { var nj0 = JSON.parse(localStorage.getItem('spinclash.news') || 'null'); if (nj0 && typeof nj0.t === 'string') { news.t = nj0.t; news.at = nj0.at | 0; } } catch (e) {}
+  var live = { maint: false, msg: '', tm: 0 };   /* 서버 점검 상태 (/api/live) */
+  var news = { t: '', at: 0, tm: 0, sig: '', own: false, list: [], i: 0, rt: 0, dur: 0 };
+  try { var nj0 = JSON.parse(localStorage.getItem('spinclash.news') || 'null'); if (nj0 && typeof nj0.t === 'string') { news.t = nj0.t; news.at = +nj0.at || 0; if (nj0.t) news.list = Array.isArray(nj0.list) && nj0.list.length ? nj0.list.filter(function (x) { return x && typeof x.t === 'string' && x.t; }) : [{ t: nj0.t, at: +nj0.at || 0 }]; if (news.list.length) { news.t = news.list[0].t; news.at = +news.list[0].at || 0; } } } catch (e) {}
   function newsOwn() { return news.own || !!(acct.me && acct.me.o); }
   function newsFit() {
-    var t = $('#hmNewsT'), v = t.parentNode; t.classList.remove('mq');
+    var t = $('#hmNewsT'), v = t.parentNode; t.classList.remove('mq'); news.dur = 0;
     var cw = v.clientWidth; if (cw <= 0) return;   /* 홈이 숨겨져 있으면 폭을 못 잰다 → 홈이 보일 때 다시 */
     var w = t.offsetWidth;
-    if (news.t && w > cw) { t.style.setProperty('--from', cw + 'px'); t.style.setProperty('--to', '-' + w + 'px'); t.style.setProperty('--dur', Math.max(6, (cw + w) / 48).toFixed(1) + 's'); t.classList.add('mq'); }
+    if (news.t && w > cw) { t.style.setProperty('--from', cw + 'px'); t.style.setProperty('--to', '-' + w + 'px'); news.dur = Math.max(6, (cw + w) / 48); t.style.setProperty('--dur', news.dur.toFixed(1) + 's'); t.classList.add('mq'); }
   }
   function newsUi(force) {
     var el = $('#hmNews'); if (!el) return;
@@ -15879,31 +15916,29 @@ var DM = (function () {
     if (sig === news.sig && !force) return;
     news.sig = sig; $('#hmNewsT').textContent = has ? news.t : '공지 쓰기 (제작자 전용)'; newsFit();
   }
-  function newsSet(t, at) { news.t = t || ''; news.at = at | 0; try { localStorage.setItem('spinclash.news', JSON.stringify({ t: news.t, at: news.at })); } catch (e) {} newsUi(); }
+  /* 공지가 여러 개면 한 개씩 돌려 보여 준다 (긴 글은 한 바퀴 흐른 뒤, 짧은 글은 7초) */
+  function newsArm() {
+    if (news.rt) { clearTimeout(news.rt); news.rt = 0; }
+    if (news.list.length < 2) return;
+    news.rt = setTimeout(function () {
+      news.rt = 0; if (news.list.length < 2) return;
+      news.i = (news.i + 1) % news.list.length; news.t = news.list[news.i].t; news.at = +news.list[news.i].at || 0; newsUi(true); newsArm();
+    }, Math.max(7000, news.dur * 1000 + 300));
+  }
+  function newsSet(t, at, list) {
+    var l = Array.isArray(list) ? list.filter(function (x) { return x && typeof x.t === 'string' && x.t; }).map(function (x) { return { t: x.t, at: +x.at || 0 }; }) : (t ? [{ t: t, at: +at || 0 }] : []);
+    var same = l.length === news.list.length && l.every(function (x, k) { return x.t === news.list[k].t; });
+    news.list = l; if (!same || news.i >= l.length) news.i = 0;
+    news.t = l.length ? l[news.i].t : ''; news.at = l.length ? l[news.i].at : 0;
+    try { localStorage.setItem('spinclash.news', JSON.stringify({ t: news.t, at: news.at, list: news.list })); } catch (e) {}
+    newsUi(!same); newsArm();
+  }
   function newsLoad(force) {
     if (!window.SPIN_ACC || (!force && Date.now() - news.tm < 20000)) return; news.tm = Date.now();
-    acApi('/api/notice').then(function (j) { if (j && j.ok) newsSet(j.t, j.at); });
+    acApi('/api/notice').then(function (j) { if (j && j.ok) newsSet(j.t, j.at, j.list); });
   }
-  function newsEdit(on) {
-    var m = $('#newsModal'); m.hidden = !on; if (!on) return;
-    var i = $('#newsIn'); i.value = news.t; $('#newsCnt').textContent = Array.from(i.value).length + '/200'; $('#newsSave').disabled = false; setTimeout(function () { try { i.focus(); } catch (e) {} }, 60);
-  }
-  function newsSave(del) {
-    if (!newsOwn()) return; var v = del ? '' : $('#newsIn').value, b = $('#newsSave'); b.disabled = true;
-    acApi('/api/notice', { t: v }).then(function (j) {
-      b.disabled = false;
-      if (j.status === 401 && j.c === 'auth') { acClear(); netNotify('로그인이 만료됐어요. 다시 로그인해 주세요'); return; }
-      if (!j.ok) { netNotify(j.m || '공지를 올리지 못했어요'); return; }
-      newsSet(j.t, j.at); newsEdit(false); netNotify(j.t ? '공지를 올렸어요' : '공지를 지웠어요');
-    });
-  }
-  $('#hmNews').addEventListener('click', function () { if (newsOwn()) { uiTick(); newsEdit(true); } });
-  $('#hmNews').addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && newsOwn()) { e.preventDefault(); newsEdit(true); } });
-  $('#newsIn').addEventListener('input', function () { var a = Array.from(this.value); if (a.length > 200) this.value = a.slice(0, 200).join(''); $('#newsCnt').textContent = Math.min(200, a.length) + '/200'; });
-  $('#newsSave').addEventListener('click', function () { uiConfirm(); newsSave(false); });
-  $('#newsDel').addEventListener('click', function () { uiBack(); newsSave(true); });
-  $('#newsX').addEventListener('click', function () { uiBack(); newsEdit(false); });
-  $('#newsModal').addEventListener('click', function (e) { if (e.target === this) newsEdit(false); });
+  $('#hmNews').addEventListener('click', function () { if (newsOwn()) { uiTick(); ownOpen('news'); } });
+  $('#hmNews').addEventListener('keydown', function (e) { if ((e.key === 'Enter' || e.key === ' ') && newsOwn()) { e.preventDefault(); ownOpen('news'); } });
   window.addEventListener('resize', function () { newsUi(true); });
   setInterval(function () { if (screenName === 'home' && !document.hidden) newsLoad(); }, 60000);
   /* ═══════ 주간 보스전 (이번 주 보스: 설녀) ═══════
@@ -16588,7 +16623,7 @@ var DM = (function () {
     else if (ar.parentNode !== host) host.insertBefore(ar, setupEl);
   }
   function showScreen(name) {
-    screenName = name; if (name !== 'battle') jbWide(false); document.body.classList.remove('bossBt'); document.body.classList.remove('jbBt'); bbgStop();
+    screenName = name; if (name !== 'battle' && rec) rec.done = true; if (name !== 'battle') jbWide(false); document.body.classList.remove('bossBt'); document.body.classList.remove('jbBt'); bbgStop();
     colShow(false);
     var title = name === 'title', select = name === 'select', battle = name === 'battle', cls = name === 'cls', spec = name === 'spec', home = name === 'home';
     $('#home').hidden = !home; if (home) { try { dotSync(); } catch (e) {} }
@@ -16604,7 +16639,7 @@ var DM = (function () {
   function start() {
     demo = false; audio();
     matchSeed = nextSeed != null ? nextSeed >>> 0 : Math.floor(Math.random() * 4294967296) >>> 0; nextSeed = null;
-    setSimSeed(matchSeed); simMs = 0;
+    setSimSeed(matchSeed); simMs = 0; recBegin();
     inSim(function () { setArena(jbRun ? ARENA_JB : arenaSel); resetFighters(); fighters.forEach(function (f) { if (f.type === 'ash') asInit(f); }); });   /* 그리기가 먼저 만들면 효과 난수로 만들어져서 어긋나므로 미리 전투 난수로 만들어 둔다 */
     clearFx(); clashCool = 0; matchT = 0; sdTier = 0;
     phase = 'countdown'; cd = 3; lastCdN = 0; goT = 0; paused = false; pauseBtn.textContent = '일시정지';
@@ -16827,7 +16862,7 @@ var DM = (function () {
   accUiSync();
   function openSettings() {
     if ((phase === 'playing' || phase === 'countdown') && !demo && !paused && !net.on) { paused = true; modalPaused = true; pauseBtn.textContent = '계속하기'; }
-    $('#settings').hidden = false; miBuildPick(); cpnRefresh();
+    $('#settings').hidden = false; miBuildPick(); cpnRefresh(); $('#ownRow').hidden = !shOwner();
   }
   function closeSettings() {
     $('#settings').hidden = true;
@@ -16848,13 +16883,13 @@ var DM = (function () {
   $('#resel').addEventListener('click', function () { if (net.on && net.mmRoom) { if (net.cl && net.cl.end) netLeave(); else netForfeitTap($('#resel'), '경기 포기'); } else if (net.on) netBack(); else if (bossRun) bossLeave(bossRun.mode === 'end', bossRun.mode === 'end' ? '' : '보스전을 포기했어요'); else if (jbRun) { var jbfin2 = jbRun.mode === 'win' || jbRun.mode === 'end'; jbLeave(jbfin2, jbfin2 ? '' : '진보스전을 포기했어요'); } else if (taRun) taLeave(true); else showScreen('select'); });
   $('#backBtn').addEventListener('click', function () { showScreen('select'); });
   [0, 1].forEach(function (i) {
-    (i === 0 ? [0, 1, 2] : [0, 1]).forEach(function (j) { $('#sp' + i + '_' + j).addEventListener('pointerdown', function (e) { e.preventDefault(); if (net.on) { if (i === net.me && net.st === 'play') net.pend.push(j); return; } castSpell(i, j); }); });
+    (i === 0 ? [0, 1, 2] : [0, 1]).forEach(function (j) { $('#sp' + i + '_' + j).addEventListener('pointerdown', function (e) { e.preventDefault(); if (net.on) { if (i === net.me && net.st === 'play') net.pend.push(j); return; } soloCast(i, j); }); });
   });
   document.addEventListener('keydown', function (e) {
     if (screenName !== 'battle' || e.repeat || e.ctrlKey || e.metaKey || e.altKey || /^(INPUT|TEXTAREA)$/.test((e.target && e.target.tagName) || '')) return;
     var k = (e.key || '').toLowerCase();
     if (net.on) { if (net.st === 'play') { if (k === 'q') net.pend.push(0); else if (k === 'w') net.pend.push(1); } return; }
-    if (k === 'q') castSpell(0, 0); else if (k === 'w') castSpell(0, 1); else if (k === 'e') castSpell(0, 2); else if (k === 'p') castSpell(1, 0); else if (k === 'o') castSpell(1, 1);
+    if (k === 'q') soloCast(0, 0); else if (k === 'w') soloCast(0, 1); else if (k === 'e') soloCast(0, 2); else if (k === 'p') soloCast(1, 0); else if (k === 'o') soloCast(1, 1);
   });
   pauseBtn.addEventListener('click', function () {
     if (net.on || (phase !== 'playing' && phase !== 'countdown')) return;
@@ -16987,6 +17022,7 @@ var DM = (function () {
       case 'err':
         if (m.c === 'ver') verBarShow(m.v);
         if (m.c === 'auth') acClear();
+        if (m.c === 'maint') { mmStop(); live.maint = true; live.msg = (m.m || '').replace(/^🛠\s*/, ''); liveBar(); }
         if (net.rc) { netRcFail(m.c === 'noresume' ? '방이 사라졌어요 (서버가 다시 시작됐을 수 있어요)' : (m.m || '재접속에 실패했어요')); break; }
         if (m.c === 'pw' || m.c === 'wrongpw') { netPwAsk(m.m, m.c === 'wrongpw'); break; }
         if (net.pj && net.pj.from === 'list') { netShow('list', m.m || '오류', true); netListReq(); break; }
@@ -17290,6 +17326,7 @@ var DM = (function () {
     c.wins = [m.wins[0] | 0, m.wins[1] | 0]; c.rd = m.rd | 0; c.end = !!m.end; c.mw = m.mw;
     if (c.cur) { c.res[0][c.cur[0]] = m.w === 0 ? 'W' : (m.w === 1 ? 'L' : 'D'); c.res[1][c.cur[1]] = m.w === 1 ? 'W' : (m.w === 0 ? 'L' : 'D'); }
     c.got = true;
+    if (net.mmRoom && c.cur && !net.spec && (m.w === 0 || m.w === 1)) { var rk = c.wins.join() + '|' + c.cur.join(), dk = c.decks && c.decks[net.me], my = dk && dk[c.cur[net.me]] ? dk[c.cur[net.me]].type : ''; if (c.rep !== rk) { c.rep = rk; if (my) report({ k: 'mm', ai: !!(net.ws && net.ws.isAi), my: my, win: m.w === net.me }); } }   /* 통계: 판마다 내가 낸 캐릭터의 승패 (사람 대전 / AI 대전 구분) */
     if (c.end && c.mw === net.me && net.mmRoom && !c.paid) { c.paid = true; c.trGain = TR_WIN; eco.tr = (eco.tr | 0) + TR_WIN; ecoSave(); trUi(); }
     netOverUI();
   }
@@ -17339,7 +17376,8 @@ var DM = (function () {
   function netPwAsk(msg, bad) { netShow('pw', msg || '', !!bad); $('#pwIn').value = ''; setTimeout(function () { $('#pwIn').focus(); }, 50); }
   function netDoJoin(pw) {
     var j = net.pj; if (!j) return;
-    netSend({ t: j.act === 'spec' ? 'spec' : 'join', tk: acct.tk, ver: VER, code: j.code, nick: nickRead(), pw: pw || '' });
+    var o = { t: j.act === 'spec' ? 'spec' : 'join', tk: acct.tk, ver: VER, code: j.code, nick: nickRead(), pw: pw || '' }; if (j.osp) o.osp = 1;
+    netSend(o);
   }
   $('#rmList').addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('button[data-c]'); if (!b || b.disabled) return;
@@ -17446,6 +17484,7 @@ var DM = (function () {
     mmStop(); var nk = nickRead(); net.mmRoom = false;
     netShow('mm'); mm.on = true; mm.t0 = Date.now(); $('#mmTxt').textContent = '상대를 찾는 중…'; mmUi();
     mm.ms = MM_MIN + Math.floor(Math.random() * (MM_MAX - MM_MIN + 1)); mm.tick = setInterval(mmUi, 250); mm.t = setTimeout(mmTimeout, mm.ms);   /* 7~17초 사이 무작위로 AI 연결 */
+    if (aiFast()) { mm.ms = 1500; clearTimeout(mm.t); mm.t = setTimeout(mmTimeout, mm.ms); }   /* 제작자 테스트: AI 즉시 연결 */
     netConnect(function () { netSend({ t: 'mm', tk: acct.tk, ver: VER, nick: nk }); });
   }
   function mmTimeout() {
@@ -17477,6 +17516,7 @@ var DM = (function () {
   function aiStreakGet() { try { var o = JSON.parse(localStorage.getItem('spinclash.aiq') || 'null'); return o && AI_SPEC[o.n] && o.c > 0 ? o : null; } catch (e) { return null; } }
   function aiStreakSet(n, c) { try { if (n) localStorage.setItem('spinclash.aiq', JSON.stringify({ n: n, c: c })); else localStorage.removeItem('spinclash.aiq'); } catch (e) {} }
   function aiName(me) {
+    var fo = aiForce(); if (fo && fo !== me) { if (AI_SPEC[fo]) aiStreakSet(fo, 1); else aiStreakSet(null); return fo; }   /* 제작자가 도구 탭에서 고른 AI */
     var q = aiStreakGet(), n;
     if (q && q.n !== me && Math.random() < AI_RP[Math.min(q.c, 3)]) { aiStreakSet(q.n, q.c + 1); return q.n; }
     do { n = Math.random() < 0.5 ? AI_NICKS[Math.floor(Math.random() * AI_NICKS.length)] : nickGuest(); } while (n === me);
@@ -17705,7 +17745,7 @@ var DM = (function () {
   function onlClose() { onl.open = false; $('#onlModal').hidden = true; presList(true); }
   $('#onlTag').addEventListener('click', function (e) { e.stopPropagation(); if (!shOwner()) return; audio(); onl.open = true; onl.list = []; $('#onlModal').hidden = false; onlRender(); presPush(); presList(false); });
   $('#onlClose').addEventListener('click', onlClose);
-  function presUi() { var e = $('#onlTag'); if (!e || !pres) return; var on = pres.n >= 0 && shOwner(); e.hidden = !on; e.classList.toggle('tap', on); if (on) e.textContent = '🟢 접속 중 ' + pres.n + '명'; if (!on && !$('#onlModal').hidden) onlClose(); }   /* 접속자 수는 제작자 계정에만 보인다 */
+  function presUi() { liveBar(); var e = $('#onlTag'); if (!e || !pres) return; var on = pres.n >= 0 && shOwner(); e.hidden = !on; e.classList.toggle('tap', on); if (on) e.textContent = '🟢 접속 중 ' + pres.n + '명'; if (!on && !$('#onlModal').hidden) onlClose(); }   /* 접속자 수는 제작자 계정에만 보인다 */
   function presShow(n) { pres.n = n; presUi(); }
   function presRetry() { if (pres.t) return; pres.t = setTimeout(function () { pres.t = 0; if (!document.hidden) presOpen(); }, pres.delay); pres.delay = Math.min(30000, pres.delay * 2); }
   function presOpen() {
@@ -17713,7 +17753,7 @@ var DM = (function () {
     var ws; try { ws = new WebSocket(netUrl()); } catch (e) { presRetry(); return; }
     pres.ws = ws;
     ws.onopen = function () { pres.delay = 3000; presSent.k = ''; presSent.s = ''; try { ws.send(JSON.stringify({ t: 'hi', ver: VER })); } catch (e) {} presPush(); if (onl.open) presList(false); pres.ka = setInterval(function () { try { if (ws.readyState === 1) ws.send(JSON.stringify({ t: 'ping', c: 0 })); } catch (e) {} }, 20000); };
-    ws.onmessage = function (ev) { var m; try { m = JSON.parse(ev.data); } catch (e) { return; } if (m && m.t === 'online') presShow(m.n | 0); else if (m && m.t === 'ver') verBarShow(m.v); else if (m && m.t === 'plist' && Array.isArray(m.l)) { onl.list = m.l.slice(0, 300); onlRender(); } };
+    ws.onmessage = function (ev) { var m; try { m = JSON.parse(ev.data); } catch (e) { return; } if (m && m.t === 'online') presShow(m.n | 0); else if (m && m.t === 'ver') verBarShow(m.v); else if (m && m.t === 'plist' && Array.isArray(m.l)) { onl.list = m.l.slice(0, 300); onlRender(); if (!$('#ownModal').hidden && ow.tab === 'spec') ownRender(); } else if (m && /^(srec|sw|sb|sd|se)$/.test(m.t)) soloMsg(m); else if (m && m.t === 'olist' && Array.isArray(m.l)) { ow.rooms = m.l.filter(function (r) { return r && /^[A-Z0-9]{4}$/.test(r.c); }).slice(0, 40); if (!$('#ownModal').hidden && ow.tab === 'spec') ownRender(); } };
     ws.onclose = function () { if (pres.ka) { clearInterval(pres.ka); pres.ka = 0; } if (pres.ws === ws) pres.ws = null; presShow(-1); presRetry(); };
     ws.onerror = function () {};
   }
@@ -17732,7 +17772,9 @@ var DM = (function () {
     { id: 'gf', t: '깜짝 선물', m: '베타버전 플레이 해주시는 분들에게 감사의 의미를', give: [{ k: 'box', t: 4, n: 10 }] },
     { id: 'tu', t: '튜토리얼 완료 보상', m: '오오..! 강함의 기운이 느껴지는데요?', cond: function () { return !!(tutS && tutS.r); }, give: [{ k: 'tkt', kind: 'spl', g: 0, n: 2 }, { k: 'coin', n: 500 }, { k: 'gem', n: 30 }] }
   ];
-  function mailList() { return (MAILS || []).filter(function (m) { return !m.cond || m.cond(); }); }
+  var svMails = [];   /* 제작자가 서버로 보낸 메일 (/api/live) · id 는 sv_ 로 시작 */
+  try { var svj = JSON.parse(localStorage.getItem('spinclash.svm') || '[]'); if (Array.isArray(svj)) svMails = svj.filter(function (m) { return m && typeof m.id === 'string' && Array.isArray(m.give); }); } catch (e) {}
+  function mailList() { return (MAILS || []).filter(function (m) { return !m.cond || m.cond(); }).concat(svMails || []); }
   function mailGot(id) { return !!(eco.ml && eco.ml[id]); }
   function mailOpenN() { return mailList().filter(function (m) { return !mailGot(m.id); }).length; }
   function mailPickChr(g) {
@@ -17759,7 +17801,7 @@ var DM = (function () {
     }).join('') || '<div class="tkn">받은 메일이 없어요</div>';
     if (typeof dotSync === 'function') dotSync();
   }
-  function mailOpen() { tk.mode = 'list'; $('#taOv').hidden = true; $('#jbOv').hidden = true; $('#tkOv').hidden = true; $('#bossOv').hidden = true; $('#hmInv').hidden = false; $('#mailOv').hidden = false; boxPause = true; mailRender(); }
+  function mailOpen() { tk.mode = 'list'; $('#taOv').hidden = true; $('#jbOv').hidden = true; $('#tkOv').hidden = true; $('#bossOv').hidden = true; $('#hmInv').hidden = false; $('#mailOv').hidden = false; boxPause = true; mailRender(); if (typeof liveLoad === 'function') liveLoad(true); }
   function mailClose() { $('#mailOv').hidden = true; $('#taOv').hidden = true; $('#jbOv').hidden = true; $('#hmInv').hidden = true; boxPause = homeTabCur !== 'play'; dotSync(); }
   /* 받은 것을 하나씩 큰 연출로 보여 준다 (여러 개면 '건너뛰기'로 한 번에 끝낼 수 있다) */
   function mailReveal(items) {
@@ -17796,6 +17838,323 @@ var DM = (function () {
   $('#mlX').addEventListener('click', function () { uiBack(); mailClose(); });
   $('#mailOv').addEventListener('click', function (e) { if (e.target === this) { uiBack(); mailClose(); } });
 
+  /* ═══════ 제작자 허브 ═══════ 설정 → '제작자 허브' (또는 홈 공지 배너 · 접속자 창). 제작자 계정에만 보이고, 서버(/api/own)도 한 번 더 확인한다
+     탭: 공지(여러 개·예약) · 메일(서버 메일 보내기) · 점검 · 통계 · 도구(테스트 지급·AI 지정) · 관전(몰래) */
+  var OW_TABS = [['news', '공지'], ['mail', '메일'], ['sys', '점검'], ['stat', '통계'], ['tool', '도구'], ['spec', '관전']];
+  var ow = { tab: 'news', notes: null, mails: null, sys: null, stats: null, rooms: null, draft: { t: '', m: '', days: 7, give: [{ k: 'gem', g: 0, n: 100 }] }, busy: false, arm: '' };
+  function oe(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function ownApi(k, body) { var o = { k: k }; if (body) Object.keys(body).forEach(function (x) { o[x] = body[x]; }); return acApi('/api/own', o); }
+  function ownFail(j) { if (j && j.status === 401 && j.c === 'auth') { acClear(); netNotify('로그인이 만료됐어요. 다시 로그인해 주세요'); return true; } if (!j || !j.ok) { netNotify((j && j.m) || '서버가 응답하지 않아요'); return true; } return false; }
+  function msLocal(ms) { if (!ms) return ''; var d = new Date(ms), p = function (n) { return (n < 10 ? '0' : '') + n; }; return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes()); }
+  function localMs(v) { if (!v) return 0; var t = new Date(v).getTime(); return isFinite(t) && t > 0 ? t : 0; }
+  function fmtD(ms) { if (!ms) return '제한 없음'; var d = new Date(ms); return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+  function ownOpen(tab) {
+    if (!shOwner()) return; if (tab) ow.tab = tab; $('#ownModal').hidden = false; $('#settings').hidden = true; if ($('#onlModal') && !$('#onlModal').hidden) onlClose();
+    ownTabs(); ownLoad();
+  }
+  function ownClose() { $('#ownModal').hidden = true; ow.arm = ''; if (!onl.open) presList(true); }
+  function ownTabs() {
+    $('#ownTabs').innerHTML = OW_TABS.map(function (t) { return '<button type="button" data-tab="' + t[0] + '" aria-pressed="' + (ow.tab === t[0]) + '">' + t[1] + '</button>'; }).join('');
+    ownRender();
+  }
+  function ownLoad() {
+    var t = ow.tab, f = function (j, fn) { if (ownFail(j)) return; fn(j); if (ow.tab === t) ownRender(); };
+    if (t === 'news') ownApi('notices').then(function (j) { f(j, function () { ow.notes = (j.all || []).map(function (x) { return { t: x.t, from: +x.from || 0, to: +x.to || 0, at: +x.at || 0 }; }); }); });
+    else if (t === 'mail') ownApi('mails').then(function (j) { f(j, function () { ow.mails = j.list || []; }); });
+    else if (t === 'sys') ownApi('sys').then(function (j) { f(j, function () { ow.sys = j.sys || { on: false, msg: '' }; }); });
+    else if (t === 'stat') ownApi('stats').then(function (j) { f(j, function () { ow.stats = j; }); });
+    else if (t === 'spec') { ownRooms(); presList(false); }
+    else ownRender();
+  }
+  function gradeOpts(k, sel) {
+    var h = '', i;
+    if (k === 'box') { for (i = 0; i <= 5; i++) h += '<option value="' + i + '"' + (sel === i ? ' selected' : '') + '>' + RAR_INFO[i + 1].n + ' 확정</option>'; }
+    else for (i = 0; i <= 6; i++) h += '<option value="' + i + '"' + (sel === i ? ' selected' : '') + '>' + oe(RAR_INFO[i].n) + '</option>';
+    return h;
+  }
+  var OW_GV = [['coin', '코인'], ['gem', '다이아'], ['box', '확정 상자'], ['stok', '공유 토큰'], ['rtok', '무작위 토큰'], ['rchr', '무작위 캐릭터'], ['tkt:chr', '캐릭터 선택권'], ['tkt:tal', '재능 선택권'], ['tkt:spl', '스펠 선택권']];
+  function giveKey(g) { return g.k === 'tkt' ? 'tkt:' + g.kind : g.k; }
+  function giveTxt(g) {
+    if (g.k === 'coin') return '코인 ' + g.n; if (g.k === 'gem') return '다이아 ' + g.n; if (g.k === 'box') return RAR_INFO[g.t + 1].n + ' 상자 ×' + g.n;
+    if (g.k === 'stok') return RAR_INFO[g.g].n + ' 공유토큰 ×' + g.n; if (g.k === 'rtok') return RAR_INFO[g.g].n + ' 무작위토큰 ×' + g.n; if (g.k === 'rchr') return RAR_INFO[g.g].n + ' 무작위 캐릭터';
+    return tkName(g.kind, g.g) + ' ×' + g.n;
+  }
+  function ownRender() {
+    var b = $('#ownBody'), t = ow.tab, h = '', i;
+    Array.prototype.forEach.call($('#ownTabs').children, function (e) { e.setAttribute('aria-pressed', String(e.dataset.tab === t)); });
+    if (t === 'news') {
+      if (!ow.notes) { b.innerHTML = '<p class="owh">불러오는 중…</p>'; return; }
+      h += '<p class="owh">홈 맨 위 배너에 돌아가며 보여요. 시작·종료 시각을 넣으면 예약 · 자동 종료 (비우면 바로 · 계속). 최대 8개.</p>';
+      var now = Date.now();
+      ow.notes.forEach(function (n, k) {
+        var st = n.from && n.from > now ? '예약됨' : (n.to && n.to <= now ? '종료됨' : '표시 중');
+        h += '<div class="owc" data-i="' + k + '"><textarea data-f="t" maxlength="200" rows="2" placeholder="공지 내용 (최대 200자)">' + oe(n.t) + '</textarea>' +
+          '<div class="owr"><label>시작<input type="datetime-local" data-f="from" value="' + msLocal(n.from) + '"></label><label>종료<input type="datetime-local" data-f="to" value="' + msLocal(n.to) + '"></label></div>' +
+          '<div class="owr"><span class="owst ' + (st === '표시 중' ? 'on' : '') + '">' + st + '</span><button type="button" class="owb" data-a="ndel">삭제</button></div></div>';
+      });
+      h += '<div class="owr"><button type="button" class="owb" data-a="nadd"' + (ow.notes.length >= 8 ? ' disabled' : '') + '>＋ 공지 추가</button><button type="button" class="owb pri" data-a="nsave">저장</button></div>';
+    } else if (t === 'mail') {
+      var d = ow.draft;
+      h += '<p class="owh">모든 유저의 메일함에 도착해요 (계정마다 1번 수령). 최대 보상 6개 · 새로고침하면 받아요.</p>';
+      h += '<div class="owc"><input type="text" data-d="t" maxlength="30" placeholder="제목 (30자)" value="' + oe(d.t) + '"><input type="text" data-d="m" maxlength="120" placeholder="내용 (120자)" value="' + oe(d.m) + '">';
+      h += '<label class="owl">기한<select data-d="days">' + [[1, '1일'], [3, '3일'], [7, '7일'], [14, '14일'], [30, '30일'], [0, '무기한']].map(function (x) { return '<option value="' + x[0] + '"' + (+d.days === x[0] ? ' selected' : '') + '>' + x[1] + '</option>'; }).join('') + '</select></label>';
+      d.give.forEach(function (g, k) {
+        var kk = giveKey(g), noN = kk === 'rchr', noG = kk === 'coin' || kk === 'gem';
+        h += '<div class="owr gv" data-g="' + k + '"><select data-f="k">' + OW_GV.map(function (x) { return '<option value="' + x[0] + '"' + (kk === x[0] ? ' selected' : '') + '>' + x[1] + '</option>'; }).join('') + '</select>' +
+          (noG ? '' : '<select data-f="g">' + gradeOpts(kk === 'box' ? 'box' : '', kk === 'box' ? (g.t | 0) : (g.g | 0)) + '</select>') +
+          (noN ? '' : '<input type="number" data-f="n" min="1" value="' + (g.n | 0) + '">') + '<button type="button" class="owb x" data-a="gdel">✕</button></div>';
+      });
+      h += '<div class="owr"><button type="button" class="owb" data-a="gadd"' + (d.give.length >= 6 ? ' disabled' : '') + '>＋ 보상 추가</button><button type="button" class="owb pri' + (ow.arm === 'msend' ? ' arm' : '') + '" data-a="msend">' + (ow.arm === 'msend' ? '한 번 더 누르면 전체 발송' : '전체 발송') + '</button></div></div>';
+      h += '<h4 class="owt">보낸 메일</h4>';
+      if (!ow.mails) h += '<p class="owh">불러오는 중…</p>';
+      else if (!ow.mails.length) h += '<p class="owh">보낸 메일이 없어요</p>';
+      else ow.mails.forEach(function (m) {
+        h += '<div class="owc" data-id="' + oe(m.id) + '"><div class="owr"><b>' + oe(m.t) + '</b><button type="button" class="owb x" data-a="mdel">삭제</button></div><small>' + oe(m.m) + '</small><small>' + (m.give || []).map(giveTxt).join(' · ') + '</small><small>' + fmtD(m.at) + ' 발송 · ' + (m.exp ? (m.exp <= Date.now() ? '기한 끝남' : '~' + fmtD(m.exp)) : '무기한') + '</small></div>';
+      });
+    } else if (t === 'sys') {
+      if (!ow.sys) { b.innerHTML = '<p class="owh">불러오는 중…</p>'; return; }
+      h += '<p class="owh">켜면 매칭·방 만들기·방 참가가 막혀요 (제작자 계정은 그대로 가능, 이미 하는 대전은 안 끊겨요). 유저에겐 아래 문구가 보여요.</p>';
+      h += '<div class="owc"><div class="owr"><b>지금: ' + (ow.sys.on ? '🔴 점검 중' : '🟢 정상') + '</b></div><input type="text" data-s="msg" maxlength="80" placeholder="안내 문구 (예: 18:00까지 서버 점검 중이에요)" value="' + oe(ow.sys.msg) + '">' +
+        '<div class="owr"><button type="button" class="owb' + (ow.sys.on ? '' : ' pri') + '" data-a="son">' + (ow.sys.on ? '점검 끄기' : '점검 켜기') + '</button><button type="button" class="owb" data-a="smsg">문구만 저장</button></div></div>';
+      h += '<p class="owh">새 버전이 올라가면 이전 버전을 쓰던 유저에겐 "새 버전이 나왔어요 · 눌러서 새로고침" 띠가 자동으로 떠요 (서버 재배포 후 접속 중인 사람에게 바로).</p>';
+    } else if (t === 'stat') {
+      if (!ow.stats) { b.innerHTML = '<p class="owh">불러오는 중…</p>'; return; }
+      var S = ow.stats, since = new Date(S.since || Date.now());
+      h += '<p class="owh">집계 시작 ' + (since.getMonth() + 1) + '/' + since.getDate() + ' · 유저가 이 버전(v634) 이상으로 접속해야 쌓여요</p>';
+      h += '<h4 class="owt">진보스전 (끝난 도전 기준)</h4>';
+      JB_BOSS.forEach(function (BD, bi) {
+        BD.lv.forEach(function (L, lv) {
+          var x = (S.jb || {})[bi + '-' + lv] || { a: 0, w: 0, p: 0, cn: [0, 0, 0] };
+          h += '<div class="owc"><div class="owr"><b>' + oe(BD.hn) + ' · ' + oe(L.n) + '</b><span>' + (x.a ? Math.round(x.w / x.a * 100) : 0) + '%</span></div><small>도전 ' + x.a + ' · 클리어 ' + x.w + ' · 클리어한 사람 ' + x.p + '명</small><small>1명 ' + (x.cn[0] | 0) + ' · 2명 ' + (x.cn[1] | 0) + ' · 3명 ' + (x.cn[2] | 0) + ' 으로 클리어</small></div>';
+        });
+      });
+      h += '<h4 class="owt">캐릭터 (매칭 클래식 · 판 단위)</h4>';
+      var ks = Object.keys(S.ch || {}).filter(function (k) { return W[k]; }).sort(function (a, c) { var A = S.ch[a], C = S.ch[c]; return (C.h[0] + C.a[0]) - (A.h[0] + A.a[0]); });
+      var pc = function (v) { return v[0] ? Math.round(v[1] / v[0] * 100) + '% (' + v[0] + '판)' : '–'; };
+      if (!ks.length) h += '<p class="owh">아직 기록이 없어요</p>';
+      ks.forEach(function (k) { var o = S.ch[k]; h += '<div class="owc"><div class="owr"><b>' + oe(W[k].name) + '</b><small>' + oe(RAR_INFO[RAR[k] || 0].n) + '</small></div><small>사람 대전 승률 ' + pc(o.h) + ' · AI 대전 승률 ' + pc(o.a) + '</small></div>'; });
+      h += '<div class="owr"><button type="button" class="owb" data-a="srf">새로고침</button><button type="button" class="owb x' + (ow.arm === 'srs' ? ' arm' : '') + '" data-a="srs">' + (ow.arm === 'srs' ? '한 번 더 누르면 초기화' : '통계 초기화') + '</button></div>';
+    } else if (t === 'tool') {
+      var ai = [], af = ''; try { af = localStorage.getItem('spinclash.aiforce') || ''; } catch (e) {}
+      Object.keys(AI_SPEC).concat(AI_NICKS).forEach(function (n) { if (ai.indexOf(n) < 0) ai.push(n); });
+      h += '<p class="owh">이 기기(내 계정)에 바로 지급해요. 다른 유저에겐 영향 없어요.</p>';
+      h += '<div class="owc"><b>재화</b><div class="owr"><input type="number" data-t="amt" value="' + (ow.amt || 1000) + '" min="1"><button type="button" class="owb" data-a="tcoin">코인</button><button type="button" class="owb" data-a="tgem">다이아</button></div></div>';
+      h += '<div class="owc"><b>상자 · 공유 토큰 · 선택권</b><div class="owr"><select data-t="g">' + gradeOpts('', ow.gr == null ? 3 : ow.gr) + '</select><select data-t="kind"><option value="chr">캐릭터</option><option value="tal">재능</option><option value="spl">스펠</option></select></div>' +
+        '<div class="owr"><button type="button" class="owb" data-a="tbox">확정 상자 +5</button><button type="button" class="owb" data-a="tstok">공유 토큰 +20</button><button type="button" class="owb" data-a="ttkt">선택권 +3</button></div></div>';
+      h += '<div class="owc"><b>해금</b><div class="owr"><button type="button" class="owb" data-a="tchr">캐릭터 전부</button><button type="button" class="owb" data-a="ttal">재능 전부 +1</button><button type="button" class="owb" data-a="tspl">스펠 전부 +1</button></div>' +
+        '<div class="owr"><button type="button" class="owb" data-a="tjb">진보스전 난이도 전부 열기</button><button type="button" class="owb" data-a="ttk18">선택권 18장</button></div><div class="owr"><button type="button" class="owb x' + (ow.arm === 'trs' ? ' arm' : '') + '" data-a="trs">' + (ow.arm === 'trs' ? '한 번 더 누르면 초기화' : '구매 기록 초기화') + '</button></div></div>';
+      h += '<div class="owc"><b>AI 매칭 테스트</b><select data-t="ai"><option value="">자동 (무작위)</option>' + ai.map(function (n) { return '<option value="' + oe(n) + '"' + (n === af ? ' selected' : '') + '>' + oe(n) + (AI_SPEC[n] ? ' ★' : '') + '</option>'; }).join('') + '</select>' +
+        '<div class="owr"><span class="owh">고르면 매칭할 때 항상 이 AI가 나와요 (연속 확률 무시) · ★ = 특색 있는 AI</span></div>' +
+        '<div class="owr"><button type="button" class="owb' + (ow.fast ? ' pri' : '') + '" data-a="tfast">AI 즉시 연결: ' + (aiFast() ? '켬' : '끔') + '</button></div></div>';
+    } else if (t === 'spec') {
+      h += '<p class="owh">진행 중인 매칭 대전을 몰래 볼 수 있어요. 관전자 수에 안 잡혀요.</p><div class="owr"><button type="button" class="owb pri" data-a="rrf">목록 새로고침</button></div>';
+      if (!ow.rooms) h += '<p class="owh">불러오는 중…</p>';
+      else if (!ow.rooms.length) h += '<p class="owh">지금 진행 중인 매칭 대전이 없어요</p>';
+      else ow.rooms.forEach(function (r) {
+        var st = r.st === 'lobby' ? '준비 중' : (r.st === 'cpick' ? '캐릭터 고르는 중' : (r.st === 'play' ? '전투 중' : '결과 보는 중'));
+        h += '<div class="owc"><div class="owr"><b>' + oe(nickNet(r.a)) + ' vs ' + oe(nickNet(r.b)) + '</b><button type="button" class="owb pri" data-a="rgo" data-c="' + oe(r.c) + '">몰래 관전</button></div><small>' + st + ' · 스코어 ' + ((r.w && r.w[0]) | 0) + ':' + ((r.w && r.w[1]) | 0) + ' · ' + ((r.rd | 0) + 1) + '라운드</small></div>';
+      });
+    }
+    if (t === 'spec') {
+      var sl = (onl.list || []).filter(function (r) { return r && r[2] && (r[1] === 'jb' || r[1] === 'boss' || r[1] === 'ta'); });
+      h += '<h4 class="owt">솔로 전투 중인 사람</h4><p class="owh">진보스전만 볼 수 있어요 (보스전·타임어택은 준비 중). 누르면 그 사람이 진보스전을 시작할 때 자동으로 보여요.</p>';
+      if (!sl.length) h += '<p class="owh">지금 솔로 전투 중인 사람이 없어요</p>';
+      sl.forEach(function (r) { var okj = r[1] === 'jb'; h += '<div class="owc"><div class="owr"><b>' + oe(nickNet(r[0])) + '</b><button type="button" class="owb pri" data-a="swatch" data-pid="' + (r[2] | 0) + '"' + (okj ? '' : ' disabled') + '>' + (okj ? '몰래 관전' : (r[1] === 'boss' ? '보스전 (준비 중)' : '타임어택 (준비 중)')) + '</button></div></div>'; });
+    }
+    var sc = b.scrollTop; b.innerHTML = h; b.scrollTop = sc;
+  }
+  function ownRooms() {
+    var w = pres && pres.ws; ow.rooms = null; ownRender();
+    if (!w || w.readyState !== 1) { ow.rooms = []; ownRender(); netNotify('서버에 연결돼 있지 않아요'); return; }
+    try { w.send(JSON.stringify({ t: 'olist', tk: acct.tk })); } catch (e) { ow.rooms = []; ownRender(); }
+  }
+  function ownArm(k) { if (ow.arm === k) { ow.arm = ''; return true; } ow.arm = k; ownRender(); setTimeout(function () { if (ow.arm === k) { ow.arm = ''; if (!$('#ownModal').hidden) ownRender(); } }, 3000); return false; }
+  /* 도구 탭 */
+  function ownAmt() { var e = $('#ownBody [data-t="amt"]'); var n = e ? Math.floor(+e.value) : 1000; ow.amt = n > 0 ? Math.min(n, 100000000) : 1000; return ow.amt; }
+  function ownGr() { var e = $('#ownBody [data-t="g"]'); var g = e ? +e.value : 3; ow.gr = g; return g; }
+  function ownKind() { var e = $('#ownBody [data-t="kind"]'); return e ? e.value : 'chr'; }
+  function ownDone(msg) { ecoSave(); ecoUi(); if (typeof dotSync === 'function') dotSync(); uiConfirm(); netNotify(msg); }
+  function ownTool(a) {
+    var g, n, i;
+    if (a === 'tcoin') { n = ownAmt(); eco.coin += n; ownDone('코인 +' + n.toLocaleString()); }
+    else if (a === 'tgem') { n = ownAmt(); eco.gem = (eco.gem || 0) + n; ownDone('다이아 +' + n.toLocaleString()); }
+    else if (a === 'tbox') { g = Math.max(1, ownGr()); g = Math.min(5, g); for (i = 0; i < 5; i++) eco.box.push(g - 1); ownDone(RAR_INFO[g].n + ' 확정 상자 5개 · 홈 상자에서 열어요'); }
+    else if (a === 'tstok') { g = ownGr(); boxApply({ k: 'stok', g: g, n: 20 }); ownDone(RAR_INFO[g].n + ' 공유 토큰 +20'); }
+    else if (a === 'ttkt') { g = ownGr(); var kd = ownKind(); tkAdd(kd, g, 3); ownDone(tkName(kd, g) + ' +3'); }
+    else if (a === 'ttk18') { ['chr', 'tal', 'spl'].forEach(function (kd2) { for (var q = 0; q <= 5; q++) tkAdd(kd2, q, 1); }); ownDone('선택권 18장 지급'); }
+    else if (a === 'tchr') { var c = 0; Object.keys(W).forEach(function (t) { if (t !== 'dummy' && t !== 'rgiant' && t !== 'kslime' && !eco.own[t]) { eco.own[t] = 1; c++; } }); ownDone('캐릭터 ' + c + '명 해금'); }
+    else if (a === 'ttal') { var tc = 0; Object.keys(W).forEach(function (t) { if (t === 'dummy' || !W[t].traits) return; W[t].traits.forEach(function (_, ti) { var k = t + ':' + ti; eco.tal[k] = (eco.tal[k] || 0) + 1; tc++; }); }); ownDone('재능 ' + tc + '개 +1'); }
+    else if (a === 'tspl') { var sc = 0; Object.keys(W).forEach(function (t) { if (t === 'dummy') return; SPELL_KEYS.forEach(function (s) { if (s === 'none' || (s === 'stack' && !stackable(t))) return; var k = t + ':' + s; eco.spl[k] = (eco.spl[k] || 0) + 1; sc++; }); }); ownDone('스펠 ' + sc + '개 +1'); }
+    else if (a === 'tjb') { var j = jbSync(); j.u = 3; j.k.u = 3; ownDone('진보스전 두 보스 전 난이도 열림'); }
+    else if (a === 'trs') { if (!ownArm('trs')) return; eco.pk = {}; eco.sp = {}; eco.stok = {}; eco.pass = 0; eco.login = ''; eco.tk = {}; ownDone('구매 기록을 초기화했어요'); ownRender(); }
+    else if (a === 'tfast') { try { if (aiFast()) localStorage.removeItem('spinclash.aifast'); else localStorage.setItem('spinclash.aifast', '1'); } catch (e) {} uiTick(); ownRender(); }
+  }
+  /* 제작자가 고른 AI · 즉시 연결 (제작자 계정일 때만 먹힌다) */
+  function aiForce() { try { return shOwner() ? (localStorage.getItem('spinclash.aiforce') || '') : ''; } catch (e) { return ''; } }
+  function aiFast() { try { return shOwner() && localStorage.getItem('spinclash.aifast') === '1'; } catch (e) { return false; } }
+  /* 허브 이벤트 */
+  $('#ownTabs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; uiTick(); ow.tab = b.dataset.tab; ow.arm = ''; ownRender(); ownLoad(); });
+  $('#ownX').addEventListener('click', function () { uiBack(); ownClose(); });
+  $('#ownModal').addEventListener('click', function (e) { if (e.target === this) ownClose(); });
+  $('#ownOpen').addEventListener('click', function () { uiTick(); ownOpen('news'); });
+  $('#onlOwn').addEventListener('click', function () { uiTick(); ownOpen('news'); });
+  $('#ownBody').addEventListener('input', function (e) {
+    var el = e.target, c = el.closest('[data-i]'), g = el.closest('[data-g]');
+    if (c && el.dataset.f && ow.notes) { var n = ow.notes[+c.dataset.i]; if (!n) return; if (el.dataset.f === 't') n.t = el.value; else n[el.dataset.f] = localMs(el.value); }
+    else if (g && el.dataset.f === 'n') { var x = ow.draft.give[+g.dataset.g]; if (x) x.n = Math.max(1, Math.floor(+el.value) || 1); }
+    else if (el.dataset.d) { ow.draft[el.dataset.d] = el.dataset.d === 'days' ? +el.value : el.value; }
+  });
+  $('#ownBody').addEventListener('change', function (e) {
+    var el = e.target, g = el.closest('[data-g]'), n;
+    if (g && el.dataset.f) {
+      var x = ow.draft.give[+g.dataset.g]; if (!x) return;
+      if (el.dataset.f === 'k') { var v = el.value, kd = v.indexOf('tkt:') === 0 ? v.slice(4) : ''; ow.draft.give[+g.dataset.g] = v === 'coin' ? { k: 'coin', n: 1000 } : (v === 'gem' ? { k: 'gem', n: 100 } : (v === 'box' ? { k: 'box', t: 3, n: 1 } : (v === 'rchr' ? { k: 'rchr', g: 3 } : (kd ? { k: 'tkt', kind: kd, g: 3, n: 1 } : { k: v, g: 3, n: 1 })))); ownRender(); }
+      else if (el.dataset.f === 'g') { if (x.k === 'box') x.t = +el.value; else x.g = +el.value; }
+    } else if (el.dataset.s === 'msg') { /* 문구는 버튼 누를 때 읽는다 */ }
+    else if (el.dataset.t === 'ai') { try { if (el.value) localStorage.setItem('spinclash.aiforce', el.value); else localStorage.removeItem('spinclash.aiforce'); } catch (er) {} uiTick(); netNotify(el.value ? 'AI 고정: ' + el.value : 'AI 자동(무작위)로 돌렸어요'); }
+    else if (el.dataset.t === 'g') ow.gr = +el.value;
+  });
+  $('#ownBody').addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-a]'); if (!b || b.disabled) return; var a = b.dataset.a, c = b.closest('[data-i]'), g = b.closest('[data-g]'), m = b.closest('[data-id]');
+    if (a.charAt(0) === 't') { ownTool(a); return; }
+    uiTick();
+    if (a === 'nadd') { if (ow.notes.length < 8) { ow.notes.push({ t: '', from: 0, to: 0, at: 0 }); ownRender(); } }
+    else if (a === 'ndel') { ow.notes.splice(+c.dataset.i, 1); ownRender(); }
+    else if (a === 'nsave') {
+      b.disabled = true;
+      ownApi('notices.set', { list: ow.notes.filter(function (n) { return n.t && n.t.trim(); }) }).then(function (j) {
+        if (ownFail(j)) { ownRender(); return; }
+        ow.notes = (j.all || []).map(function (x) { return { t: x.t, from: +x.from || 0, to: +x.to || 0, at: +x.at || 0 }; }); newsSet(j.t, j.at, j.list); ownRender(); uiConfirm(); netNotify('공지를 저장했어요 (' + ow.notes.length + '개)');
+      });
+    }
+    else if (a === 'gadd') { if (ow.draft.give.length < 6) { ow.draft.give.push({ k: 'coin', n: 1000 }); ownRender(); } }
+    else if (a === 'gdel') { ow.draft.give.splice(+g.dataset.g, 1); ownRender(); }
+    else if (a === 'msend') {
+      var d = ow.draft; if (!d.t.trim()) { netNotify('제목을 써 주세요'); return; } if (!d.give.length) { netNotify('보상을 넣어 주세요'); return; }
+      if (!ownArm('msend')) return;
+      b.disabled = true;
+      ownApi('mails.add', { t: d.t, m: d.m, days: d.days, give: d.give.map(function (x) { var o = {}; Object.keys(x).forEach(function (k) { o[k] = x[k]; }); return o; }) }).then(function (j) {
+        if (ownFail(j)) { ownRender(); return; }
+        ow.mails = j.list || []; ow.draft = { t: '', m: '', days: d.days, give: [{ k: 'gem', g: 0, n: 100 }] }; ownRender(); uiConfirm(); netNotify('전체 발송했어요'); svMailLoad(true);
+      });
+    }
+    else if (a === 'mdel') { ownApi('mails.del', { id: m.dataset.id }).then(function (j) { if (ownFail(j)) return; ow.mails = j.list || []; ownRender(); netNotify('메일을 삭제했어요'); svMailLoad(true); }); }
+    else if (a === 'son' || a === 'smsg') {
+      var inp = $('#ownBody [data-s="msg"]'), on = a === 'son' ? !ow.sys.on : ow.sys.on, msg = inp ? inp.value : ow.sys.msg;
+      ownApi('sys.set', { on: on, msg: msg }).then(function (j) { if (ownFail(j)) return; ow.sys = j.sys; ownRender(); uiConfirm(); netNotify(a === 'smsg' ? '문구를 저장했어요' : (j.sys.on ? '점검을 켰어요' : '점검을 껐어요')); liveLoad(true); });
+    }
+    else if (a === 'srf') { ow.stats = null; ownRender(); ownLoad(); }
+    else if (a === 'srs') { if (!ownArm('srs')) return; ownApi('stats.reset').then(function (j) { if (ownFail(j)) return; ow.stats = null; ownRender(); ownLoad(); netNotify('통계를 초기화했어요'); }); }
+    else if (a === 'rrf') ownRooms();
+    else if (a === 'rgo') { ownSpec(b.dataset.c); }
+    else if (a === 'swatch') { try { pres.ws.send(JSON.stringify({ t: 'sw', tk: acct.tk, id: b.dataset.pid | 0 })); } catch (er) { netNotify('서버에 연결돼 있지 않아요'); } }
+  });
+  /* 몰래 관전: 방 코드로 관전 접속 (osp:1 = 관전자 수에 안 잡히고 비밀번호·관전 금지도 통과. 서버가 제작자 계정인지 다시 확인한다) */
+  function ownSpec(code) {
+    if (!/^[A-Z0-9]{4}$/.test(code || '')) return;
+    ownClose(); net.pj = { code: code, act: 'spec', from: 'own', osp: 1 };
+    netShow('list', '몰래 관전하러 가는 중…'); netConnect(function () { netDoJoin(''); });
+  }
+  /* ── 서버 메일 · 점검 상태 (/api/live) ── */
+  function svMailLoad(force) { liveLoad(force); }
+  function liveLoad(force) {
+    if (!window.SPIN_ACC || (!force && Date.now() - live.tm < 30000)) return; live.tm = Date.now();
+    acApi('/api/live').then(function (j) {
+      if (!j || !j.ok) return;
+      live.maint = !!j.maint; live.msg = String(j.msg || '');
+      svMails = (j.mails || []).filter(function (m) { return m && m.id && Array.isArray(m.give) && m.give.length; }).map(function (m) { return { id: 'sv_' + m.id, t: String(m.t || ''), m: String(m.m || ''), give: m.give }; });
+      try { localStorage.setItem('spinclash.svm', JSON.stringify(svMails)); } catch (e) {}
+      if (!$('#mailOv').hidden) mailRender(); if (typeof dotSync === 'function') dotSync(); liveBar();
+    });
+  }
+  function liveBar() { var b = $('#maintBar'); if (!b || !live) return; var on = live.maint && !shOwner(); b.hidden = !on; if (on) b.textContent = '🛠 ' + (live.msg || '점검 중이에요') + ' · 매칭·방 대전이 잠시 막혀요'; }
+  liveLoad(true);
+  setInterval(function () { if (!document.hidden) liveLoad(); }, 60000);
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) liveLoad(); });
+  /* ── 통계 보고 (익명: 기기 번호만) ── */
+  function did() {
+    try { var d = localStorage.getItem('spinclash.did'); if (!d) { d = ''; for (var i = 0; i < 14; i++) d += Math.floor(Math.random() * 36).toString(36); localStorage.setItem('spinclash.did', d); } return d; } catch (e) { return 'tmp' + Math.random().toString(36).slice(2, 10); }
+  }
+  function report(o) { if (!window.SPIN_ACC || tut.on) return; try { fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(o), keepalive: true }).catch(function () {}); } catch (e) {} }
+  function jbReport(r, win) { try { report({ k: 'jb', bi: r.bi, lv: r.lv, win: !!win, cn: r.used.length + (win ? 1 : 0), id: did() }); } catch (e) {} }
+  /* ═══════ 솔로 전투 몰래 관전 (진보스전) ═══════
+     전투는 '시드 + 시작 설정 + 프레임 간격(dt) + 스펠 누른 시점'만 알면 똑같이 다시 돌릴 수 있다 (온라인 대전과 같은 결정적 엔진).
+     구경당하는 쪽: 평소엔 이 기록을 폰 안에만 쌓아 두고, 서버가 "누가 본다(srec)"고 하면 처음부터 지금까지 보내고 이어서 계속 보낸다 → 아무도 안 보면 전송 0.
+     제작자 쪽: 받은 기록으로 같은 전투를 처음부터 재생한다 (내 기록·보상은 건드리지 않고, 끝나면 원래 상태로 되돌린다) */
+  var rec = null, recWatch = false, rp = null, rpOn = false;
+  function recSend(o) { var w = pres && pres.ws; if (w && w.readyState === 1) { try { w.send(JSON.stringify(o)); } catch (e) {} } }
+  function recHdr() {
+    if (net.on || rpOn || !window.SPIN_ONLINE || bossRun || taRun || tut.on || !jbRun) return null;
+    var h = { k: 'jb', v: VER, seed: matchSeed, sel: JSON.parse(JSON.stringify(sel)), arena: arenaSel, jb: JSON.parse(JSON.stringify({ bi: jbRun.bi, lv: jbRun.lv, used: jbRun.used, fs: jbRun.fs, mode: 'play', acc: jbRun.acc, bs: jbRun.bs, n: jbRun.n, to: false })) };
+    return JSON.stringify(h).length < 12000 ? h : null;
+  }
+  function recBegin() {
+    rec = null; var h = recHdr(); if (!h) return;
+    rec = { hdr: h, dts: [], ev: [], sent: 0, evs: 0, begun: false, done: false, fin: false };
+    if (recWatch) recFlush(true);
+  }
+  function recDt(dt) { rec.dts.push(paused ? -dt : dt); }
+  function recFlush(begin) {
+    if (!recWatch || !rec) return;
+    if (begin) { rec.sent = 0; rec.evs = 0; rec.fin = false; rec.begun = true; recSend({ t: 'sb', hdr: rec.hdr }); }
+    if (!rec.begun) { rec.sent = 0; rec.evs = 0; rec.begun = true; recSend({ t: 'sb', hdr: rec.hdr }); }
+    var n = rec.dts.length, k = 0;
+    while ((rec.sent < n || rec.evs < rec.ev.length) && k < 3) {
+      var to = Math.min(n, rec.sent + 400); recSend({ t: 'sd', from: rec.sent, dts: rec.dts.slice(rec.sent, to), ev: rec.ev.slice(rec.evs) }); rec.evs = rec.ev.length; rec.sent = to; k++;
+      if (to >= n) break;
+    }
+    if (rec.done && rec.sent >= n && !rec.fin) { rec.fin = true; recSend({ t: 'se' }); }
+  }
+  setInterval(function () { if (recWatch && rec) recFlush(false); }, 400);
+  function soloCast(i, j) { if (rpOn) return; if (rec && !rec.done) rec.ev.push([rec.dts.length, i, j]); inSim(function () { castSpell(i, j); }); }
+  /* ── 제작자 쪽 재생 ── */
+  function rpBegin(m) {
+    var h = m && m.hdr; if (!shOwner() || !h || h.k !== 'jb' || !Array.isArray(h.sel) || h.sel.length !== 2 || !h.jb) return;
+    if (net.on || bossRun || taRun || tut.on || (jbRun && !rpOn)) { netNotify('지금은 몰래 관전을 못 해요 (내가 전투 중)'); return; }
+    if (!rpOn && screenName !== 'home') { netNotify('홈 화면에서 관전이 시작돼요'); return; }
+    if (h.v && h.v !== VER) netNotify('상대는 ' + h.v + ' · 나는 ' + VER + ' → 장면이 어긋날 수 있어요');
+    var sv = rp ? rp.saved : { sel: sel, arenaSel: arenaSel };
+    rp = { saved: sv, nm: String(m.n || '손님'), dts: [], ev: {}, n: 0, acc: 0, run: true, ended: false, hdr: h };
+    var ns = h.sel.map(function (x) { x = x || {}; var o = JSON.parse(JSON.stringify(x)); if (!W[o.type]) o.type = 'sword'; return o; });
+    sel = ns; arenaSel = (h.arena | 0) >= 0 && (h.arena | 0) < ARENAS.length ? (h.arena | 0) : 0;
+    var j = h.jb; jbRun = { bi: j.bi === 1 ? 1 : 0, lv: Math.max(0, Math.min(3, j.lv | 0)), used: Array.isArray(j.used) ? j.used.slice(0, 3) : [], fs: j.fs, mode: 'play', acc: +j.acc || 0, bs: j.bs || null, n: j.n | 0, to: false, bk: '' };
+    rpOn = true; ownClose(); nextSeed = h.seed >>> 0; fixedStep = false; stepAcc = 0;
+    jbWide(true); start(); jbUi(); document.body.classList.add('rpv', 'jbBt');
+    var b = $('#rpBar'); b.hidden = false; $('#rpTx').textContent = '👁 몰래 관전 · ' + rp.nm + ' · ' + JB_BOSS[jbRun.bi].hn + ' ' + JB_BOSS[jbRun.bi].lv[jbRun.lv].n;
+  }
+  function rpData(m) {
+    if (!rp || !rp.run) return; var from = m.from | 0, d = Array.isArray(m.dts) ? m.dts : [];
+    if (from <= rp.dts.length) { for (var i = rp.dts.length - from; i < d.length; i++) { var x = +d[i]; rp.dts.push(isFinite(x) ? x : 0); } }
+    if (Array.isArray(m.ev)) m.ev.forEach(function (e) { if (Array.isArray(e) && e.length === 3) { var k = e[0] | 0; (rp.ev[k] = rp.ev[k] || []); if (!rp.ev[k].some(function (q) { return q[0] === (e[1] | 0) && q[1] === (e[2] | 0) && q[2] === e[0]; })) rp.ev[k].push([e[1] | 0, e[2] | 0, e[0]]); } });
+  }
+  function spvRun() {
+    var d = rp.dts[rp.n], es = rp.ev[rp.n]; paused = d < 0;
+    if (es) es.forEach(function (e) { inSim(function () { castSpell(e[0], e[1]); }); });
+    update(Math.abs(d)); rp.n++;
+  }
+  function rpPump(dt) {
+    if (rp.n >= rp.dts.length) { paused = false; return; }
+    var back = rp.dts.length - rp.n, k = 0;
+    if (back > 90) { while (rp.n < rp.dts.length && k < 40) { spvRun(); k++; } rp.acc = 0; }
+    else { rp.acc += dt; while (rp.n < rp.dts.length && k < 8 && rp.acc >= Math.abs(rp.dts[rp.n]) - 1e-9) { rp.acc -= Math.abs(rp.dts[rp.n]); spvRun(); k++; } if (k === 8) rp.acc = 0; }
+    paused = false;
+  }
+  function rpFin() { if (rp) { $('#rpTx').textContent = '👁 전투 끝 · ' + rp.nm; } }
+  function rpStop(tell) {
+    if (!rp) return; var sv = rp.saved, id = rp.id; rp.run = false; rp = null; rpOn = false; paused = false;
+    sel = sv.sel; arenaSel = sv.arenaSel; jbRun = null; bossIntroTk++; try { $('#bossIntro').hidden = true; } catch (e) {}
+    document.body.classList.remove('rpv', 'jb', 'ksb', 'jbBt'); $('#rpBar').hidden = true; $('#bossBar').hidden = true;
+    showScreen('home'); if (tell !== false) { try { pres.ws.send(JSON.stringify({ t: 'sw', tk: acct.tk, id: ow.wid | 0, off: 1 })); } catch (e) {} } ow.wid = 0;
+  }
+  $('#rpX').addEventListener('click', function () { uiBack(); rpStop(); });
+  /* 서버가 보내 주는 솔로 전투 관련 메시지 (presOpen 의 onmessage 에서 부른다) */
+  function soloMsg(m) {
+    if (m.t === 'srec') { recWatch = m.on === 1; if (recWatch && rec) recFlush(true); }
+    else if (m.t === 'sw') { if (m.ok) { ow.wid = m.id | 0; netNotify(String(m.n || '') + ' 님 연결됨 · 진보스전을 하면 자동으로 보여요'); } else netNotify('그 사람을 찾지 못했어요'); }
+    else if (m.t === 'sb') { if (rp && rp.run) { var wid = ow.wid; rpStop(false); ow.wid = wid; } rpBegin(m); }
+    else if (m.t === 'sd') rpData(m);
+    else if (m.t === 'se') { if (m.gone) { netNotify('상대가 나갔어요'); if (rp) rpStop(false); } else if (rp) rp.ended = true; }
+  }
   /* ═══════ 더미 타임어택 ═══════
      홈 왼쪽 세로줄 '타임어택'. 체력 150 더미(견고)를 가장 빨리 쓰러뜨리는 기록 도전. 캐릭터·재능·스펠은 자유.
      기록은 eco.ta (이 기기 저장, 빠른 순 10개 · c = 1/100초). 전체 랭킹은 서버 작업 때
@@ -19413,6 +19772,7 @@ var DM = (function () {
     if (win) {
       r.mode = 'win'; ag.hidden = true; t.style.color = '#ffd23a'; t.textContent = BD.nm + ' 격파!'; sfxBossClear(); setTimeout(function () { bossConfetti(BD.conf); }, 1800);
       var first = !P.rw[r.lv], rw = BD.rw[r.lv], it = { k: 'tkt', kind: rw[0], g: rw[1], n: 1 }, unlock = r.lv < 3 && P.u < r.lv + 1;
+      jbReport(r, true);
       var nb = !!P.bt[r.lv] && r.acc < P.bt[r.lv]; P.cl[r.lv]++; if (!P.bt[r.lv] || r.acc < P.bt[r.lv]) P.bt[r.lv] = Math.max(1, Math.round(r.acc)); P.u = Math.max(P.u, Math.min(3, r.lv + 1));
       if (first) { P.rw[r.lv] = 1; tkAdd(it.kind, it.g, 1); }
       ecoSave(); ecoUi();
@@ -19422,9 +19782,9 @@ var DM = (function () {
     }
     r.used.push(sel[0].type); t.style.color = 'var(--p2)';
     var left = 3 - r.used.length;
-    if (r.to) { r.mode = 'end'; t.textContent = '시간 초과…'; s.textContent = '6분이 지났어요 · ' + BD.hn + ' 체력 ' + bh + '/' + L.hp + ' · 다시 도전할 수 있어요'; ag.textContent = '다시 도전'; sfxBossLose(); return; }
+    if (r.to) { jbReport(r, false); r.mode = 'end'; t.textContent = '시간 초과…'; s.textContent = '6분이 지났어요 · ' + BD.hn + ' 체력 ' + bh + '/' + L.hp + ' · 다시 도전할 수 있어요'; ag.textContent = '다시 도전'; sfxBossLose(); return; }
     r.bs = sl ? { sl: ksSnap(), rage: !!(ksG && ksG.rage) } : { hp: b.hp, am: b.rg.am.slice(), rage: b.rg.rage };
-    if (left <= 0) { r.mode = 'end'; t.textContent = '도전 실패…'; s.textContent = '세 명이 모두 쓰러졌어요 · ' + BD.hn + ' 체력 ' + bh + '/' + L.hp + ' · 다시 도전할 수 있어요'; ag.textContent = '다시 도전'; sfxBossLose(); return; }
+    if (left <= 0) { jbReport(r, false); r.mode = 'end'; t.textContent = '도전 실패…'; s.textContent = '세 명이 모두 쓰러졌어요 · ' + BD.hn + ' 체력 ' + bh + '/' + L.hp + ' · 다시 도전할 수 있어요'; ag.textContent = '다시 도전'; sfxBossLose(); return; }
     r.mode = 'next'; rs.textContent = '포기하기'; rs.classList.add('giveup'); t.textContent = nm + ' 쓰러짐'; s.textContent = BD.hn + ' 체력 ' + bh + '/' + L.hp + (sl ? ' · 슬라임 ' + r.bs.sl.length + '마리' : ' · 장갑 ' + Math.max(0, Math.ceil(b.rg.am[0])) + '·' + Math.max(0, Math.ceil(b.rg.am[1]))) + ' · 남은 캐릭터 ' + left + '명 · 남은 시간 ' + jbFmt(JB_TIME - r.acc); ag.textContent = '다음 캐릭터'; sfxBossLose();
   }
   function jbAgain() {
