@@ -1185,7 +1185,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v693</span>
+      <span class="verTag">v694</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -2762,12 +2762,13 @@ var DM = (function () {
         tc.x += tc.vx * dt; tc.y += tc.vy * dt; tc.rot += dt * 22;
         tc.sp = (tc.sp || 0) - dt; if (tc.sp <= 0) { tc.sp = 0.012; sparks(tc.x, tc.y, Math.random() < 0.5 ? '#ff7a1a' : '#ffe08a', 1, 110); flame(tc.x, tc.y, 1, 60); }
         var sp0 = Math.hypot(tc.vx, tc.vy) || 1, ux = tc.vx / sp0, uy = tc.vy / sp0;
-        if (op.hp > 0 && Math.hypot(op.x - tc.x, op.y - tc.y) < rOf(op) + 14) {
-          if (op.inv > 0) sparks(tc.x, tc.y, '#ffb02e', 8, 240);
+        var tct = op.hp > 0 ? projFoe(f.i, tc.x, tc.y, 14) : null;
+        if (tct) {
+          if (tct.inv > 0) sparks(tc.x, tc.y, '#ffb02e', 8, 240);
           else {
-            addBurn(op, f, 1);
-            sparks(tc.x, tc.y, '#ff7a1a', 26, 520); sparks(tc.x, tc.y, '#ffe08a', 14, 380); ring(op.x, op.y, R * 2.2, '#ff9a2e', 0.35);
-            floater(op.x, Math.max(60, op.y - R - 18), '횃불 명중!', '#ff9a2e', 54); shake = Math.max(shake, 0.25); playHit(true);
+            addBurn(tct.cpc ? op : tct, f, 1);   /* 백족왕 마디에 맞아도 불은 본체에 붙는다 */
+            sparks(tc.x, tc.y, '#ff7a1a', 26, 520); sparks(tc.x, tc.y, '#ffe08a', 14, 380); ring(tct.x, tct.y, R * 2.2, '#ff9a2e', 0.35);
+            floater(tct.x, Math.max(60, tct.y - R - 18), '횃불 명중!', '#ff9a2e', 54); shake = Math.max(shake, 0.25); playHit(true);
           }
           torchRest(f, tc.x - ux * 20, tc.y - uy * 20); return;
         }
@@ -2995,10 +2996,11 @@ var DM = (function () {
       var px = c.x, py = c.y; c.x += c.vx * dt; c.y += c.vy * dt;
       c.tr -= dt; if (c.tr <= 0) { c.tr = 0.035; particles.push({ x: c.x, y: c.y, vx: (Math.random() - 0.5) * 30, vy: (Math.random() - 0.5) * 30, life: 0.3, max: 0.3, color: Math.random() < 0.5 ? '#e9b6ff' : '#ffffff', size: 4 }); }
       if (c.hc > 0) c.hc -= dt;
-      if (op.hp > 0 && Math.hypot(c.x - op.x, c.y - op.y) < rOf(op) + 20) {
-        var res = applyDamage(op, MG_DMG, { src: f });
+      var mgt = op.hp > 0 ? projFoe(f.i, c.x, c.y, 20) : null;
+      if (mgt) {
+        var res = applyDamage(mgt, MG_DMG, { src: f });
         if (res) {
-          f.hits++; op.flash = 0.1; floater(op.x, Math.max(60, op.y - R - 14), '-' + res.dmg + res.note, C.p[f.i], 46);
+          f.hits++; mgt.flash = 0.1; floater(mgt.x, Math.max(60, mgt.y - R - 14), '-' + res.dmg + res.note, C.p[f.i], 46);
           sparks(c.x, c.y, '#e9b6ff', 12, 420); sparks(c.x, c.y, '#ffffff', 6, 300); ring(c.x, c.y, R * 1.1, '#e9b6ff', 0.2); sfxCardVanish(); playHit(false);
           mgCards.splice(q, 1); continue;
         }
@@ -3295,7 +3297,7 @@ var DM = (function () {
     for (i = pwBones.length - 1; i >= 0; i--) {
       var b = pwBones[i]; b.t += dt; f = fighters[b.own]; d = fighters[1 - b.own];
       var bx = b.sx + b.ux * PW_B_SPD * b.t, by = b.sy + b.uy * PW_B_SPD * b.t;
-      if (!b.hit && d.hp > 0 && phase === 'playing') { var sg = { x1: bx - b.ux * 120, y1: by - b.uy * 120, x2: bx + b.ux * 120, y2: by + b.uy * 120 }; if (segCircle(sg, d.x, d.y, rOf(d) + 26)) { b.hit = true; pwHurt(f, d, PW_B_DMG, '#efe9d6', '뼈'); } }
+      if (!b.hit && d.hp > 0 && phase === 'playing') { var sg = { x1: bx - b.ux * 120, y1: by - b.uy * 120, x2: bx + b.ux * 120, y2: by + b.uy * 120 }, bft = projFoeSeg(b.own, sg, 26); if (bft) { b.hit = true; pwHurt(f, bft, PW_B_DMG, '#efe9d6', '뼈'); } }
       if (b.t > 2700 / PW_B_SPD) pwBones.splice(i, 1);
     }
     for (i = pwFogs.length - 1; i >= 0; i--) {
@@ -4020,8 +4022,9 @@ var DM = (function () {
     if (P.st === 'fly') {
       var px = P.x, py = P.y; P.x += P.vx * dt; P.y += P.vy * dt; P.rot += 14 * dt; P.life -= dt;
       P.tr -= dt; if (P.tr <= 0) { P.tr = 0.02; particles.push({ x: P.x, y: P.y, vx: (Math.random() - 0.5) * 40, vy: (Math.random() - 0.5) * 40, life: 0.3, max: 0.3, color: '#8ac926', size: 8 }); }
-      if (segCircle({ x1: px, y1: py, x2: P.x, y2: P.y }, op.x, op.y, rOf(op) + 10)) {
-        var pr0 = applyDamage(op, 10, { src: f }); plgAdd(op, 10, f); floater(op.x, Math.max(60, op.y - R - 14), pr0 ? '-' + pr0.dmg + ' 독포션' + pr0.note : '독 10', '#9dc12a', 56); plgSplash(op.x, op.y); f.pot = null; f.brew = 0; return;
+      var plt = projFoeSeg(f.i, { x1: px, y1: py, x2: P.x, y2: P.y }, 10);
+      if (plt) {
+        var pr0 = applyDamage(plt, 10, { src: f }); plgAdd(plt.cpc ? op : plt, 10, f); floater(plt.x, Math.max(60, plt.y - R - 14), pr0 ? '-' + pr0.dmg + ' 독포션' + pr0.note : '독 10', '#9dc12a', 56); plgSplash(plt.x, plt.y); f.pot = null; f.brew = 0; return;
       }
       if (hookWall(P.x, P.y) || P.x < -40 || P.x > F + 40 || P.y < -40 || P.y > F + 40 || P.life <= 0) { P.st = 'rest'; P.vx = P.vy = 0; plgSplash(P.x, P.y); ring(P.x, P.y, R * 0.9, '#8ac926', 0.4); }
       return;
@@ -4081,14 +4084,15 @@ var DM = (function () {
         var ws = wseg(op, INNER, R + wlen(op)), hit = segSeg({ x1: D.x - ux * 40, y1: D.y - uy * 40, x2: D.x, y2: D.y }, ws);
         if (hit.d <= W[op.type].width / 2 + 5) { sparks(hit.x, hit.y, TGC.s, 8, 260); clashFx(hit.x, hit.y, false); tactRest(f, D.x - ux * 24, D.y - uy * 24); return; }
       }
-      if (op.hp > 0 && segCircle(seg, op.x, op.y, rOf(op) + 6)) {
-        var tdv = tdDmg(f), res = applyDamage(op, tdv, { src: f });
+      var tdt = projFoeSeg(f.i, seg, 6);
+      if (tdt) {
+        var tdv = tdDmg(f), res = applyDamage(tdt, tdv, { src: f });
         if (res) {
           var bigT = tdv >= 6, fa = Math.atan2(D.vy, D.vx);
-          floater(op.x, Math.max(60, op.y - R - 12), '-' + res.dmg + res.note, C.p[f.i], 50);
-          sparks(D.x, D.y, TGC.s, 14, 420); sparks(D.x, D.y, TGC.w, 6, 300); tsmoke(op.x, op.y, bigT ? 14 : 8, 190, 10); tdebris(D.x, D.y, bigT ? 14 : 8);
-          ring(op.x, op.y, R * (bigT ? 2.4 : 1.7), TGC.d, 0.28); ring(op.x, op.y, R * (bigT ? 1.5 : 1.0), TGC.s, 0.2);
-          tcross(op.x, op.y, fa + Math.PI / 2, R * (bigT ? 5.2 : 3.8), false);
+          floater(tdt.x, Math.max(60, tdt.y - R - 12), '-' + res.dmg + res.note, C.p[f.i], 50);
+          sparks(D.x, D.y, TGC.s, 14, 420); sparks(D.x, D.y, TGC.w, 6, 300); tsmoke(tdt.x, tdt.y, bigT ? 14 : 8, 190, 10); tdebris(D.x, D.y, bigT ? 14 : 8);
+          ring(tdt.x, tdt.y, R * (bigT ? 2.4 : 1.7), TGC.d, 0.28); ring(tdt.x, tdt.y, R * (bigT ? 1.5 : 1.0), TGC.s, 0.2);
+          tcross(tdt.x, tdt.y, fa + Math.PI / 2, R * (bigT ? 5.2 : 3.8), false);
           shake = Math.max(shake, bigT ? 0.36 : 0.2); if (fxOn && !demo) { hitStopT = Math.max(hitStopT, bigT ? 0.07 : 0.035); if (bigT) slowT = Math.max(slowT, 0.1); } vib(bigT ? 30 : 14); sfxTactHit(bigT);
         }
         tactRest(f, D.x - ux * 30, D.y - uy * 30); return;
@@ -4294,9 +4298,10 @@ var DM = (function () {
       var nx = fi.x + Math.cos(fi.a) * AN_FISH_SPEED * dt, ny = fi.y + Math.sin(fi.a) * AN_FISH_SPEED * dt;
       if (hookWall(nx + Math.cos(fi.a) * 26, ny + Math.sin(fi.a) * 26)) { fi.a = Math.atan2(CX - fi.y, CX - fi.x) + (Math.random() - 0.5) * 1.4; fi.turn = 0; }
       else { fi.x = nx; fi.y = ny; }
-      if (op.hp > 0 && Math.hypot(op.x - fi.x, op.y - fi.y) < rOf(op) + 14) {
+      var fht = op.hp > 0 ? projFoe(fi.o, fi.x, fi.y, 14) : null;
+      if (fht) {
         fishes.splice(i, 1);
-        var res = applyDamage(op, AN_FISH_DMG, { src: me });
+        var res = applyDamage(fht, AN_FISH_DMG, { src: me });
         if (res) { floater(fi.x, fi.y - 30, '-' + res.dmg + res.note, C.p[me.i], 46); anSplash(fi.x, fi.y, false); sfxSlap(false); shake = Math.max(shake, 0.12); }
         continue;
       }
@@ -4957,10 +4962,11 @@ var DM = (function () {
     var p = a.pot, sp = WC_POT_SPD * dt;
     p.x += p.ux * sp; p.y += p.uy * sp; p.run += sp; p.rot += dt * 14; p.z = Math.sin(Math.PI * Math.min(1, p.run / p.dist)) * 70;
     if (Math.random() < dt * 60) particles.push({ x: p.x, y: p.y - p.z, vx: (Math.random() - 0.5) * 60, vy: (Math.random() - 0.5) * 60, life: 0.35, max: 0.35, color: Math.random() < 0.5 ? '#b04ae0' : '#e2b0ff', size: 3 + Math.random() * 3 });
-    if (o && o.hp > 0 && Math.hypot(o.x - p.x, o.y - p.y) < rOf(o) + 18) {
+    var wpt = o && o.hp > 0 ? projFoe(f.i, p.x, p.y, 18) : null;
+    if (wpt) {
       a.pot = null; a.st = 'done'; var vp = f.trait === 1;
-      fkPoison(o, f, vp ? 10 : 5, WC_POT);
-      if (o.type !== 'kslime') floater(o.x, Math.max(60, o.y - R - 26), (vp ? '극독 200' : '맹독 ' + WC_POT), vp ? '#ff6fb5' : '#b04ae0', 60); o.flash = 0.22;
+      fkPoison(wpt.cpc ? o : wpt, f, vp ? 10 : 5, WC_POT);   /* 마디에 맞아도 독은 본체에 */
+      if (o.type !== 'kslime') floater(wpt.x, Math.max(60, wpt.y - R - 26), (vp ? '극독 200' : '맹독 ' + WC_POT), vp ? '#ff6fb5' : '#b04ae0', 60); wpt.flash = 0.22;
       ring(p.x, p.y, R * 3, '#b04ae0', 0.4); ring(p.x, p.y, R * 1.6, '#ffffff', 0.25); sparks(p.x, p.y, '#b04ae0', 30, 800); sparks(p.x, p.y, '#e2b0ff', 16, 560); sparks(p.x, p.y, '#ffffff', 10, 640);
       for (var q = 0; q < 20; q++) { var qa = Math.random() * TAU, qs = 100 + Math.random() * 500; particles.push({ x: p.x, y: p.y, vx: Math.cos(qa) * qs, vy: Math.sin(qa) * qs, life: 0.7, max: 0.7, color: q % 2 ? '#b04ae0' : '#cf8cf0', size: 4 + Math.random() * 6 }); }
       sfxWcShatter(); shake = Math.max(shake, 0.6); vib(50); if (fxOn && !demo) hitStopT = Math.max(hitStopT, 0.08);
@@ -7492,6 +7498,20 @@ var DM = (function () {
   function jbNearTo(x, y, o) { var arr = jbFoes(o), best = o, bd = 1e9; for (var i = 0; i < arr.length; i++) { var c = arr[i]; if (c !== o && c.hp <= 0) continue; var dd = Math.hypot(c.x - x, c.y - y); if (dd < bd) { bd = dd; best = c; } } return best; }
   function jbAimAng(x, y, o) { var n = jbNearTo(x, y, o); return Math.atan2(n.y - y, n.x - x); }
   function fkTargets(src) { var o = fighters[1 - src.i], arr = [o]; for (var i = 0; i < clones.length; i++) if (clones[i].i === o.i && clones[i].hp > 0) arr.push(clones[i]); return arr; }
+  /* 날아가는 물체가 맞출 수 있는 상대: 본체 + 그쪽 편 분신·마디·알·새끼 (백족왕의 몸통 마디는 분신으로 취급된다). 가장 깊이 겹친 쪽 하나 */
+  function projFoe(si, x, y, pad) {
+    var o = fighters[1 - si], best = null, bd = 0, d, q, t;
+    if (!o) return null;
+    if (o.hp > 0) { d = rOf(o) + pad - Math.hypot(o.x - x, o.y - y); if (d >= 0) { best = o; bd = d; } }
+    for (q = 0; q < clones.length; q++) { t = clones[q]; if (t.i !== o.i || t.hp <= 0) continue; d = rOf(t) + pad - Math.hypot(t.x - x, t.y - y); if (d >= 0 && (!best || d > bd)) { best = t; bd = d; } }
+    return best;
+  }
+  function projFoeSeg(si, sg, pad) {
+    var o = fighters[1 - si], q, t;
+    if (o && o.hp > 0 && segCircle(sg, o.x, o.y, rOf(o) + pad)) return o;
+    for (q = 0; q < clones.length; q++) { t = clones[q]; if (t.i === (o ? o.i : -1) && t.hp > 0 && segCircle(sg, t.x, t.y, rOf(t) + pad)) return t; }
+    return null;
+  }
   function fkMark(x, y, ang, k, t, len) { if (fkMarks.length < 120) fkMarks.push({ x: x, y: y, ang: ang, k: k, t: t, max: t, len: len || 50 }); }
   function fkPoison(o, src, v, tot) { if (o.type === 'kslime' || isCp(o)) { jbImm(o, '독 면역'); return; } v = v || 2; o.pois = { t: tot ? tot / v : FK_POIS_T, acc: 0, src: src, v: v }; }
   var FK_BLOOD_DMG = 4;
@@ -8948,8 +8968,9 @@ var DM = (function () {
       var wt = paTouch(c.x, c.y);
       if (wt) { var vn = c.vx * wt.nx + c.vy * wt.ny; if (vn < 0) { c.vx -= 2 * vn * wt.nx; c.vy -= 2 * vn * wt.ny; } c.x = wt.x + wt.nx * 16; c.y = wt.y + wt.ny * 16; sparks(wt.x, wt.y, '#ffd34a', 2, 160); }
       if (!h || h.hp <= 0 || c.t > 14) { tcCoins.splice(i, 1); continue; }
-      if (c.sp > 300 && !c.gold && o && o.hp > 0 && Math.hypot(o.x - c.x, o.y - c.y) <= rOf(o) + 14) {
-        tcCoins.splice(i, 1);
+      var cft = c.sp > 300 && !c.gold && o && o.hp > 0 ? projFoe(c.own, c.x, c.y, 14) : null;
+      if (cft) {
+        o = cft; tcCoins.splice(i, 1);
         var dm = c.dia ? TC_DIA_DMG : TC_DMG, r = applyDamage(o, dm, { src: h });
         sfxTcHit();
         if (r) {
