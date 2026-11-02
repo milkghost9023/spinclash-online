@@ -128,7 +128,7 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
     if (!A.enabled) { A.state = 'err'; console.log('[accounts] 꺼짐: DB에 연결하지 못했어요 –', lastErr && lastErr.message); return; }
     const prov = mailProvider(); A.mailOn = !!prov;
     console.log('[accounts] 켜짐 · 가입자 ' + nickKeys.size + '명 · 메일 ' + (prov || '꺼짐') + (env.OWNER_USERNAME ? ' · 제작자 아이디 설정됨' : ''));
-    sysLoad().catch(() => {}); const ts = setInterval(() => { sysLoad().catch(() => {}); }, 15000); ts.unref();
+    sysLoad().catch(() => {}); jbLoad().catch(() => {}); const ts = setInterval(() => { sysLoad().catch(() => {}); jbLoad().catch(() => {}); }, 15000); ts.unref();
     const t = setInterval(() => { q('DELETE FROM sessions WHERE expires_at < now()').catch(() => {}); q('DELETE FROM user_tokens WHERE expires_at < now()').catch(() => {}); }, 30 * 60 * 1000); t.unref();
   };
   A.nickTaken = (nick) => nickKeys.has(normKey(nick));
@@ -292,6 +292,12 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
   A.sys = { on: false, msg: '' };
   async function sysLoad() { const v = await metaGet('sys', { on: false, msg: '' }); A.sys = { on: !!v.on, msg: cleanTxt(v.msg, 80) }; return A.sys; }
 
+  /* 진보스전 열고 닫기: 닫아 둔 보스 번호만 저장한다 (새 보스는 기본으로 열려 있다). 제작자는 닫힌 보스도 들어갈 수 있다 */
+  const JB_OFF_MAX = 16;
+  function jbOffClean(a) { const out = []; if (Array.isArray(a)) for (const v of a) { const n = Math.floor(+v); if (n >= 0 && n < JB_OFF_MAX && out.indexOf(n) < 0) out.push(n); } return out.sort((x, y) => x - y); }
+  A.jbOff = [];
+  async function jbLoad() { const v = await metaGet('jbopen', { off: [] }); A.jbOff = jbOffClean(v && v.off); return A.jbOff; }
+
   /* 서버 메일: 제작자가 앱에서 써서 모두에게 보낸다. give 는 허용된 종류만 */
   const MAIL_N = 30;
   function cleanGive(arr) {
@@ -326,7 +332,7 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
     const S = await statsLoad(), win = !!b.win;
     if (b.k === 'jb') {
       const bi = Math.floor(+b.bi), lv = Math.floor(+b.lv), cn = Math.floor(+b.cn), id = String(b.id || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 24);
-      if (!(bi >= 0 && bi <= 4) || !(lv >= 0 && lv <= 3)) return send(res, 200, { ok: true });
+      if (!(bi >= 0 && bi <= 7) || !(lv >= 0 && lv <= 3)) return send(res, 200, { ok: true });
       const k = bi + '-' + lv, o = S.jb[k] || (S.jb[k] = { a: 0, w: 0, cn: [0, 0, 0], u: new Set() });
       o.a++; if (win) { o.w++; if (cn >= 1 && cn <= 3) o.cn[cn - 1]++; if (id.length >= 6 && o.u.size < 3000) o.u.add(id); }
       statsDirty = true;
@@ -386,6 +392,8 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
     if (k === 'mails.del') { const l = (await metaGet('mails', [])).filter((x) => x.id !== String(b.id)); await metaSet('mails', l); return send(res, 200, { ok: true, list: l }); }
     if (k === 'sys.set') { await metaSet('sys', { on: !!b.on, msg: cleanTxt(b.msg, 80) }); await sysLoad(); return send(res, 200, { ok: true, sys: A.sys }); }
     if (k === 'sys') return send(res, 200, { ok: true, sys: await sysLoad() });
+    if (k === 'jbopen.set') { await metaSet('jbopen', { off: jbOffClean(b.off) }); return send(res, 200, { ok: true, off: await jbLoad() }); }
+    if (k === 'jbopen') return send(res, 200, { ok: true, off: await jbLoad() });
     if (k === 'stats') return send(res, 200, Object.assign({ ok: true }, await statsOut()));
     if (k === 'stats.reset') { stats = { since: Date.now(), jb: {}, ch: {} }; statsDirty = true; statsSave(); return send(res, 200, { ok: true }); }
     return fail(res, 400, 'own', '알 수 없는 요청이에요');
@@ -400,7 +408,7 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
       if (req.method === 'GET' && p === '/api/me') { const u = await userFromToken(bearer(req)); if (!u) fail(res, 401, 'auth', '로그인이 필요해요'); else send(res, 200, { ok: true, me: me(u), mail: A.mailOn }); return true; }
       if (req.method === 'GET' && p === '/api/ta') { send(res, 200, await taOut(await userFromToken(bearer(req)))); return true; }
       if (req.method === 'GET' && p === '/api/notice') { send(res, 200, await noticeGet()); return true; }
-      if (req.method === 'GET' && p === '/api/live') { const sy = await sysLoad(); send(res, 200, { ok: true, maint: sy.on, msg: sy.msg, mails: mailsActive(await metaGet('mails', [])) }); return true; }
+      if (req.method === 'GET' && p === '/api/live') { const sy = await sysLoad(); send(res, 200, { ok: true, maint: sy.on, msg: sy.msg, jboff: await jbLoad(), mails: mailsActive(await metaGet('mails', [])) }); return true; }
       if (req.method !== 'POST') { fail(res, 405, 'method', '잘못된 요청이에요'); return true; }
       const b = await readBody(req); const addr = ip(req);
       switch (p) {
