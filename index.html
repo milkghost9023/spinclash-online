@@ -1185,7 +1185,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v694</span>
+      <span class="verTag">v698</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -19448,7 +19448,7 @@ var DM = (function () {
   }
   function rgTouch(h, o) {
     if (h.type !== 'rgiant' || h.hp <= 0 || o.hp <= 0 || phase !== 'playing' || h.i === o.i) return;
-    var a = h.rg; if (!a || a.mu || a.ar || !rgBroken(h) || a.tcd > 0 || a.stag > 0 || rgGo(h) || a.ug || (a.cpd && a.cpd.em > 0)) return;
+    var a = h.rg; if (!a || a.mm || a.mu || a.ar || !rgBroken(h) || a.tcd > 0 || a.stag > 0 || rgGo(h) || a.ug || (a.cpd && a.cpd.em > 0)) return;
     a.tcd = 1.2;
     var dx = o.x - h.x, dy = o.y - h.y, dl = Math.hypot(dx, dy) || 1, ux = dx / dl, uy = dy / dl, res = applyDamage(o, rgDmg(h, jbL().ct || 8), { src: h });
     if (!res) return;
@@ -25303,10 +25303,10 @@ var DM = (function () {
   /* ═══════════════ 빙하 맘모스 (여덟 번째 진보스) ═══════════════
      느리고 거대한 얼음 매머드. 강타·냉기 숨결·혹한이 닿은 자리에 서리 지대(감속 + 빙결 게이지)가 남는다. 빙결·절대 영도·감속 면역, 화상은 그대로 걸린다. */
   var MM_LV = [
-    { n: 'Easy', c: '#7fd96a', hp: 300, rage: 180, sk: ['gore', 'stomp', 'sleet'], int: 8, ct: 3, fz: 0.10, thd: 7, thn: 2, gd: 8, gn: 1, sd: 8, sr: 360, sc: 1, icn: 8, icd: 6, fl: '숨결이 얼어붙는다. 발밑이 하얗게 변한다.' },
-    { n: 'Normal', c: '#ffb340', hp: 400, rage: 150, sk: ['gore', 'stomp', 'sleet', 'blast'], int: 7.5, ct: 5, fz: 0.13, thd: 10, thn: 3, gd: 11, gn: 1, sd: 10, sr: 390, sc: 1, icn: 10, icd: 7, bt: 2.0, bdm: 1, fl: '서리가 번진다. 하얀 땅을 밟지 마라.' },
-    { n: 'Hard', c: '#ff5a3a', hp: 500, rage: 120, sk: ['gore', 'stomp', 'sleet', 'blast', 'tusk'], int: 7, ct: 7, fz: 0.16, thd: 14, thn: 4, gd: 15, gn: 2, sd: 13, sr: 420, sc: 2, icn: 12, icd: 10, bt: 2.3, bdm: 2, tn: 3, td: 8, tv: 1, fl: '얼음 상아가 겨눈다. 얼어붙기 전에 움직여라.' },
-    { n: 'Extreme', c: '#e0143c', hp: 600, rage: 90, sk: ['gore', 'stomp', 'sleet', 'blast', 'tusk', 'crack'], int: 6.5, ct: 9, fz: 0.20, thd: 20, thn: 5, gd: 21, gn: 2, sd: 17, sr: 450, sc: 2, icn: 14, icd: 13, bt: 2.6, bdm: 2, tn: 5, td: 13, tv: 2, cn: 6, cdm: 22, fl: '빙하가 갈라진다. 안전한 칸을 찾아라.' }
+    { n: 'Easy', c: '#7fd96a', hp: 150, rage: 180, sk: ['gore', 'stomp', 'sleet'], int: 8, ct: 0, fz: 0.07, thd: 7, thn: 2, gd: 8, gn: 1, sd: 8, sr: 330, sc: 1, icn: 6, icd: 6, fl: '숨결이 얼어붙는다. 발밑이 하얗게 변한다.' },
+    { n: 'Normal', c: '#ffb340', hp: 250, rage: 150, sk: ['gore', 'stomp', 'sleet', 'blast'], int: 7.5, ct: 0, fz: 0.09, thd: 10, thn: 3, gd: 11, gn: 1, sd: 10, sr: 350, sc: 1, icn: 7, icd: 7, bt: 1.6, bdm: 1, fl: '서리가 번진다. 하얀 땅을 밟지 마라.' },
+    { n: 'Hard', c: '#ff5a3a', hp: 300, rage: 120, sk: ['gore', 'stomp', 'sleet', 'blast', 'tusk'], int: 7, ct: 0, fz: 0.11, thd: 14, thn: 4, gd: 15, gn: 1, sd: 13, sr: 380, sc: 1, icn: 9, icd: 10, bt: 1.9, bdm: 2, tn: 3, td: 8, tv: 1, fl: '얼음 상아가 겨눈다. 얼어붙기 전에 움직여라.' },
+    { n: 'Extreme', c: '#e0143c', hp: 400, rage: 90, sk: ['gore', 'stomp', 'sleet', 'blast', 'tusk', 'crack'], int: 6.5, ct: 0, fz: 0.14, thd: 20, thn: 5, gd: 21, gn: 2, sd: 17, sr: 410, sc: 2, icn: 10, icd: 13, bt: 2.2, bdm: 2, tn: 4, td: 13, tv: 2, cn: 5, cdm: 22, fl: '빙하가 갈라진다. 안전한 칸을 찾아라.' }
   ];
   var MM_RW = [['tal', 3], ['spl', 4], ['chr', 4], ['chr', 5]];   /* 첫 격파 보상: 영웅 재능 · 신화 스펠 · 신화 캐릭터 · 전설 캐릭터 선택권 */
   var mmFz = [], mmIc = [], mmBl = [], mmTk = [], mmBr = null, mmCr = null, mmFx = [], mmIconURL = '', MM_FZ_MAX = 10, MM_FZ_LIFE = 14, MM_FUR = null, mmSfxT = 0, mmBrT = 0;
@@ -25406,7 +25406,7 @@ var DM = (function () {
     if (!rgDie) {
       mv = Math.hypot(f.x - d.px, f.y - d.py); d.px = f.x; d.py = f.y;
       if (mv < 200 && !(a.stag > 0) && f.frozen <= 0) { d.sd += mv; d.sd = 0; }
-      mmGrabStep(f, o, L, dt);
+      mmGrabStep(f, o, L, dt); mmSwat(f, o, L, rr, dt);
       if (mv > 0.5 && Math.random() < dt * 12) mmPush({ k: 'mist', x: f.x + (Math.random() - 0.5) * rr * 1.2, y: f.y + rr * 0.55 + (Math.random() - 0.5) * rr * 0.3, vx: (Math.random() - 0.5) * 30, vy: -10 - Math.random() * 20, s: 16 + Math.random() * 14, t: 0, life: 0.9 + Math.random() * 0.4 });
     }
     for (j = 0; j < foes.length; j++) {
@@ -25504,6 +25504,10 @@ var DM = (function () {
   }
   function mmRay(x, y, ux, uy) { var t = 1e9; if (ux > 1e-4) t = Math.min(t, (F - R - x) / ux); else if (ux < -1e-4) t = Math.min(t, (R - x) / ux); if (uy > 1e-4) t = Math.min(t, (F - R - y) / uy); else if (uy < -1e-4) t = Math.min(t, (R - y) / uy); return Math.max(0, t); }
   function mmPin(t, p) { t.x = mmClamp(p[0], R, F - R); t.y = mmClamp(p[1], R, F - R); t.vx = t.vy = 0; t.kvx = t.kvy = 0; t.kT = 0; stunTarget(t, 0.25); }
+  function mmFree(t) {   /* 잡혀 있던 동안 속도를 0으로 눌러 뒀으니, 놓아주면 다시 움직이게 한다 (안 그러면 그 자리에 멈춰 선다) */
+    var an = Math.atan2(F / 2 - t.y, F / 2 - t.x) + (Math.random() - 0.5) * 0.9, sp = SPD();
+    t.vx = Math.cos(an) * sp; t.vy = Math.sin(an) * sp; t.kvx = t.kvy = 0; t.kT = 0;
+  }
   function mmSlam(f, t, L, g) {
     var a = f.rg, ux = g.ux, uy = g.uy, wx = t.x, wy = t.y, q, an, sp, off, inw, p;
     ring(wx, wy, R * 3.6, '#8fdcff', 0.45); ring(wx, wy, R * 1.9, '#ffffff', 0.3); sparks(wx, wy, '#bfeaff', 34, 760); sparks(wx, wy, '#ffffff', 16, 560); sparks(wx, wy, '#3a7fb8', 10, 500);
@@ -25515,17 +25519,28 @@ var DM = (function () {
       p = mmIcPlace(f, wx - ux * inw - uy * off, wy - uy * inw + ux * off, ux, uy);
       mmIc.push({ x: p[0], y: p[1], t: -(q * 0.1), warn: 1.0, r: 95, dmg: L.icd, fell: false, age: 0, snd: 0 });
     }
-    a.tcd = Math.max(a.tcd, 1.4);
+    a.tcd = Math.max(a.tcd, 1.4); mmFree(t);
+  }
+  /* 몸 가까이 달라붙은 분신 · 소환수 · 옛 전우를 쳐낸다 (접촉 피해는 없다 — 본체 말고 곁다리만, 0.8초마다) */
+  function mmSwat(f, o, L, rr, dt) {
+    var a = f.rg, d = a.mmd, foes, q, t, hit = 0, dm;
+    a.swt = (a.swt || 0) - dt; if (a.swt > 0 || a.stag > 0 || f.frozen > 0 || d.gb || phase !== 'playing') return;
+    foes = jbFoes(o); dm = Math.max(3, Math.round(L.sd * 0.6));
+    for (q = 0; q < foes.length; q++) {
+      t = foes[q]; if (t === o || t.hp <= 0 || t.inv > 0 || Math.hypot(t.x - f.x, t.y - f.y) >= rr + R + 90) continue;
+      if (mmHit(f, t, dm, (t.x - f.x), (t.y - f.y), 0, 0, true)) hit++;
+    }
+    if (hit) { a.swt = 0.8; ring(f.x, f.y, rr + R + 90, '#bfeaff', 0.3); sfxRgSmash(false); shake = Math.max(shake, 0.25); } else a.swt = 0.15;
   }
   function mmGrabStep(f, o, L, dt) {
     var a = f.rg, d = a.mmd, g = d.gb, rr = rOf(f), tp, t, i, foes, step, hit, p;
-    if (g && (rgDie || a.stag > 0 || f.frozen > 0 || phase !== 'playing')) { d.gb = null; return; }
+    if (g && (rgDie || a.stag > 0 || f.frozen > 0 || phase !== 'playing')) { if (g.tg && g.tg.hp > 0 && g.st !== 'rec') mmFree(g.tg); d.gb = null; return; }
     if (!g) {
       if (rgDie || a.tcd > 0 || a.sk || a.stag > 0 || f.frozen > 0 || phase !== 'playing') return;
       tp = mmTip(f, rr, 1); foes = jbFoes(o);
       for (i = 0; i < foes.length; i++) {
         t = foes[i]; if (t.hp <= 0 || t.inv > 0 || Math.hypot(t.x - tp[0], t.y - tp[1]) >= R + 40) continue;
-        d.gb = { st: 'catch', t: 0, tg: t, tr: 1, ts: 0, sg: 1, ts0: 0, tsr: 0, ux: Math.cos(f.ang), uy: Math.sin(f.ang) }; a.tcd = 4; f.vx = d.gb.ux * SPD(); f.vy = d.gb.uy * SPD();
+        d.gb = { st: 'catch', t: 0, tg: t, tr: 1, ts: 0, sg: 1, ts0: 0, tsr: 0, ux: Math.cos(f.ang), uy: Math.sin(f.ang) }; a.tcd = t === o ? 4 : 2.2; f.vx = d.gb.ux * SPD(); f.vy = d.gb.uy * SPD();
         banners.push({ i: f.i, text: '코 잡기!', color: '#bfeaff', life: 1.1, max: 1.1 }); sfxRgWarn(); sfxMmGrab();
         ring(tp[0], tp[1], R * 2.6, '#bfeaff', 0.35); sparks(tp[0], tp[1], '#ffffff', 12, 420); shake = Math.max(shake, 0.4); vib(30);
         return;
@@ -25564,7 +25579,7 @@ var DM = (function () {
     }
   }
   function mmSpawnIc(f, o, L) {
-    var foes = jbFoes(o), n = L.icn + (f.rg.rage ? 2 : 0), q, x, y, an, dd, fo; mmIc.length = 0;
+    var foes = jbFoes(o), n = L.icn + (f.rg.rage ? 1 : 0), q, x, y, an, dd, fo; mmIc.length = 0;
     for (q = 0; q < n; q++) {
       if (q === 0) { x = o.x; y = o.y; }
       else if (q < Math.ceil(n * 0.6)) { fo = foes[Math.floor(Math.random() * foes.length)]; an = Math.random() * TAU; dd = 100 + Math.random() * 320; x = fo.x + Math.cos(an) * dd; y = fo.y + Math.sin(an) * dd; }
@@ -25766,7 +25781,7 @@ var DM = (function () {
       };
     });
   }
-  function mmInfo(f) { return ['접촉', String(rgDmg(f, jbL().ct)), '서리 ' + mmCnt() + '칸' + (f.rg.rage ? ' · 혹한' : '')]; }
+  function mmInfo(f) { return ['코 잡기', String(rgDmg(f, jbL().thd)), '서리 ' + mmCnt() + '칸' + (f.rg.rage ? ' · 혹한' : '')]; }
   /* ── 그리기: 몸 ── 위에서 내려다본 맘모스: 털북숭이 몸 · 등의 얼음 갑옷 · 얼음 상아 두 개 · 짧은 코 · 푸른 눈 하나 */
   function mmFur() {
     if (MM_FUR) return MM_FUR;
@@ -26132,7 +26147,7 @@ var DM = (function () {
     { id: 'magmadon', nm: '마그마돈', hn: '마그마돈', sub: '숨 쉬는 화산. 걸음마다 용암이 고인다.', wn: ['-용암은 아프고 느려져요 · 식으면 흑요석(안전)', '-기절,수면,넉백 면역 (진보스 공통 면역)', '-고유 면역: 화상, 파상풍'], lv: MAG_LV, rw: MAG_RW, icon: function () { return magIcon(); }, hint: '마그마돈은 완전히 식을 때까지 멈추지 않는다', conf: ['#ff6a2a', '#ffd23a', '#ffffff', '#5a4038'], sx: function (L) { return '용암 웅덩이 · 기술 ' + L.sk.length + '개'; } },
     { id: 'centipede', nm: '백족왕', hn: '백족왕', sub: '수많은 다리가 땅을 두드린다. 머리가 약점이다.', wn: ['-머리가 약점 · 마디를 부수면 꼬리가 잘려요 · 몸 접촉 주의', '-기절,수면,넉백 면역 (진보스 공통 면역)', '-고유 면역: 중독, 파상풍'], lv: CP_LV, rw: CP_RW, icon: function () { return cpIcon(); }, hint: '머리를 노려라. 마디를 부수면 꼬리가 잘린다', conf: ['#f8f4ea', '#d8b45a', '#ffffff', '#9aff6a'], sx: function (L) { return '마디 ' + L.ns + '개 · 기술 ' + L.sk.length + '개'; } },
     { id: 'ares', nm: '아레스', hn: '아레스', sub: '방패와 창의 보병전. 방패가 깨지면 쌍검의 광란전. 전쟁의 신.', wn: ['-가드가 먼저 깎임 · 깨지면 광란전 · 시간이 지나면 강제로 깨져요', '-기절,수면,넉백 면역 (진보스 공통 면역)', '-고유 면역: 푸른 불꽃, 업화, 파상풍'], lv: AR_LV, rw: AR_RW, icon: function () { return arIcon(); }, hint: '방패를 부수면 신의 창이 날아온다', conf: ['#ffb340', '#ff4a2a', '#ffffff', '#c98a3a'], sx: function (L) { return '방패 ' + L.gd + ' · 기술 ' + (L.sk.length + L.sk2.length) + '개'; } },
-    { id: 'mammoth', nm: '빙하 맘모스', hn: '맘모스', sub: '강타와 숨결이 닿는 곳마다 서리가 번지는 거대한 얼음 매머드. 상아가 빙하를 가른다.', wn: ['-코 끝에 잡히면 옆으로 던져져 벽쿵 · 서리 지대 · 돌진·숨결 주의', '-기절,수면,넉백 면역 (진보스 공통 면역)', '-고유 면역: 빙결, 절대 영도, 파상풍'], lv: MM_LV, rw: MM_RW, icon: function () { return mmIcon(); }, hint: '맘모스는 빙하가 녹을 때까지 멈추지 않는다', conf: ['#bfeaff', '#5ac8ff', '#ffffff', '#3d98d8'], sx: function (L) { return '서리 지대 · 기술 ' + L.sk.length + '개'; } }
+    { id: 'mammoth', nm: '빙하 맘모스', hn: '맘모스', sub: '강타와 숨결이 닿는 곳마다 서리가 번지는 거대한 얼음 매머드. 상아가 빙하를 가른다.', wn: ['-코 잡기·서리 지대·돌진·숨결 주의 · 소환체에 대응 가능', '-기절,수면,넉백 면역 (진보스 공통 면역)', '-고유 면역: 빙결, 절대 영도, 파상풍'], lv: MM_LV, rw: MM_RW, icon: function () { return mmIcon(); }, hint: '맘모스는 빙하가 녹을 때까지 멈추지 않는다', conf: ['#bfeaff', '#5ac8ff', '#ffffff', '#3d98d8'], sx: function (L) { return '서리 지대 · 기술 ' + L.sk.length + '개'; } }
   ];
 
   /* ── 패널 · 흐름 ── */
@@ -26150,7 +26165,7 @@ var DM = (function () {
     '<h5>마그마돈</h5><ul class="ul"><li>거인보다 더 크고 <b>아주 느려요</b>. 장갑이 없어서 처음부터 몸이 맞아요. 닿으면 접촉 피해와 넉백을 줘요 (1.2초마다).</li><li><b>화산바위</b>: 난이도와 상관없이 싸움이 시작되면 하늘에서 <b>화산바위 4개</b>가 무작위 위치에 떨어져 큰 용암을 남겨요. 이 용암도 시간이 지나면 흑요석으로 굳어요.</li><li><b>용암 웅덩이</b>: 분출·포격·구르기가 떨어진 자리에 고여요. 위에 서 있으면 <b>초당 2 피해</b>를 입고 <b>이동이 20% 느려져요</b>. 굳지 않은 용암 위에서는 <b>화상 게이지도 조금씩</b> 올라요(약 8초 서 있으면 불이 붙어요). 웅덩이는 난이도마다 최대 4·6·8·10칸만 남고, 넘치면 가장 오래된 것부터 말라요.</li><li><b>흑요석</b>: 용암은 <b>생긴 지 12초</b>가 지나면 저절로 식어서 흑요석이 돼요(체력과 상관없어요). 식어 갈수록 가운데부터 검게 굳어요. 흑요석은 <b>최대 8칸</b>이고 9번째가 생기면 가장 오래된 것이 사라져요(난이도 무관). 흑요석 위는 <b>용암 웅덩이 · 용암 파도 · 대분화를 막아 주는 안전한 바닥</b>이에요. 다만 용암 분출이 다시 떨어지면 녹아요. 파도·대분화 전에는 흑요석이 <b>최소 2칸</b> 생겨요.</li><li>기술 (Easy 3개 · Normal 5개 · Hard 6개 · Extreme 7개): <b>용암 분출</b>(경고 표시 뒤 불기둥이 솟아요) · <b>용암탄 포격</b>(분화구에서 포탄이 날아와요) · <b>구르기 돌진</b>(Normal~, 세 번 연달아 굴러요. 지나간 자리에 용암이 남고, 끝나면 식어서 잠깐 멈춰요) · <b>용암 파도</b>(Hard~, 필드를 가로지르는 용암 벽. Extreme은 두 번 연달아) · <b>대분화</b>(Extreme, 4초 충전 뒤 필드 전체 폭발. 피해 60 + <b>확정 화상</b>. 끝나면 힘이 빠져 멈춰요).</li><li><b>화상</b>: 접촉을 뺀 모든 기술(분출·포격·구르기·파도)에 맞으면 화상 게이지가 1/3씩 차요. 대분화는 게이지를 한 번에 채워 바로 불이 붙어요. 흑요석 위에서 막은 공격에는 화상도 없어요. 마그마돈 자신은 <b>화상 면역</b>이라 불 계열 공격이 안 먹어요.</li><li>광폭화 대신 <b>분화</b>: 피해 ×1.3 · 기술 간격 절반 · 웅덩이 +2칸 · 웅덩이 피해가 빨라져요.</li></ul>',
     '<h5>백족왕</h5><ul class="ul"><li>머리와 <b>마디 몸통</b>으로 이뤄진 거대한 지네예요. 빠르게 꿈틀거리며 쫓아오고, 머리든 몸이든 <b>닿으면 접촉 피해</b>를 줘요 (머리와 몸이 1초 쿨타임을 같이 써요). 몸은 벽처럼 막아서요.</li><li>백족왕은 <b>필드를 무시</b>해요. 상대 쪽으로 다가오려는 경향은 있지만, 제멋대로 방향을 틀고 <b>벽을 통과해서</b> 반대편으로 튀어나오며 기괴하게 돌아다녀요. 몸통도 같이 벽을 뚫고 지나가요.</li><li><b>머리가 약점</b>이에요. 머리를 때리면 피해가 그대로 들어가고, <b>마디를 때리면 피해의 30%</b>(최소 1)만 본체에 들어가요. 대신 그 마디의 <b>내구도</b>가 깎여요.</li><li><b>꼬리 절단</b>: 마디의 내구도가 0이 되면 그 마디부터 <b>뒤쪽 꼬리가 통째로 잘려요</b>. 잘릴 때 최대 체력의 <b>4%</b>가 추가 피해로 들어가고, 잘린 마디가 늘수록 <b>이동이 6%씩</b> 빨라져요(최대 40%). 마디 수 Easy 8 · Normal 10 · Hard 12 · Extreme 14, 마디 내구도 12 · 16 · 20 · 24.</li><li>기술 (Easy 2개 · Normal 3개 · Hard 4개 · Extreme 5개): <b>내려찍기</b>(머리를 높이 쳐들었다가 땅을 내려찍어요. 바닥에 <b>붉은 원</b>이 차오르면 그 밖으로 피하세요. Easy는 1번, Normal·Hard는 2번, Extreme은 3번 연달아 내려찍고, 마지막엔 머리가 박혀서 잠깐 멈춰요) · <b>독침</b>(독침 여러 발을 쏴요. 쏘기 전에 발마다 <b>날아갈 궤도선</b>이 떠요. 맞으면 <b>중독</b>. Extreme은 두 번 연달아) · <b>기괴한 포효</b>(머리를 쳐들고 소리를 질러요. 바닥의 <b>보라색 원 안</b>에 있으면 <b>기절 + 중독</b>이에요. 원 밖으로 피하세요) · <b>땅속 돌진</b>(Normal~: 땅속으로 사라져서 그동안 <b>맞지 않아요</b>. 갈라진 길을 따라 튀어나와 돌진하고, 벽에 박혀서 잠깐 멈춰요) · <b>분탕</b>(Normal~: 벽을 뚫고 필드를 마구 가로질러요. 돌진 전에 경고선이 떠요. Normal 3번 · Hard 4번 · Extreme 5번) · <b>꼬리 휘두르기</b>(Hard~: 머리 자리를 지키고 몸이 한 바퀴 반 돌아요. 머리 바로 옆 <b>안전 구역</b>은 맞지 않아요) · <b>알 낳기</b>(Extreme: 알 3개를 낳아요. 2초 뒤 새끼 지네 6마리씩 부화해요. 알은 부화 전에 <b>깨뜨릴 수 있어요</b>). 경고 표시가 먼저 떠요.</li><li><b>새끼 지네</b>: 체력 4, 접촉 3, 8초 뒤 사라지고 내 캐릭터와 분신을 쫓아와요.</li><li>시간이 지나면 <b>광란</b>: 피해 1.3배, 기술 주기가 절반이 되고 몸이 붉게 달아올라요.</li><li>넉백·기절·수면, 그리고 <b>독 계열</b>(중독·맹독·극독)과 <b>파상풍</b>은 안 먹혀요. 화상은 먹혀요.</li></ul>',
     '<h5>아레스</h5><ul class="ul"><li>청동 갑옷의 전쟁의 신이에요. 크기는 무사시와 비슷해요. <b>방패(가드)</b>가 먼저 피해를 받고, 복구되지 않아요. 출혈·화상 같은 지속 피해도 방패를 깎아요. 가드 수치는 머리 위 방패 아이콘의 숫자예요.</li><li><b>가드 규칙</b>: 방패가 막은 공격은 <b>명중으로 치지 않아요</b>. 창 길이·피해, 단검·철퇴·활 같은 명중 스택과 화상·빙결·번개 같은 타격 부가 효과는 붙지 않고, 피해만 방패를 깎아요(창 삼연 강타의 ×3도 방패가 대신 맞아요). 도약 중에는 공격이 아예 안 먹혀요. 방패가 부서진 뒤 몸을 맞혀야 스택이 쌓여요.</li><li>방패가 부서지면 <b>포효 → 락온 투창</b>(예고선이 먼저 떠요)이 날아오고, 창이 벽에 박히면 <b>쌍검을 뽑아 광란전</b>이 시작돼요. 광란전부터 몸 체력이 깎여요. 벽에 박힌 창은 <b>모든 난이도에서 3초 뒤 터져요</b>(경고 원이 차올라요). 광란전의 아레스는 빨라서 <b>벽에 튕겨 다니며</b> 덮쳐 와요.</li><li>제한 시간(Easy 180초 · Normal 150초 · Hard 120초 · Extreme 90초)이 지나면 <b>격노</b>: 방패가 남아 있어도 강제로 부서지고 기술 간격이 짧아져요.</li><li>보병전 기술: <b>방패 밀치기</b>(넓은 돌진) · <b>창 삼연찌르기</b>(긴 사거리) · <b>밀집 대형</b>(아레스와 똑같이 생긴 병사들이 줄지어 밀려와요. 초록 빈틈으로 피하세요. 병사는 때릴 수 없어요) · <b>표적 창격</b>(찍힌 자리로 순식간에 돌진한 뒤 그 자리에서 2연 회전베기) · <b>도약 강타</b>(하늘로 뛰어올라 경고 자리에 X자로 내려찍어요) · <b>창 내려찍기</b>(Normal~) · <b>전쟁북</b>(Hard~: 빈틈이 있는 충격파) · <b>방패벽 돌격</b>(Extreme: 병사 둘과 셋이 나란히 돌진해요).</li><li>광란전 기술: <b>쌍날 돌진</b> · <b>쌍검 투척</b>(검을 하나씩 던진 뒤 순서대로 회수하며 베어요. 몸에 박힌 검을 먼저 뽑으러 와요) · <b>불꽃 참격</b>(Normal~: 광선에 맞으면 <b>확정 화상</b>, 바닥에 불꽃이 남아요) · <b>피의 맹세</b>(Hard~: 붉게 물든 필드에서 안전한 원 안으로 들어가요) · <b>대도약 베기</b>(Hard~: 하늘에서 X·+·Z 순서로 필드를 베고 마지막에 내려찍어요) · <b>신의 일격</b>(Extreme). 경고 표시가 먼저 떠요.</li><li>체력 (방패 / 몸): Easy 40/60 · Normal 60/100 · Hard 80/180 · Extreme 100/230.</li><li>넉백·기절·수면, <b>푸른 불꽃·업화</b>, <b>파상풍</b>은 안 먹혀요. 독(중독)과 기본 화상은 먹혀요.</li></ul>',
-    '<h5>빙하 맘모스</h5><ul class="ul"><li>체력 Easy 300 · Normal 400 · Hard 500 · Extreme 600. 느리고 거대한 얼음 매머드예요. <b>빙하 강타</b>·<b>냉기 숨결</b>·<b>혹한</b>이 닿은 자리에 <b>서리 지대</b>가 남아요(최대 10칸 · 14초 뒤 녹아요 · 혹한 땐 12칸).</li><li><b>서리 지대</b> 위에 서면 <b>이동이 느려지고 빙결 게이지가 차올라요</b>(초당 Easy 10% · Normal 13% · Hard 16% · Extreme 20%). 가득 차면 얼어붙어요(5초 · 받는 피해 2배 · 3번 맞으면 깨져요). 맘모스의 얼음 기술을 맞아도 게이지가 차요.</li><li><b>코 잡기</b>(기본 공격): 코 끝에 서 있으면 붙잡아 <b>옆으로 휘둘러 벽에 던져요</b>. 벽에 부딪히면 피해(Easy 7 · Normal 10 · Hard 14 · Extreme 20)와 기절 0.5초, 그리고 부딪힌 자리 근처에 고드름이 떨어져요(Easy 2개 · Normal 3개 · Hard 4개 · Extreme 5개, 혹한엔 +1). 몸 접촉 피해와 <b>쿨타임을 같이 써요</b>.</li><li>기술 (Easy 3개 · Normal 4개 · Hard 5개 · Extreme 6개): <b>빙하 돌진</b>(예고선이 뜨고 달려와요. 벽에 부딪히면 위에서 고드름이 떨어지고, 돌진이 끝나면 상아가 박혀 잠깐 멈춰요) · <b>빙하 강타</b>(발밑 원 안이 아파요. Hard~는 두 번 연달아) · <b>고드름 낙하</b>(표시된 곳에 떨어져요) · <b>냉기 숨결</b>(Normal~: 부채꼴로 쓸어요. 맞는 동안 서리 게이지가 차고 바닥에 서리가 번져요) · <b>상아 투창</b>(Hard~: 상아가 날아와요. <b>무기로 쳐내면</b> 사라져요) · <b>빙하 균열</b>(Extreme: 필드가 4×4 칸으로 나뉘고 <b>빨간 칸</b>이 2.4초 뒤 터져요. 칸 밖으로 피하세요).</li><li>제한 시간(Easy 180초 · Normal 150초 · Hard 120초 · Extreme 90초)이 지나면 <b>혹한</b>: 눈보라가 몰아치고, 걸음이 빨라지고, 서리가 더 빨리 번지고, 기술 간격이 절반이 돼요.</li><li>기절·수면·넉백, 그리고 <b>빙결 계열</b>(빙결·절대 영도·서리 감속)은 안 먹혀요. 화상 계열은 <b>그대로 먹혀요</b>.</li></ul>'
+    '<h5>빙하 맘모스</h5><ul class="ul"><li>체력 Easy 150 · Normal 250 · Hard 300 · Extreme 400. 느리고 거대한 얼음 매머드예요. <b>빙하 강타</b>·<b>냉기 숨결</b>·<b>혹한</b>이 닿은 자리에 <b>서리 지대</b>가 남아요(최대 10칸 · 14초 뒤 녹아요 · 혹한 땐 12칸).</li><li><b>서리 지대</b> 위에 서면 <b>이동이 느려지고 빙결 게이지가 차올라요</b>(초당 Easy 7% · Normal 9% · Hard 11% · Extreme 14%). 가득 차면 얼어붙어요(5초 · 받는 피해 2배 · 3번 맞으면 깨져요). 맘모스의 얼음 기술을 맞아도 게이지가 차요.</li><li><b>코 잡기</b>(기본 공격): 코 끝에 서 있으면 붙잡아 <b>옆으로 휘둘러 벽에 던져요</b>. 벽에 부딪히면 피해(Easy 7 · Normal 10 · Hard 14 · Extreme 20)와 기절 0.5초, 그리고 부딪힌 자리 근처에 고드름이 떨어져요(Easy 2개 · Normal 3개 · Hard 4개 · Extreme 5개, 혹한엔 +1). <b>몸이 닿아도 피해는 없어요.</b> 대신 몸 가까이 붙은 분신·소환수·옛 전우는 0.8초마다 서리 충격으로 쳐내요.</li><li>기술 (Easy 3개 · Normal 4개 · Hard 5개 · Extreme 6개): <b>빙하 돌진</b>(예고선이 뜨고 달려와요. 벽에 부딪히면 위에서 고드름이 떨어지고, 돌진이 끝나면 상아가 박혀 잠깐 멈춰요) · <b>빙하 강타</b>(발밑 원 안이 아파요. Extreme은 두 번 연달아) · <b>고드름 낙하</b>(표시된 곳에 떨어져요) · <b>냉기 숨결</b>(Normal~: 부채꼴로 쓸어요. 맞는 동안 서리 게이지가 차고 바닥에 서리가 번져요) · <b>상아 투창</b>(Hard~: 상아가 날아와요. <b>무기로 쳐내면</b> 사라져요) · <b>빙하 균열</b>(Extreme: 필드가 4×4 칸으로 나뉘고 <b>빨간 칸</b>이 2.4초 뒤 터져요. 칸 밖으로 피하세요).</li><li>제한 시간(Easy 180초 · Normal 150초 · Hard 120초 · Extreme 90초)이 지나면 <b>혹한</b>: 눈보라가 몰아치고, 걸음이 빨라지고, 서리가 더 빨리 번지고, 기술 간격이 절반이 돼요.</li><li>기절·수면·넉백, 그리고 <b>빙결 계열</b>(빙결·절대 영도·서리 감속)은 안 먹혀요. 화상 계열은 <b>그대로 먹혀요</b>.</li></ul>'
   ];
   function jbBossInfoHtml(bi) { return (JB_BINFO[bi] || '').replace(/^<h5>.*?<\/h5>/, ''); }
   function jbInfoHtml() {
