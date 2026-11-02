@@ -1185,7 +1185,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v698</span>
+      <span class="verTag">v699</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -1891,7 +1891,7 @@ var DM = (function () {
                { name: '영웅', desc: '휘두르기 적중 시 1/2로 피해 영구 +1' }] }
     , tycoon: { name: '졸부', len: 0, width: 0, omega: 0, desc: '무기 없음. 3초마다 동전 부채꼴 5 / 폭죽 12 / 일자 3 중 하나. 동전 피해 2, 남은 동전은 주우면 +2 회복',
       traits: [{ name: '일확천금', desc: '모든 기술 동전 +2' },
-               { name: '다이아 동전', desc: '1/12로 다이아 동전(피해·회복 10)' }] }
+               { name: '다이아 동전', desc: '1/20로 다이아 동전(피해·회복 10)' }] }
   };
   var RAR = { halberd: 0, selene: 6, sisyphus: 6, boomerang: 1, archmage: 5, morrigan: 6, chronos: 6, snake: 6, chef: 5, lightning: 5, rusty: 1, cannon: 2, laser: 2, shuriken: 2, greatbow: 2, hammer: 1, whip: 1, handfan: 2, giant: 1, beast: 3, gumiho: 5, sulnyeo: 5, trumpet: 1, ash: 6, sword: 0, dummy: 0, dagger: 0, bow: 0, spear: 0, fire: 2, ice: 2, azure: 2, dark: 3, great: 0, robin: 3, angler: 3, vampire: 4, scythe: 4, dancer: 3, hyup: 3, ronin: 3, master: 4, katana: 5, torch: 5, holy: 5, tactician: 4, freak: 4, fighter: 1, dbaxe: 1, rapier: 2, pickaxe: 1, tycoon: 4, extg: 2, michael: 6, mace: 0, elf: 1, sniper: 1, witch: 5, guard: 3, silver: 2, black: 6, plague: 3, songwriter: 1, revolver: 4, thunder: 2, axe: 0, magician: 4, bounty: 4, paewang: 6 };
   var RAR_INFO = [{ n: '일반', c: '#8b94a1' }, { n: '희귀', c: '#2fb857' }, { n: '초희귀', c: '#3d8bff' }, { n: '영웅', c: '#a05cf0' }, { n: '신화', c: '#e8383d' }, { n: '전설', c: '#ffc21a' }, { n: '태고', c: '#3a2a5e' }];
@@ -8928,7 +8928,7 @@ var DM = (function () {
   function tcCount(f) { var n = 0; tcCoins.forEach(function (c) { if (c.own === f.i && c.sp < 400) n++; }); return n; }
   function tcExtra(f) { return f.trait === 1 ? 2 : 0; }
   function tcSpawn(f, x, y, ang, spd) {
-    var dia = f.trait === 2 && Math.random() < 1 / 12;
+    var dia = f.trait === 2 && Math.random() < 1 / 20;
     tcCoins.push({ x: x, y: y, vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd, own: f.i, t: 0, ph: Math.random() * TAU, dia: dia, sp: spd });
   }
   function tcStep(f, k, dt) {
@@ -15236,7 +15236,7 @@ var DM = (function () {
       else if (f.type === 'halberd') s = f.trait === 1 ? '5초마다 참격 ' + HB_SL_DMG : (f.trait === 2 ? '이속 ×' + HB_MV + ' · 공격 텀 ' + HB_CD_B + '초' : '');
       else if (f.type === 'michael') s = f.trait === 1 ? '깃발 파괴 → 12 참격' : '30초 후 축복';
       else if (f.type === 'extg') s = f.trait === 1 ? '소화량 40 · 충전 1초' : '휘두르기 1/2 → 영구 +1';
-      else if (f.type === 'tycoon') s = f.trait === 1 ? '동전 +2' : '다이아 동전 1/12';
+      else if (f.type === 'tycoon') s = f.trait === 1 ? '동전 +2' : '다이아 동전 1/20';
       else if (f.type === 'pickaxe') s = f.trait === 1 ? '다이아 → 20 피해' : '석탄 → 확정 화상';
       else if (f.type === 'rapier') s = f.trait === 1 ? '찌르기 초고속' : '빗나가면 1초 후 재시전';
       else if (f.type === 'dbaxe') s = f.trait === 1 ? '회전 빠름' : '회전 중 추적';
