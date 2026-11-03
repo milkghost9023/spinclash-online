@@ -332,7 +332,7 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
     const S = await statsLoad(), win = !!b.win;
     if (b.k === 'jb') {
       const bi = Math.floor(+b.bi), lv = Math.floor(+b.lv), cn = Math.floor(+b.cn), id = String(b.id || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 24);
-      if (!(bi >= 0 && bi <= 7) || !(lv >= 0 && lv <= 3)) return send(res, 200, { ok: true });
+      if (!(bi >= 0 && bi <= 9) || !(lv >= 0 && lv <= 3)) return send(res, 200, { ok: true });
       const k = bi + '-' + lv, o = S.jb[k] || (S.jb[k] = { a: 0, w: 0, cn: [0, 0, 0], u: new Set() });
       o.a++; if (win) { o.w++; if (cn >= 1 && cn <= 3) o.cn[cn - 1]++; if (id.length >= 6 && o.u.size < 3000) o.u.add(id); }
       statsDirty = true;
