@@ -1193,7 +1193,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v714</span>
+      <span class="verTag">v718</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -1672,7 +1672,7 @@ var DM = (function () {
 
   var CALM_T = 6, PATIENCE_DMG = 1;          // 검-기사의 인내: 6초 무피격 → 다음 피격 데미지 1로 고정
   var RAGE_T = 6;                             // 검-기사의 분노: 6초 무타격 → 다음 타격 2배
-  var SPEAR_TIP_STREAK = 2, SPEAR_MULT = 3;   // 창-날카로운 창 끝
+  var SPEAR_TIP_STREAK = 2, SPEAR_MULT = 2;   // 창-날카로운 창 끝
   var SHAFT_DMG_T2 = 3;                       // 창-단단한 창대: 창대 데미지
   var SC_DMG = 4, SC_CD = 5, SC_DASH_T = 0.5, SC_DASH_MUL = 2.3, SC_REAP_DMG = 30;   // 낫
   var PARRY_NEED = 5, DASH_DMG = 10, DASH_SPEED = 3200;  // 단검-눈초리
@@ -1693,7 +1693,7 @@ var DM = (function () {
   var HY_SPIN1 = 235, H_REACH = 105, H_CHASE = 380, H_BIG = 520;   // 협객
   var RN_DMG = 3, RN_CD = 1.6, RN_PERIOD = 4, RN_AURA = 2.3, RN_AURA1 = 3, RN_COUNTER = 4, RN_X = 15, RN_SHUN = 8, RN_X_HP = 40;   // 낭인
   var INV_T = 0.5, ZAN_T = 30, GREAT_DMG = 4;
-  var DARK_NEED = [8, 8, 5, 10], DARK_DMG = [25, 25, 25, 55], DARK_BASE = 3;   // 흑도 (trait 0/1/2 -> 인덱스 +1)   // 인내 무적 / 대검   // 카타나
+  var DARK_NEED = [8, 8, 5, 14], DARK_DMG = [25, 25, 25, 55], DARK_BASE = 3;   // 흑도 (trait 0/1/2 -> 인덱스 +1)   // 인내 무적 / 대검   // 카타나
   var ICE_DECAY = 0.03, ICE_TIME = 5, ICE_TIME_T2 = 10, ICE_MAX_HITS = 3, ICE_BREAK_DMG = 8, ICE_FILL_T1 = [1 / 2, 1 / 2];   // 얼음검
 
   var asFx = [], asDust = [];
@@ -1709,7 +1709,7 @@ var DM = (function () {
                { name: '날 갈기', desc: '시작 치명타 확률 15%' }] },
     spear: { name: '창', len: 84 * K, width: 6 * K, omega: 2.8, tip: 24 * K, grow: 16 * K, maxLen: 170 * K,
       desc: '타격할수록 길어지고 창끝이 강해진다',
-      traits: [{ name: '삼연 강타', desc: '창끝으로 2번 타격하면 다음 타격 3배 (창대도 3배)' },
+      traits: [{ name: '삼연 강타', desc: '창끝으로 2번 타격하면 다음 타격 2배 (창대도 2배)' },
                { name: '단단한 창대', desc: '창대로 때려도 3 피해' }] },
     dagger: { name: '단검', len: 46 * K, width: 5 * K, omega: 4.2, spin: 0.6, maxOmega: 20, desc: '타격할수록 더 빨리 돈다 (피해 1)',
       traits: [{ name: '눈초리', desc: '패링+타격 5번이면 돌진 10 피해' },
@@ -1728,7 +1728,7 @@ var DM = (function () {
                { name: '무게감', desc: '패링하면 상대에게 1 피해' }] },
     dark: { name: '흑도', len: 84 * K, width: 6 * K, omega: 3.3, desc: '타격마다 어둠 쌓임. 8스택이면 25 피해',
       traits: [{ name: '조건 조작', desc: '5스택이면 발동' },
-               { name: '임계돌파', desc: '10스택이면 55 피해 + 기절' }] },
+               { name: '임계돌파', desc: '14스택이면 55 피해 + 기절' }] },
     master: { name: '마스터', len: 90 * K, width: 5 * K, omega: 0, desc: '다가오면 연속 베기. 16초마다 영역 전개',
       traits: [{ name: '전개 강화', desc: '영역이 더 넓어진다' },
                { name: '추격 베기', desc: '벽에서 튕길 때 돌진 베기' }] },
@@ -1831,7 +1831,7 @@ var DM = (function () {
       traits: [{ name: '강한 출력', desc: '5초마다 2초간 발사. 레이저가 굵어지고 초당 12 피해' },
                { name: '단발 레이저', desc: '2초마다 1초간 발사. 초당 5 피해' }] }
     , shuriken: { name: '표창', len: 0, width: 0, omega: 0, desc: '0.5초마다 표창을 던진다(2)',
-      traits: [{ name: '난사', desc: '10초마다 제자리에 멈춰 1초간 집중. 이후 5초간 0.1초마다 부채꼴 안으로 무작위 발사' },
+      traits: [{ name: '난사', desc: '10초마다 제자리에 멈춰 1초간 집중. 이후 5초간 0.1초마다 부채꼴 안으로 무작위 발사. 부채꼴은 천천히 상대를 따라간다' },
                { name: '튕기는 표창', desc: '표창이 벽에 2번까지 튕긴다' }] }
     , greatbow: { name: '대궁', len: 0, width: 0, omega: 0, desc: '6초마다 속도가 느려지며 상대를 조준한 뒤 대화살을 쏜다. 매우 빠름(10)',
       traits: [{ name: '유성화살', desc: '짝수 번째 공격이 바뀐다. 하늘로 화살 3발을 쏘면 상대를 따라다니는 표식 위로 화살 3발이 떨어진다(7)' },
@@ -1877,9 +1877,9 @@ var DM = (function () {
     , lightning: { name: '라이트닝', len: 0, width: 0, omega: 0, desc: '무기 없음, 매우 빠르다. 접촉 1. 타격 시 속도 증가 + 1/5 확률로 피해 +1(영구). 벽 튕김 시 1/7로 초신속 · 천벌 · 악재 중 하나',
       traits: [{ name: '좋은 시작', desc: '접촉 피해 4로 시작' },
                { name: '전연격', desc: '접촉 시 1/4 확률로 번개연격(4연타 + 스턴 + 넉백)' }] }
-    , fighter: { name: '격투가', len: 0, width: 0, omega: 0, desc: '무기 없음, 빠르다. 접촉 1. 타격마다 1/4로 피해 +1(영구), 나머지는 산고(×2 + 넉백) · 시스테마(연격, ×4)',
+    , fighter: { name: '격투가', len: 0, width: 0, omega: 0, desc: '무기 없음, 빠르다. 접촉 1. 타격마다 1/10로 피해 +1(영구), 나머지는 산고(×2 + 넉백) · 시스테마(연격, ×4)',
       traits: [{ name: '기본기 단련', desc: '접촉 피해 3으로 시작' },
-               { name: '인내', desc: '피해가 5가 되기 전엔 +1만 발동' }] }
+               { name: '단련된 몸', desc: '최대 체력 +15 (체력 115로 시작)' }] }
     , dbaxe: { name: '쌍도끼', len: 58 * K, width: 9 * K, omega: 3.3, desc: '피해 3. 10초마다 4초간 회전베기(패링 불가, 상대와 겹쳐도 튕기지 않음)',
       traits: [{ name: '강회전', desc: '회전베기가 더 빠르고, 피해 간격이 짧다(0.3초 → 0.18초)' },
                { name: '추적', desc: '회전베기 중 상대를 계속 추적. 이동속도 조금 감소' }] }
@@ -2108,7 +2108,7 @@ var DM = (function () {
   }
   function snd(fn) { if (!soundOn || demo) return; var c = audio(); if (!c) return; var sr = Math.random; Math.random = FXR; try { fn(c, c.currentTime); } catch (e) { if (window.__sndErr) window.__sndErr.push(String(e)); } finally { Math.random = sr; } }
   /* UI 효과음: 데모 화면(무음)에서도 울리도록 snd를 거치지 않음 */
-  function ui(fn) { if (!soundOn) return; var c = audio(); if (!c) return; try { fn(c, c.currentTime); } catch (e) { if (window.__sndErr) window.__sndErr.push(String(e)); } }
+  function ui(fn) { if (!soundOn) return; var c = audio(); if (!c) return; var sr = Math.random; Math.random = FXR; try { fn(c, c.currentTime); } catch (e) { if (window.__sndErr) window.__sndErr.push(String(e)); } finally { Math.random = sr; } }
   function uiTick(p) { ui(function (c, t) { var f = 640 * (p || 1) * (1 + (Math.random() - 0.5) * 0.04); tone(c, t, 'square', f, f * 1.5, 0.06, 0.07); tone(c, t, 'triangle', f * 2, f * 2, 0.05, 0.05); noise(c, t, 0.02, 0.05, 5000); }); }
   function uiPing() { ui(function (c, t) { tone(c, t, 'sine', 880, 880, 0.14, 0.13); tone(c, t + 0.11, 'sine', 1320, 1320, 0.22, 0.13); tone(c, t + 0.11, 'triangle', 660, 660, 0.22, 0.08); }); }
   function uiBack() { ui(function (c, t) { tone(c, t, 'square', 600, 380, 0.09, 0.07); tone(c, t + 0.05, 'triangle', 420, 280, 0.1, 0.07); }); }
@@ -4449,15 +4449,15 @@ var DM = (function () {
   function mk0(i) {
     var s = sel[i], sps = (s.spells || []).filter(function (k) { return SPELL[k] && k !== 'none'; }).slice(0, 2).map(function (k) { return { k: k, left: SPELL[k].uses }; });
     return { i: i, type: s.type, trait: s.trait, x: SPAWN[i].x, y: SPAWN[i].y, vx: Math.cos(s.ang) * SPD(), vy: Math.sin(s.ang) * SPD(),
-      hp: (s.type === 'dancer' && s.trait) ? DN_HP : (s.type === 'sulnyeo' ? SY_HP : s.type === 'tycoon' ? 50 : (s.type === 'dummy' ? (s.trait === 1 ? 150 : (s.trait === 2 ? 60 : 20)) : (s.type === 'giant' ? (s.trait === 1 ? 250 : 200) : 100))), cs: Math.random() < 0.5 ? 1 : -1, ct: Math.random() * 6, sfT: 0, ghost: 0, rib: [], dn: 0, hits: 0, ang: s.ang - Math.PI / 2, dir: 1, cool: 0, latch: false, flash: 0, startAng: s.ang,
+      hp: (s.type === 'dancer' && s.trait) ? DN_HP : (s.type === 'sulnyeo' ? SY_HP : s.type === 'tycoon' ? 50 : (s.type === 'dummy' ? (s.trait === 1 ? 150 : (s.trait === 2 ? 60 : 20)) : (s.type === 'giant' ? (s.trait === 1 ? 250 : 200) : (s.type === 'fighter' && s.trait === 2 ? 100 + FT_BODY_HP : 100)))), cs: Math.random() < 0.5 ? 1 : -1, ct: Math.random() * 6, sfT: 0, ghost: 0, rib: [], dn: 0, hits: 0, ang: s.ang - Math.PI / 2, dir: 1, cool: 0, latch: false, flash: 0, startAng: s.ang,
       calm: 0, idle: 0, streak: 0, charged: false, parries: 0, stun: 0, jx: 0, jy: 0,
       burn: 0, burnLv: 0, burnT: 0, burnAcc: 0, burnNoDecay: false,
       ice: 0, frozen: 0, iceHits: 0, iceMax: ICE_TIME, calmReady: false, idleReady: false, inv: 0, zan: 0, dark: 0, rageOn: false, t1shown: false,
       fireT: 1.0, specT: s.type === 'katana' ? IAI_CD : (s.type === 'great' ? ZAN_T : (s.type === 'master' ? DOM_CD : (s.type === 'scythe' ? SC_CD : (s.type === 'angler' ? AN_CD : (s.type === 'robin' ? (s.trait === 1 ? RB_RAIN_CD : RB_CD) : SPEC_CD))))), slicing: null, mcd: 0.4, swing: 0, swingT: 0, kT: 0, kvx: 0, kvy: 0, dom: null, hs: 0, drawn: false, hy: { step: 0, cd: 0.7, idle: 0, keep: 0 }, rn: { cyc: 2.0, aura: false, auraT: 0, cd: 0.6, keep: 0, cnt: 0 }, atk: null, stab: 0, smash: null, queue: 0, qT: 0, fan2: 0, focus: null,
       phoenix: s.type === 'fire' && s.trait === 2,
-      maxHp: (s.type === 'sulnyeo' ? SY_HP : s.type === 'dummy' && s.trait === 1 ? 150 : (s.type === 'giant' ? (s.trait === 1 ? 250 : 200) : 100)), sps: sps, spCd: 0, spdT: 0, spdE: 0, dashT: 0, reaped: false, endureT: 0, bombT: 0, bombLock: 0, vamp: false, shield: 0, shieldT: 0, shieldFlash: 0, chaseT: 0, chaseA: 0, chaseC: '#ffb84a', endure: false, assistT: 0, bs: (s.type === 'azure' && s.trait === 1) ? 4 : 1, cc: (s.type === 'azure' && s.trait === 2) ? 15 : 0, hunger: false, vd: 0, ag: null, gpT: 0, gpCd: GP_CD, gpHit: false, gd: s.type === 'silver' ? 3 : (s.type === 'archmage' ? 2 : 5), skh: 0, gdT: 0, gc: 0.4, gk: null, gh: false, gx: 0, gsa: 0, gsw: null, gdF: 0, gbT: 99, med: null, pl: 0, plBy: 0, plFx: 0 };
+      maxHp: (s.type === 'sulnyeo' ? SY_HP : s.type === 'dummy' && s.trait === 1 ? 150 : (s.type === 'giant' ? (s.trait === 1 ? 250 : 200) : (s.type === 'fighter' && s.trait === 2 ? 100 + FT_BODY_HP : 100))), sps: sps, spCd: 0, spdT: 0, spdE: 0, dashT: 0, reaped: false, endureT: 0, bombT: 0, bombLock: 0, vamp: false, shield: 0, shieldT: 0, shieldFlash: 0, chaseT: 0, chaseA: 0, chaseC: '#ffb84a', endure: false, assistT: 0, bs: (s.type === 'azure' && s.trait === 1) ? 4 : 1, cc: (s.type === 'azure' && s.trait === 2) ? 15 : 0, hunger: false, vd: 0, ag: null, gpT: 0, gpCd: GP_CD, gpHit: false, gd: s.type === 'silver' ? 3 : (s.type === 'archmage' ? 2 : 5), skh: 0, gdT: 0, gc: 0.4, gk: null, gh: false, gx: 0, gsa: 0, gsw: null, gdF: 0, gbT: 99, med: null, pl: 0, plBy: 0, plFx: 0 };
   }
-  function resetFighters() { hbFx.length = 0; wcFx.length = 0; snpFx.length = 0; slArr.length = 0; slFx.length = 0; bmArr.length = 0; amOrbs.length = 0; amBolts.length = 0; mrFx.length = 0; mrFeath.length = 0; crArrows.length = 0; crWaves.length = 0; rsShards.length = 0; chProj.length = 0; chDishes.length = 0; chFx.length = 0; asAmb.fl.length = 0; asAmb.g = 0; asAmb.prev = {}; roars.length = 0; cnBalls.length = 0; cnFx.length = 0; asCut(); asFx.length = 0; asDust.length = 0; miPetals.length = 0; miFx.length = 0; exSmoke.length = 0; tcCoins.length = 0; paItems.length = 0; paFx.length = 0; ftFx.length = 0; pwHands.length = 0; pwBones.length = 0; pwFogs.length = 0; bhCoins.length = 0; bhBlood.length = 0; bhSplats.length = 0; bhVig = 0; songNotes.length = 0; mgCards.length = 0; firePs.length = 0; clones.length = 0; fkGlobs.length = 0; fkPuds.length = 0; fkMarks.length = 0; fkGuts.length = 0; gmFloors.length = 0; gmFx.length = 0; syFx.length = 0; sySnow.length = 0; fighters = [mk(0), mk(1)]; fighters.forEach(function (f) { f.tc = null; f.ex = null; f.mi = null; f.mr = null; f.am = null; f.bm = null; f.ss = null; f.bind = 0; f.dg = null; f.tdc = 1.0; f.ti = false; f.sm = 1; f.spm = 1; f.tbc = 0; if (f.type === 'torch') f.specT = TC_CD; if (f.type === 'holy') { f.specT = HL_CD0; f.hl = { st: 'idle', t: 0, chains: [], tethers: [], pend: null, placed: 0, rush: false, stop: false, tcd: 0, px: 0, py: 0, pa: 0, k: 0, gt: 0, ts: 0 }; } }); arrows.length = 0; rains.length = 0; fishes.length = 0; }
+  function resetFighters() { hbFx.length = 0; wcFx.length = 0; snpFx.length = 0; slArr.length = 0; slFx.length = 0; bmArr.length = 0; amOrbs.length = 0; amBolts.length = 0; mrFx.length = 0; mrFeath.length = 0; crArrows.length = 0; crWaves.length = 0; rsShards.length = 0; chProj.length = 0; chDishes.length = 0; chFx.length = 0; asAmb.fl.length = 0; asAmb.g = 0; asAmb.gt = 4; asAmb.prev = {}; roars.length = 0; cnBalls.length = 0; cnFx.length = 0; asCut(); asFx.length = 0; asDust.length = 0; miPetals.length = 0; miFx.length = 0; exSmoke.length = 0; tcCoins.length = 0; paItems.length = 0; paFx.length = 0; ftFx.length = 0; pwHands.length = 0; pwBones.length = 0; pwFogs.length = 0; bhCoins.length = 0; bhBlood.length = 0; bhSplats.length = 0; bhVig = 0; songNotes.length = 0; mgCards.length = 0; firePs.length = 0; clones.length = 0; fkGlobs.length = 0; fkPuds.length = 0; fkMarks.length = 0; fkGuts.length = 0; gmFloors.length = 0; gmFx.length = 0; syFx.length = 0; sySnow.length = 0; fighters = [mk(0), mk(1)]; fighters.forEach(function (f) { f.tc = null; f.ex = null; f.mi = null; f.mr = null; f.am = null; f.bm = null; f.ss = null; f.bind = 0; f.dg = null; f.tdc = 1.0; f.ti = false; f.sm = 1; f.spm = 1; f.tbc = 0; if (f.type === 'torch') f.specT = TC_CD; if (f.type === 'holy') { f.specT = HL_CD0; f.hl = { st: 'idle', t: 0, chains: [], tethers: [], pend: null, placed: 0, rush: false, stop: false, tcd: 0, px: 0, py: 0, pa: 0, k: 0, gt: 0, ts: 0 }; } }); arrows.length = 0; rains.length = 0; fishes.length = 0; }
   function wseg(f, inner, outer) {
     var c = Math.cos(f.ang), s = Math.sin(f.ang);
     return { x1: f.x + c * inner, y1: f.y + s * inner, x2: f.x + c * outer, y2: f.y + s * outer };
@@ -6068,17 +6068,18 @@ var DM = (function () {
         if (sk.st === 'aim') fan(b, sk.t, L.tha * 0.7, L.tha, 1, 0, 1700, 38, rr * 0.9, 1.0);
         if (sk.st === 'pre' || sk.st === 'fetch') hz.push(function () { return function (tau, dt, px, py) { return tau < 0.7 ? jbHit(ptSeg(px, py, b.x, b.y, sk.sx, sk.sy).d, rr * 0.7 + R * 0.8 + 14, 40, HIT * 0.7) : 0; }; });
         if (sk.st === 'wind') hz.push(function () { return function (tau, dt, px, py) { var t1 = sk.wt + tau; return (t1 >= L.thw && t1 - dt < L.thw) ? jbHit(Math.hypot(px - b.x, py - b.y), rr + MU_PR + 70 + R * 0.4, 50, HIT) : 0; }; });
-      } else if (sk && sk.id === 'spin') {
+      } else if (sk && sk.id === 'spin') {   /* 느려지는 동안 계속 나를 겨눈다(피한 자리로 다시 겨눔) → 그 방향으로 돌진 → 끝에서 0.4초 더 돈다 */
         var srd = rr + MU_SR;
         hz.push(function () {
+          var st = sk.st, t = sk.t, run = sk.run || 0, ft = sk.ft || 0, bx = b.x, by = b.y, ux = sk.ux, uy = sk.uy;
           return function (tau, dt, px, py) {
-            var ta = sk.t + tau, run, rem, pos;
-            if (sk.st === 'sl') { if (ta < L.spt) return 0; run = Math.min(L.spl, L.sps * (ta - L.spt)); rem = ta - L.spt - L.spl / L.sps; }
-            else if (sk.st === 'go') { run = Math.min(L.spl - sk.run, L.sps * tau); rem = tau - (L.spl - sk.run) / L.sps; }
+            if (st === 'sl') { t += dt; var dx = px - bx, dy = py - by, dl = Math.hypot(dx, dy) || 1; ux = dx / dl; uy = dy / dl; if (t >= L.spt) { st = 'go'; run = 0; } return 0; }
+            if (st === 'go') {
+              var mv = Math.min(L.sps * dt, L.spl - run), nx = Math.max(rr, Math.min(F - rr, bx + ux * mv)), ny = Math.max(rr, Math.min(F - rr, by + uy * mv)), bl = nx !== bx + ux * mv || ny !== by + uy * mv;
+              run += Math.hypot(nx - bx, ny - by); bx = nx; by = ny; if (run >= L.spl - 0.5 || bl) { st = 'fin'; ft = 0; }
+            } else if (st === 'fin') { ft += dt; if (ft > 0.4) return 0; }
             else return 0;
-            if (rem > 0.4) return 0;
-            pos = { x: b.x + sk.ux * (sk.st === 'sl' ? run : run), y: b.y + sk.uy * (sk.st === 'sl' ? run : run) };
-            return jbHit(Math.hypot(px - pos.x, py - pos.y), srd + R * 0.3 + 8, 40, 26);
+            return jbHit(Math.hypot(px - bx, py - by), srd + R * 0.3 + 8, 40, HIT * 0.45);
           };
         });
       } else if (sk && sk.id === 'zone') {
@@ -6090,7 +6091,20 @@ var DM = (function () {
       } else if (sk && sk.id === 'blitz') {
         if ((sk.st === 'pre' || sk.st === 'warn') && sk.ray) hz.push(function () { return function (tau, dt, px, py) { var tw = sk.st === 'warn' ? L.bzw - sk.w : 0.55 - sk.pt + L.bzw; return (tau >= tw - 0.03 && tau <= tw + 0.35) ? jbHit(ptSeg(px, py, b.x, b.y, sk.ray.x, sk.ray.y).d, rr * 0.6 + R * 0.7 + 14, 40, HIT * 0.9) : 0; }; });
       } else if (sk && sk.id === 'rend') {
-        if (sk.st === 'aim' || sk.st === 'close' || sk.st === 'spin') hz.push(function () { return function (tau, dt, px, py) { return jbHit(Math.hypot(px - b.x, py - b.y), rr + 150 + R * 0.3 + 8, 40, 22); }; });
+        if (sk.st === 'aim' || sk.st === 'close' || sk.st === 'spin') hz.push(function () {   /* 겨눔 → 돌진(내가 있던 곳 앞까지) → 그 자리에서 회전 베기 → 휘두르기 */
+          var st = sk.st, at = sk.at, sp = sk.sp || 0, run = sk.run || 0, lim = sk.lim || 0, bx = b.x, by = b.y, ux = sk.ux, uy = sk.uy, wt = 0;
+          return function (tau, dt, px, py) {
+            var dx, dy, dl;
+            if (st === 'aim') { at += dt; dx = px - bx; dy = py - by; dl = Math.hypot(dx, dy) || 1; ux = dx / dl; uy = dy / dl; if (at >= 0.5) { if (dl > rr + R + 90) { st = 'close'; run = 0; lim = Math.min(900, dl - rr - R - 50); } else { st = 'spin'; sp = 0; } } return 0; }
+            if (st === 'close') { var mv = Math.min(2800 * dt, Math.max(0, lim - run)); bx = Math.max(rr, Math.min(F - rr, bx + ux * mv)); by = Math.max(rr, Math.min(F - rr, by + uy * mv)); run += mv; if (run >= lim - 0.5) { st = 'spin'; sp = 0; } return 0; }
+            if (st === 'spin') { sp += dt; if (sp >= 0.9) { st = 'wind'; wt = 0; } return jbHit(Math.hypot(px - bx, py - by), rr + 150 + R * 0.3 + 8, 40, HIT * 0.35); }
+            if (st === 'wind') {
+              wt += dt; dx = px - bx; dy = py - by; dl = Math.hypot(dx, dy) || 1; if (wt < 0.3) { ux = dx / dl; uy = dy / dl; }
+              if (wt >= 0.45) { st = 'done'; return Math.abs(jbAng(Math.atan2(dy, dx), Math.atan2(uy, ux))) <= 1.3 + 0.25 ? jbHit(dl, rr + MU_PR + 80 + R * 0.4, 50, HIT) : 0; }
+            }
+            return 0;
+          };
+        });
         if (sk.st === 'wind') hz.push(function () { return function (tau, dt, px, py) { var t1 = sk.wt + tau; return (t1 >= 0.45 && t1 - dt < 0.45) ? jbHit(Math.hypot(px - b.x, py - b.y), rr + MU_PR + 80 + R * 0.4, 50, HIT) : 0; }; });
         if (sk.st === 'win') hz.push(function () { return function (tau, dt, px, py) { return jbHit(Math.hypot(px - b.x, py - b.y), rr + R + 60, 80, HIT); }; });
       } else if (sk && sk.id === 'still') {
@@ -6475,7 +6489,7 @@ var DM = (function () {
     d.ice += amt != null ? amt : (a.trait === 1 ? ICE_FILL_T1[0] : 1 / 3);
     if (d.ice >= 0.999) { if (d.frozen > 0) absZero(d, a); else freeze(d, a); }
   }
-  function jbImm(d, txt) { var n = performance.now(); if (!d.imT || n > d.imT) { d.imT = n + 1300; floater(d.x, Math.max(60, d.y - R - 20), txt, '#d8e8d0', 40); } }   /* 진보스 상태이상 면역 표시(그림만) */
+  function jbImm(d, txt) { var n = simMs; if (!d.imT || n > d.imT || d.imT - n > 1300) { d.imT = n + 1300; floater(d.x, Math.max(60, d.y - R - 20), txt, '#d8e8d0', 40); } }   /* 진보스 상태이상 면역 표시(그림만) */
   function magImm(d) { return d.type === 'rgiant' && !!d.rg && !!d.rg.mag; }   /* 마그마돈은 화상 면역 */
   function addBurn(d, a, amt) {
     if (d.type === 'kraken' || magImm(d)) { jbImm(d, '화상 면역'); d.burn = 0; return; }
@@ -8735,7 +8749,7 @@ var DM = (function () {
     if (T > 3.2) { for (var i = 0; i < 3; i++) { var th = now / 1100 + i * TAU / 3; sySnowFlake(X + Math.cos(th) * 210, Y + 10 + Math.sin(th) * 130, 24, th * 2, 3.5); } }
   }
   /* ---------- 표창 ---------- */
-  var SR_INT = 0.5, SR_DMG = 2, SR_SPD = 550, SR_FOCUS = 1, SR_RAIN = 5, SR_RINT = 0.1, SR_PER = 10, SR_FAN = 0.7, SR_BN = 2, SR_PARRY = true, srSndT = 0;
+  var SR_INT = 0.5, SR_DMG = 2, SR_SPD = 550, SR_FOCUS = 1, SR_RAIN = 5, SR_RINT = 0.1, SR_PER = 10, SR_FAN = 0.7, SR_TRK = 0.6, SR_BN = 2, SR_PARRY = true, srSndT = 0;
   function sfxSrThrow() { var n = performance.now(); if (n - srSndT < 70) return; srSndT = n; snd(function (c, t) { noise(c, t, 0.05, 0.16, 5200); tone(c, t, 'triangle', 1900, 800, 0.06, 0.05); }); }
   function sfxSrWall() { var n = performance.now(); if (n - srSndT < 50) return; srSndT = n; snd(function (c, t) { tone(c, t, 'square', 1500, 900, 0.03, 0.03); }); }
   function sfxSrFocus() { snd(function (c, t) { tone(c, t, 'sine', 300, 900, 0.8, 0.07); noise(c, t, 0.7, 0.05, 1800); }); }
@@ -8766,7 +8780,8 @@ var DM = (function () {
       a.t += dt; a.aim = Math.atan2(o.y - f.y, o.x - f.x); f.ang = a.aim;
       if (a.t >= SR_FOCUS) { a.st = 'rain'; a.t = 0; a.rt = 0; a.aim = Math.atan2(o.y - f.y, o.x - f.x); ring(f.x, f.y, R * 2, '#ffffff', 0.25); sparks(f.x, f.y, '#cfd8e6', 12, 380); }
     } else {
-      a.t += dt; a.rt += dt; f.ang = a.aim;
+      a.t += dt; a.rt += dt;
+      var sd0 = jbAng(Math.atan2(o.y - f.y, o.x - f.x), a.aim), sm0 = SR_TRK * dt; a.aim += Math.max(-sm0, Math.min(sm0, sd0)); f.ang = a.aim;   /* 난사 중에도 부채꼴이 천천히(초당 약 34도) 상대를 따라간다 */
       while (a.rt >= SR_RINT) { a.rt -= SR_RINT; srThrow(f, a.aim + (Math.random() - 0.5) * SR_FAN); }
       if (a.t >= SR_RAIN) { a.st = 'idle'; a.cd = SR_INT; }
     }
@@ -8797,7 +8812,7 @@ var DM = (function () {
     ctx.restore();
   }
   /* ---------- 레이저 ---------- */
-  var LZ_PULSE = 0.2, LZ_D = 2, LZ_D1 = 3, LZ_D2 = 1, LZ_TRK = 0.7, LZ_LEN = 44;
+  var LZ_PULSE = 0.2, LZ_D = 2, LZ_D1 = 3, LZ_D2 = 1, LZ_TRK = 0.85, LZ_LEN = 44;
   function sfxLzFire(d) { snd(function (c, t) { tone(c, t, 'sawtooth', 220, 900, 0.14, 0.1); noise(c, t, 0.16, 0.22, 3200); tone(c, t + 0.1, 'sawtooth', 120, 112, d, 0.07); tone(c, t + 0.1, 'sine', 340, 300, d, 0.07); }); }
   function sfxLzHit() { snd(function (c, t) { tone(c, t, 'square', 640, 300, 0.06, 0.035); }); }
   function lzCfg(f) { return f.trait === 1 ? { per: 5, dur: 2, dmg: LZ_D1, w: 74, pu: 0.25 } : (f.trait === 2 ? { per: 2, dur: 1, dmg: LZ_D2, w: 46 } : { per: 3, dur: 1, dmg: LZ_D, w: 46 }); }
@@ -9308,7 +9323,7 @@ var DM = (function () {
     ctx.save(); ctx.rotate(Math.PI); drawAxeArt(f, s, e); ctx.restore();
   }
   /* ---------- 격투가 ---------- */
-  var FT_CD = 0.5, FT_STUN = 0.5, FT_MOVE = 1.25, FT_PAT = 5, FT_SYS_N = 4, FT_SYS_GAP = 0.13, ftFx = [];
+  var FT_CD = 0.5, FT_STUN = 0.5, FT_MOVE = 1.25, FT_PAT = 5, FT_UP_P = 0.1, FT_BODY_HP = 15, FT_SYS_N = 4, FT_SYS_GAP = 0.13, ftFx = [];
   function ftBase(f) { return f.type === 'lightning' ? (f.trait === 1 ? 4 : 1) : (f.trait === 1 ? 3 : 1); }
   function ftInit(f) { return f.ft || (f.ft = { tcd: 0, A: ftBase(f), sys: null }); }
   function ftA(f) { return f.ft ? f.ft.A : ftBase(f); }
@@ -9337,8 +9352,7 @@ var DM = (function () {
     if (h.type === 'lightning') { ltTouch(h, o); return; }
     var a = ftInit(h); if (a.tcd > 0 || a.sys) return;
     a.tcd = FT_CD;
-    var rk = Math.random(), kind = rk < 0.25 ? 0 : (rk < 0.625 ? 1 : 2);   /* 0: 강화 1/4 · 1: 산고 · 2: 시스테마 */
-    if (h.trait === 2 && a.A < FT_PAT) kind = 0;
+    var rk = Math.random(), kind = rk < FT_UP_P ? 0 : (rk < FT_UP_P + (1 - FT_UP_P) / 2 ? 1 : 2);   /* 0: 강화 1/10 · 1: 산고 · 2: 시스테마 (나머지 반반) */
     if (kind === 0) {
       if (ftHit(h, o, a.A, '#ffd34a', false)) { a.A++; sparks(h.x, h.y, '#ffd34a', 8, 260); ring(h.x, h.y, R * 1.8, '#ffd34a', 0.25); sfxFtUp(); }
       return;
@@ -15266,7 +15280,7 @@ var DM = (function () {
       else if (f.type === 'rapier') s = f.trait === 1 ? '찌르기 초고속' : '빗나가면 1초 후 재시전';
       else if (f.type === 'dbaxe') s = f.trait === 1 ? '회전 빠름' : '회전 중 추적';
       else if (f.type === 'lightning') s = f.trait === 1 ? '시작 피해 4' : '번개연격 1/4';
-      else if (f.type === 'fighter') s = f.trait === 1 ? '시작 피해 3' : (ftA(f) < FT_PAT ? '인내 ' + ftA(f) + '/' + FT_PAT : '인내 해제');
+      else if (f.type === 'fighter') s = f.trait === 1 ? '시작 피해 3' : '최대 체력 ' + (100 + FT_BODY_HP);
       else if (f.type === 'paewang') s = f.trait === 1 ? '2초마다 HP +1' : f.trait === 2 ? '기술 타수당 +2' : '죽으면 왕의 복수';
       else if (f.type === 'bounty') s = f.trait === 1 ? 'HP 20 이하면 20 피해' : '표식 6초';
       else if (f.type === 'chronos') s = f.trait === 1 ? 'd 증가 7초마다' : (f.cr && f.cr.rev ? '부활 사용' : '부활 1회');
@@ -15295,7 +15309,7 @@ var DM = (function () {
       else if (f.type === 'guard') s = f.trait === 1 ? '가드 파괴 시 회전 베기' : (gdBuff(f) ? '창 5 피해! ' + Math.max(0, GD_BUFF_T - f.gbT).toFixed(1) + '초' : '가드 깨지면 5초간 창 5');
       else if (f.type === 'elf') s = (f.trait === 1 ? '갈래 화살 ' : '백샷 ') + Math.max(0, Math.ceil(f.specT)) + '초';
       else if (isBow(f)) s = f.focus ? '사격 중…' : '재사용 ' + Math.ceil(Math.max(0, f.specT)) + '초';
-      else if (f.type === 'dark') s = f.trait === 1 ? '필요 5스택' : '필요 10스택 · 55 피해';
+      else if (f.type === 'dark') s = f.trait === 1 ? '필요 5스택' : '필요 14스택 · 55 피해';
       else if (f.type === 'great') s = f.trait === 1 ? (f.zan === 0 ? Math.max(0, Math.ceil(f.specT)) + '초 후 강화' : (f.zan === 1 ? '강화 준비! +' + (100 - f.hp) : '사용 완료')) : '패링 시 상대 -1';
       else if (f.type === 'katana') s = f.trait === 1 ? Math.max(0, Math.ceil(f.specT)) + '초 후 발동' : '패링 ' + Math.min(KATANA_PARRY_NEED, f.parries) + '/' + KATANA_PARRY_NEED;
       else if (f.type === 'ice') s = f.trait === 1 ? '게이지 1/2 확정' : '빙결 ' + ICE_TIME_T2 + '초';
@@ -16123,7 +16137,7 @@ var DM = (function () {
     if (f.type === 'rapier') { var rb = f.rp; if (rb && rb.st === 'charge') return { p: 1 - rb.t / rb.T, txt: '기 모으는 중', ready: true }; if (rb && rb.st === 'dash') return { p: 1, txt: '찌르기!', ready: true }; return { p: 1 - Math.max(0, rb ? rb.cd : RP_CD) / RP_CD, txt: '찌르기까지 ' + Math.ceil(Math.max(0, rb ? rb.cd : RP_CD)) + '초', ready: false }; }
     if (f.type === 'dbaxe') { var dbb = f.db; if (dbb && dbb.spin > 0) return { p: dbb.spin / DB_DUR, txt: '회전베기 ' + dbb.spin.toFixed(1) + '초', ready: true }; return { p: 1 - Math.max(0, dbb ? dbb.cd : DB_CD) / DB_CD, txt: '회전베기까지 ' + Math.ceil(Math.max(0, dbb ? dbb.cd : DB_CD)) + '초', ready: false }; }
     if (f.type === 'lightning') { var la = f.ft || {}, lsp = Math.min(LT_STEP_MAX, la.sp || 0); if (la.ss > 0) return { p: la.ss / (la.ssT || LT_SS_T), txt: '초신속!', ready: true }; if (la.cq) return { p: 1, txt: '천벌!', ready: true }; if (la.bq) return { p: 1, txt: '악재!', ready: true }; return { p: lsp / LT_STEP_MAX, txt: '속도 +' + Math.round(lsp * LT_STEP * 100 / LT_MOVE) + '%', ready: false }; }
-    if (f.type === 'fighter') { var fa = ftA(f); if (f.trait === 2 && fa < FT_PAT) return { p: fa / FT_PAT, txt: '인내 · 피해 ' + fa + '/' + FT_PAT, ready: false }; return { p: -1, txt: '현재 피해 ' + fa + ' · 산고 ×2 · 시스테마 ×4', ready: true }; }
+    if (f.type === 'fighter') { var fa = ftA(f); return { p: -1, txt: '현재 피해 ' + fa + ' · 산고 ×2 · 시스테마 ×4', ready: true }; }
     if (f.type === 'paewang') { var pa = f.pw; if (f.curse && f.curse.on) { var gal = 0; clones.forEach(function (q) { if (q.gh && q.i === f.i && q.hp > 0) gal++; }); return { p: Math.min(1, f.curse.n / PW_CURSE_N), txt: '왕의 복수 · 옛 전우 ' + (PW_CURSE_N - f.curse.n + gal) + '마리 남음', ready: true }; } if (!pa) return { p: 0, txt: '패턴 준비', ready: false }; if (pa.cur) return { p: 1, txt: PW_NAMES[pa.cur.id] + ' 시전 중', ready: true }; return { p: 1 - Math.max(0, pa.cd) / PW_CD, txt: '다음 패턴까지 ' + Math.ceil(Math.max(0, pa.cd)) + '초', ready: false }; }
     if (f.type === 'bounty') { var bb = f.bh; if (bb && bb.mt > 0) return { p: bb.mt / bb.md, txt: '표식 ' + bb.mt.toFixed(1) + '초 · 적중 시 현상금 수거', ready: true }; var qq = bb ? bb.quiet : 0; return { p: Math.min(1, qq / BH_QUIET), txt: qq >= BH_QUIET ? '표식 찍기!' : '표식까지 ' + Math.max(0, Math.ceil(BH_QUIET - qq)) + '초 (교전 없이)', ready: qq >= BH_QUIET }; }
     if (f.type === 'chronos') { var ck = f.cr; if (!ck) return { p: 0, txt: '기술까지 5초', ready: false }; if (ck.st) return { p: 1, txt: CR_NAMES[ck.st] + '!', ready: true }; var prv = ck.k === 0 ? 0 : (ck.k < 3 ? CR_SCHED[ck.k - 1] : CR_SCHED[2] + CR_LOOP * (ck.k - 3)); return { p: Math.min(1, (ck.t - prv) / Math.max(1, ck.nx - prv)), txt: '기술까지 ' + Math.max(0, Math.ceil(ck.nx - ck.t)) + '초', ready: false }; }
@@ -16361,7 +16375,7 @@ var DM = (function () {
   $('#snd').addEventListener('click', function () { soundOn = !soundOn; sync(); if (soundOn) { audio(); if (screenName === 'title' || screenName === 'home') bgmStart(); } else { bgmStop(); bbgStop(); } hintSync(); });
 
   /* ---------- 화면 전환 ---------- */
-  function clearFx() { hbFx.length = 0; wcFx.length = 0; snpFx.length = 0; slArr.length = 0; slFx.length = 0; bmArr.length = 0; amOrbs.length = 0; amBolts.length = 0; mrFx.length = 0; mrFeath.length = 0; crArrows.length = 0; crWaves.length = 0; rsShards.length = 0; chProj.length = 0; chDishes.length = 0; chFx.length = 0; asAmb.fl.length = 0; asAmb.g = 0; asAmb.prev = {}; roars.length = 0; cnBalls.length = 0; cnFx.length = 0; asCut(); asFx.length = 0; asDust.length = 0; miPetals.length = 0; miFx.length = 0; exSmoke.length = 0; tcCoins.length = 0; paItems.length = 0; paFx.length = 0; ftFx.length = 0; pwHands.length = 0; pwBones.length = 0; pwFogs.length = 0; bhCoins.length = 0; bhBlood.length = 0; bhSplats.length = 0; bhVig = 0; songNotes.length = 0; mgCards.length = 0; firePs.length = 0; clones.length = 0; fkGlobs.length = 0; fkPuds.length = 0; fkMarks.length = 0; fkGuts.length = 0; gmFloors.length = 0; gmFx.length = 0; syFx.length = 0; sySnow.length = 0; particles.length = 0; floaters.length = 0; slashes.length = 0; trail.length = 0; fishes.length = 0; shards.length = 0; cracksFx.length = 0; bursts.length = 0; slapFxs.length = 0; phxFxs.length = 0; arrows.length = 0; rains.length = 0; rings.length = 0; banners.length = 0; confetti.length = 0; shake = 0; slowT = 0; darkFlash = 0; hitStopT = 0; zoomT = 0; sdShow = 0; cine = null; winner = -1; }
+  function clearFx() { hbFx.length = 0; wcFx.length = 0; snpFx.length = 0; slArr.length = 0; slFx.length = 0; bmArr.length = 0; amOrbs.length = 0; amBolts.length = 0; mrFx.length = 0; mrFeath.length = 0; crArrows.length = 0; crWaves.length = 0; rsShards.length = 0; chProj.length = 0; chDishes.length = 0; chFx.length = 0; asAmb.fl.length = 0; asAmb.g = 0; asAmb.gt = 4; asAmb.prev = {}; roars.length = 0; cnBalls.length = 0; cnFx.length = 0; asCut(); asFx.length = 0; asDust.length = 0; miPetals.length = 0; miFx.length = 0; exSmoke.length = 0; tcCoins.length = 0; paItems.length = 0; paFx.length = 0; ftFx.length = 0; pwHands.length = 0; pwBones.length = 0; pwFogs.length = 0; bhCoins.length = 0; bhBlood.length = 0; bhSplats.length = 0; bhVig = 0; songNotes.length = 0; mgCards.length = 0; firePs.length = 0; clones.length = 0; fkGlobs.length = 0; fkPuds.length = 0; fkMarks.length = 0; fkGuts.length = 0; gmFloors.length = 0; gmFx.length = 0; syFx.length = 0; sySnow.length = 0; particles.length = 0; floaters.length = 0; slashes.length = 0; trail.length = 0; fishes.length = 0; shards.length = 0; cracksFx.length = 0; bursts.length = 0; slapFxs.length = 0; phxFxs.length = 0; arrows.length = 0; rains.length = 0; rings.length = 0; banners.length = 0; confetti.length = 0; shake = 0; slowT = 0; darkFlash = 0; hitStopT = 0; zoomT = 0; sdShow = 0; cine = null; winner = -1; }
   var screenName = 'title', modalPaused = false;
   var homeTypes = function () { var a = Object.keys(W).filter(function (k) { return !isLocked(k); }); a.sort(function (x, y) { return (RAR[x] || 0) - (RAR[y] || 0); }); return a; };
   /* ---------- 상자·보관함 (기획 총정리 5장 수치) ---------- */
@@ -17517,7 +17531,7 @@ var DM = (function () {
   $('#homeBtn').addEventListener('click', function () { var qc = quitCtx(); if (qc) askQuit(qc, homeGo); else homeGo(); });
   $('#startBtn').addEventListener('click', function () { if (net.on) netReadyToggle(); else if (bossRun) bossFight(); else if (jbRun) jbStart(); else if (taRun) taStart(); else start(); });
   $('#again').addEventListener('click', function () { if (net.on) netRematch(); else if (bossRun) bossAgain(); else if (jbRun) jbAgain(); else if (taRun) taStart(); else start(); });
-  $('#resel').addEventListener('click', function () { if (net.on && net.mmRoom) { if (net.cl && net.cl.end) netLeave(); else netForfeitTap($('#resel'), '경기 포기'); } else if (net.on) netBack(); else if (bossRun) { var bfin2 = bossRun.mode === 'end', bgo = function () { bossLeave(bfin2, bfin2 ? '' : '보스전을 포기했어요'); }; if (bfin2) bgo(); else askQuit(quitCtx() || { w: '보스전을 포기하면 이번 도전이 실패로 끝나요.' }, bgo); } else if (jbRun) { var jbfin2 = jbRun.mode === 'win' || jbRun.mode === 'end', jgo = function () { jbLeave(jbfin2, jbfin2 ? '' : '진보스전을 포기했어요'); }; if (jbfin2) jgo(); else askQuit(quitCtx() || { w: '진보스전을 포기하면 이번 도전이 실패로 끝나요.' }, jgo); } else if (taRun) taLeave(true); else showScreen('select'); });
+  $('#resel').addEventListener('click', function () { if (net.on && net.mmRoom) { if (net.cl && net.cl.end) netLeave(); else netForfeitTap($('#resel'), '경기 포기'); } else if (net.on) netBack(); else if (bossRun) { var bfin2 = bossRun.mode === 'end', bgo = function () { bossLeave(bfin2, bfin2 ? '' : '보스전을 포기했어요'); }; if (bfin2) bgo(); else askQuit(quitCtx() || { w: '보스전을 포기하면 이번 도전이 실패로 끝나요.' }, bgo); } else if (jbRun) { var jbfin2 = jbRun.mode === 'win' || jbRun.mode === 'end', jgo = function () { if (!jbfin2 && jbRun && jbRun.n > 0 && !jbRun.hub) jbReport(jbRun, false); jbLeave(jbfin2, jbfin2 ? '' : '진보스전을 포기했어요'); }; if (jbfin2) jgo(); else askQuit(quitCtx() || { w: '진보스전을 포기하면 이번 도전이 실패로 끝나요.' }, jgo); } else if (taRun) taLeave(true); else showScreen('select'); });
   $('#backBtn').addEventListener('click', function () { showScreen('select'); });
   [0, 1].forEach(function (i) {
     (i === 0 ? [0, 1, 2] : [0, 1]).forEach(function (j) { $('#sp' + i + '_' + j).addEventListener('pointerdown', function (e) { e.preventDefault(); if (net.on) { if (i === net.me && net.st === 'play') net.pend.push(j); return; } var mp = spMapC(i, j); if (mp[1] >= 0) soloCast(mp[0], mp[1]); }); });
@@ -19352,6 +19366,7 @@ var DM = (function () {
     f.sps.push({ k: 'chase', left: JB_FS_N, max: JB_FS_N, sh: 1 }, { k: 'tdodge', left: JB_FS_N, max: JB_FS_N, sh: 1 });   /* 공용 스펠: 추적 · 회피 둘 다, 캐릭터마다 10회씩 (화면 오른쪽 칸) */
     if (jbRun.used.length) f.inv = 3;   /* 교대로 들어온 캐릭터는 3초 무적 */
   }
+  function jbRageBgm(on) { if (on && bbg.on && !bbg.rage && bbg.mode !== 'bb' && bbg.mode !== 'mp' && bbg.mode !== 'mb') { bbg.rage = true; bbg.six *= 0.85; } }
   function rgDmg(f, n) { return Math.round(n * (f.rg && f.rg.rage ? 1.3 : 1)); }
   function rgBroken(f) { var a = f.rg; return !!a && a.am[0] <= 0 && a.am[1] <= 0; }
   function rgGo(f) { return f.type === 'rgiant' && !!f.rg && !!f.rg.sk && ((f.rg.sk.id === 'roll' && f.rg.sk.st === 'go') || (!!f.rg.mu && !!f.rg.sk.dash) || (!!f.rg.ar && !!f.rg.sk.dash) || (!!f.rg.mag && f.rg.sk.id === 'mroll' && f.rg.sk.st === 'go') || (!!f.rg.mm && f.rg.sk.id === 'gore' && f.rg.sk.st === 'go') || (!!f.rg.cp && (f.rg.sk.id === 'dive' || f.rg.sk.id === 'rush') && f.rg.sk.st === 'go')); }
@@ -19421,7 +19436,7 @@ var DM = (function () {
     if (Math.hypot(f.vx, f.vy) > 1) f.ang = Math.atan2(f.vy, f.vx);
     a.rot += dt * Math.hypot(f.vx, f.vy) * rgMul(f) / Math.max(40, rr) * 0.6;
     if (!a.en) {   /* 싸움 시작: 안내 글자 · 교대 연출 */
-      a.en = 1;
+      a.en = 1; jbRageBgm(a.rage);
       if (jbRun && jbRun.used.length) { banners.push({ i: 0, text: '교대! 무적 3초', color: '#5ac8ff', life: 1.4, max: 1.4 }); ring(o.x, o.y, R * 3, '#5ac8ff', 0.5); sfxRgSwap(); floater(F / 2, 330, '이어서 싸워라!', '#ffd9a0', 64); }
       else floater(F / 2, 330, a.ym ? '낙인이 찍히면 때려서 지워라!' : a.tb ? '근접은 공중에서 피한다! 원거리·착지를 노려라!' : a.mm ? '맘모스를 쓰러뜨려라!' : a.ar ? '아레스를 쓰러뜨려라!' : a.cp ? '백족왕을 쓰러뜨려라!' : a.mag ? '마그마돈을 식혀라!' : (a.mu ? '무사시를 쓰러뜨려라!' : '장갑을 부숴라!'), '#ffd9a0', 64);
       if (a.mag) magRocks(f, o, L);
@@ -19432,8 +19447,8 @@ var DM = (function () {
       a.sd += Math.hypot(f.vx, f.vy) * mv0 * dt; a.bob = Math.abs(Math.sin(a.sd / 190 * Math.PI));
       if (a.sd >= 190) { a.sd -= 190; if (a.mag) sfxMagStep(); else if (a.ar) sfxArStep(); else if (a.mm) sfxMmStep(); else sfxRgStep(); shake = Math.max(shake, a.mag ? 0.2 : (a.mm ? 0.18 : (a.ar ? 0.05 : 0.12))); sparks(f.x - Math.cos(f.ang) * rr * 0.6, f.y - Math.sin(f.ang) * rr * 0.6 + rr * 0.25, a.mag ? '#ff8a3a' : (a.mm ? '#e8f8ff' : '#9a7a52'), 4, 150); }
     } else a.bob = 0;
-    if (jbRun && !jbRun.to && T >= JB_TIME && o.hp > 0) {   /* 제한 시간 */
-      jbRun.to = true; o.phoenix = false; if (o.cr) o.cr.rev = 1; if (o.type === 'paewang') o.curse = { on: false };
+    if (jbRun && !jbRun.to && T >= JB_TIME && (om.hp > 0 || pwDead(om))) {   /* 제한 시간 */
+      jbRun.to = true; om.phoenix = false; if (om.cr) om.cr.rev = 1; if (om.type === 'paewang') om.curse = { on: false };
       floater(F / 2, 300, '시간 초과!', '#ff6b6b', 76); sfxBossLose(); om.hp = 0; return;
     }
     var lsx = Math.ceil(JB_TIME - T);   /* 남은 시간 알림 · 마지막 10초 초침 */
@@ -21046,14 +21061,14 @@ var DM = (function () {
     var g = ksG, b = fighters[1], o = fighters[0], T = jbT(), L = g.L, rr = b.slm ? b.slm.r : R, lsx;
     if (g.rest) ksRestore();
     if (!g.en) {
-      g.en = 1;
+      g.en = 1; jbRageBgm(g.rage);
       if (jbRun && jbRun.used.length) { banners.push({ i: 0, text: '교대! 무적 3초', color: '#5ac8ff', life: 1.4, max: 1.4 }); ring(o.x, o.y, R * 3, '#5ac8ff', 0.5); sfxRgSwap(); floater(F / 2, 330, '이어서 싸워라!', '#d8ffc0', 64); }
       else floater(F / 2, 330, '슬라임 왕을 쓰러뜨려라!', '#d8ffc0', 64);
     }
     if (g.ci > 0) g.ci -= dt;
     if (o.gook > 0) o.gook -= dt;
-    if (jbRun && !jbRun.to && T >= JB_TIME && om.hp > 0) {
-      jbRun.to = true; om.phoenix = false; if (om.cr) om.cr.rev = 1; if (om.type === 'paewang') om.curse = { on: false };
+    if (jbRun && !jbRun.to && T >= JB_TIME && (o.hp > 0 || pwDead(o))) {
+      jbRun.to = true; o.phoenix = false; if (o.cr) o.cr.rev = 1; if (o.type === 'paewang') o.curse = { on: false };
       floater(F / 2, 300, '시간 초과!', '#ff6b6b', 76); sfxBossLose(); o.hp = 0; return;
     }
     lsx = Math.ceil(JB_TIME - T);
@@ -21790,13 +21805,13 @@ var DM = (function () {
   function krTick(d, g, b, o) {
     var L = g.L, T = jbT(), i, s, lsx, rr = rOf(b);
     if (!g.en) {
-      g.en = 1;
+      g.en = 1; jbRageBgm(g.rage);
       if (jbRun && jbRun.used.length) { banners.push({ i: 0, text: '교대! 무적 3초', color: '#5ac8ff', life: 1.4, max: 1.4 }); ring(o.x, o.y, R * 3, '#5ac8ff', 0.5); sfxRgSwap(); floater(F / 2, 330, '이어서 싸워라!', '#d8f6ff', 64); }
       else floater(F / 2, 330, '크라켄을 쓰러뜨려라!', '#d8f6ff', 64);
     }
     if (g.tcd > 0) g.tcd -= d; if (g.blk > 0) g.blk -= d; if (g.hurt > 0) g.hurt -= d; if (g.open > 0) g.open -= d; if (g.vul > 0) g.vul -= d; if (o.ink > 0) o.ink -= d;
     if (g.er > 0) g.er -= d;
-    if (jbRun && !jbRun.to && T >= JB_TIME && o.hp > 0) {
+    if (jbRun && !jbRun.to && T >= JB_TIME && (o.hp > 0 || pwDead(o))) {
       jbRun.to = true; o.phoenix = false; if (o.cr) o.cr.rev = 1; if (o.type === 'paewang') o.curse = { on: false };
       floater(F / 2, 300, '시간 초과!', '#ff6b6b', 76); sfxBossLose(); o.hp = 0; return;
     }
@@ -23131,7 +23146,7 @@ var DM = (function () {
     if (d.wr && !gh && !out) d.wr = false;
   }
   function cpWeave(a, dt) { var d = a.cpd; if (a.sk || d.em > 0) return 0; d.wv += dt * (a.rage ? 4.2 : 3.0); return Math.sin(d.wv) * 0.8; }
-  function cpUgBlock(b) { var n = performance.now(); if (n - cpUgT > 700) { cpUgT = n; floater(b.x, Math.max(60, b.y - CP_HR - 20), '땅속!', '#d8b890', 44); sparks(b.x, b.y, '#a07040', 5, 220); } }
+  function cpUgBlock(b) { var n = simMs; if (!cpUgT || n - cpUgT > 700 || n < cpUgT) { cpUgT = n; floater(b.x, Math.max(60, b.y - CP_HR - 20), '땅속!', '#d8b890', 44); sparks(b.x, b.y, '#a07040', 5, 220); } }
   /* 한 틱: 사슬 · 마디 위치 · 걸음 소리 · 독침 (경직 중에도 계속) */
   function cpWorld(f, dt) {
     var a = f.rg, d = a.cpd, i, s, sp, o = fighters[0];
@@ -23902,6 +23917,17 @@ var DM = (function () {
   /* 전술 회피가 읽는 위험 구역 */
   function cpHazards(hz, f, a, sk, rr, HIT) {
     var b = fighters[1], d = a.cpd, L = jbL();
+    if (!(sk && sk.id === 'sweep' && sk.st === 'spin')) d.segs.forEach(function (sg) {   /* 몸통 마디: 머리를 따라 움직이니 지금 자리 둘레를 넉넉히 */
+      if (!sg.alive) return;
+      hz.push(function () { return function (tau, dt, px, py) { var dd = Math.hypot(px - sg.x, py - sg.y) - (sg.r + R); return dd < 20 ? 40 : (dd < 90 ? 14 * (1 - dd / 90) : 0); }; });
+    });
+    clones.forEach(function (c) {   /* 새끼 지네: 0.9배 속도로 나를 쫓아온다 (회전 초당 7) */
+      if (!c.cpb || c.hp <= 0) return;
+      hz.push(function () {
+        var cx = c.x, cy = c.y, an = c.cpt.ang || 0, sp = SPD() * 0.9, rc = c.cpt.r;
+        return function (tau, dt, px, py) { an += jbAng(Math.atan2(py - cy, px - cx), an) * Math.min(1, dt * 7); cx += Math.cos(an) * sp * dt; cy += Math.sin(an) * sp * dt; return jbHit(Math.hypot(px - cx, py - cy), rc + R * 0.9 + 6, 30, 70); };
+      });
+    });
     cpSp.forEach(function (s) { hz.push(function () { return function (tau, dt, px, py) { return jbHit(Math.hypot(px - (s.x + s.vx * tau), py - (s.y + s.vy * tau)), R + 22, 36, HIT * 0.35); }; }); });
     if (!sk) return;
     if (sk.id === 'slam') {
@@ -23924,31 +23950,41 @@ var DM = (function () {
         for (var pi = 0; pi < pts.length; pi++) { var qx = px - pts[pi][0], qy = py - pts[pi][1]; if (qx * qx + qy * qy < hw2) return HIT * 0.5; }
         return 0;
       }; });
-    } else if (sk.id === 'spine' && sk.st === 'aim') {
-      hz.push(function () { return function (tau, dt, px, py) {
-        var tf = 1.0 - sk.t, n = L.spn, k, an, al, pp, dx, dy;
-        if (tau < tf || tau > tf + 0.9) return 0;
-        dx = px - b.x; dy = py - b.y;
-        for (k = 0; k < n; k++) {
-          an = sk.ang + (n > 1 ? (k / (n - 1) - 0.5) * 1.22 : 0); al = dx * Math.cos(an) + dy * Math.sin(an); pp = Math.abs(dx * Math.sin(an) - dy * Math.cos(an));
-          if (al > 40 && pp < R + 26) return HIT * 0.5;
-        }
-        return 0;
-      }; });
+    } else if (sk.id === 'spine' && sk.st === 'aim') {   /* 0.78초까지 나를 따라 돈다 → 1.0초에 머리 앞에서 가시 n개가 부채꼴로 980px/s */
+      hz.push(function () {
+        var t = sk.t, ang = sk.ang, bx = b.x, by = b.y, fired = false, ox = 0, oy = 0, e = 0, n = L.spn, mm = jbMulAt(b, sk, 0) || 0;
+        return function (tau, dt, px, py) {
+          var k, an, pen = 0;
+          if (!fired) {
+            t += dt;
+            if (t < 0.78) ang += jbAng(Math.atan2(py - by, px - bx), ang) * Math.min(1, dt * 8);
+            bx += Math.cos(ang) * SPD() * mm * dt; by += Math.sin(ang) * SPD() * mm * dt;
+            if (t >= 1.0) { fired = true; ox = bx + Math.cos(ang) * CP_HR * 0.9; oy = by + Math.sin(ang) * CP_HR * 0.9; e = 0; }
+            return 0;
+          }
+          e += dt; if (e > 1.2) return 0;
+          for (k = 0; k < n; k++) { an = ang + (n > 1 ? (k / (n - 1) - 0.5) * 1.22 : 0); pen = Math.max(pen, jbHit(Math.hypot(px - (ox + Math.cos(an) * 980 * e), py - (oy + Math.sin(an) * 980 * e)), R + 22, 36, HIT * 0.5)); }
+          return pen;
+        };
+      });
     } else if (sk.id === 'dive') {
       hz.push(function () { return function (tau, dt, px, py) {
         var tg = sk.st === 'dig' ? 1.3 - sk.t : -sk.gt, rx = px - sk.sx, ry = py - sk.sy, al = rx * sk.ux + ry * sk.uy, lat = Math.abs(-rx * sk.uy + ry * sk.ux), HW = CP_HR * 0.9 + R * 0.6 + 12, hd = sk.st === 'go' ? Math.hypot(b.x - sk.sx, b.y - sk.sy) : 0, ha = hd + Math.max(0, tau - Math.max(0, tg)) * SPD() * 4.8;
         if (tau + 0.05 < tg || lat > HW || al < -120) return 0;
         return Math.abs(al - ha) < 140 ? HIT : 0;
       }; });
-    } else if (sk.id === 'sweep') {
-      hz.push(function () { return function (tau, dt, px, py) {
-        var tt = (sk.st === 'prep' ? sk.t - 1.0 : sk.t) + tau;
-        if (tt < 0 || tt > 3.2) return 0;
-        var ph = sk.ph0 + sk.dr * (tt / 3.2) * 3 * Math.PI, dd = Math.hypot(px - b.x, py - b.y), w = Math.min(1.1, 112 / Math.max(120, dd));
-        if (dd < 160 || dd > 270 + d.n * 58 + 80) return 0;
-        return Math.abs(jbAng(Math.atan2(py - b.y, px - b.x), ph)) < w ? HIT * 0.6 : 0;
-      }; });
+    } else if (sk.id === 'sweep') {   /* 마디가 머리 둘레 270 + k·간격 자리에서 돈다. 벽에 닿는 마디는 벽을 따라 미끄러진다 → 마디 하나하나의 실제 자리로 판단 */
+      hz.push(function () {
+        var al = d.segs.filter(function (q) { return q.alive; }), m = al.length, step = Math.min(58, 560 / Math.max(1, m)), bx = b.x, by = b.y;
+        if (sk.st === 'prep') { bx = cpClampF(bx, 300); by = cpClampF(by, 300); }
+        return function (tau, dt, px, py) {
+          var tt = (sk.st === 'prep' ? sk.t - 1.0 : sk.t) + tau, k, rd, sx, sy, best = 0;
+          if (tt < 0 || tt > 3.2 || !m) return 0;
+          var ph = sk.ph0 + sk.dr * (tt / 3.2) * 3 * Math.PI, c = Math.cos(ph), sn = Math.sin(ph);
+          for (k = 0; k < m; k++) { rd = 270 + k * step; sx = cpClampF(bx + c * rd, 30); sy = cpClampF(by + sn * rd, 30); best = Math.max(best, jbHit(Math.hypot(px - sx, py - sy), al[k].r + R * 0.8 + 10, 40, HIT * 0.6)); }
+          return best;
+        };
+      });
     }
   }
 
@@ -25816,9 +25852,11 @@ var DM = (function () {
       var ang = sk.ang, st = sk.st, at = sk.at, gt = sk.gt;
       return function (tau, dt, px, py) {
         var dx = px - b.x, dy = py - b.y, d = Math.hypot(dx, dy), ad;
+        ang = mmTurn(ang, Math.atan2(dy, dx), (st === 'chg' ? 2.6 : (a.rage ? 1.25 : 0.9)) * dt);   /* 숨결이 나를 따라 돈다 */
+        dx = px - (b.x + Math.cos(ang) * rr * 1.05); dy = py - (b.y + Math.sin(ang) * rr * 1.05); d = Math.hypot(dx, dy);   /* 숨결은 코끝에서 나간다 */
         if (st === 'chg') { at += dt; if (at >= 1.0) st = 'go'; }
         else gt += dt;
-        if (d > MM_BR_RANGE + R + rr || gt > L.bt) return 0;
+        if (d > MM_BR_RANGE + R || gt > L.bt) return 0;
         ad = Math.abs(jbAng(Math.atan2(dy, dx), ang));
         if (ad > MM_BR_HALF + 0.12 + Math.min(0.4, R / Math.max(60, d))) return 0;
         return st === 'go' ? HIT * 0.18 : 2;
@@ -26250,7 +26288,7 @@ var DM = (function () {
     return out;
   }
   function tbBlock(d) {
-    var n = performance.now(); if (n - tbBlkT < 650) return; tbBlkT = n;
+    var n = simMs; if (tbBlkT && n >= tbBlkT && n - tbBlkT < 650) return; tbBlkT = n;
     floater(d.x, Math.max(60, d.y - 150), '회피!', '#bcd0ff', 44); sparks(d.x, d.y - 50, '#bcd0ff', 4, 220); sfxTbBlock();
   }
   /* ── 효과음: 천둥 · 낙뢰 · 날갯짓 바람 · 급강하 휘파람 · 쿵 ── */
@@ -27215,20 +27253,21 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
      저승의 재판관. 명부에 죄를 적고 '罪' 낙인을 찍는다. 둥근 진홍빛 몸 · 검은 면류관과 구슬 줄 · 업경(거울)을 품은 노란 외눈 · 손 대신 옥새와 붓.
      · 낙인: 내 캐릭터와 분신·소환체(최대 3)에 낙인. 제한 시간 안에 보스를 정해진 횟수만큼 때리면 '면죄'(다른 낙인도 풀리고 사자가 사라지며 보스가 1초 경직),
        못 하면 '집행'(옥새가 내려찍는다 + 지옥 장판 + 화상 또는 빙결 게이지 1/3). 낙인이 걸려 있는 동안 보스는 멈춰서 맞아 준다.
-     · 기술: 옥새 내려찍기 · 사자 소환 · 지옥 형벌(Normal~) · 혼불 난무(Normal~) · 업경 비추기(Hard~) · 열 번의 판결(Extreme)
+     · 기술: 옥새 내려찍기 · 사자 소환 · 윤회의 수레바퀴 · 저승 사슬 · 죽음의 기로 · 지옥 형벌(Normal~) · 혼불 난무(Normal~) · 업경 비추기(Hard~) · 열 번의 판결(Extreme)
+     · 죽음의 기로: 필드 한가운데를 가르는 선. 死 쪽에 남아 있으면 무엇이든(보호막·버티기·체력·부활 무시) 즉사
      · 접촉 피해 없음 · 고유 면역: 중독 계열(중독·맹독·극독) · 출혈 계열(출혈·과출혈) · 광폭화 '대심판' */
   var YM_LV = [
-    { n: 'Easy', c: '#7fd96a', hp: 180, rage: 180, sk: ['brand', 'seal', 'reaper', 'wheel', 'chain'], int: 5, whn: 4, whw: 0.9, whd: 8, wht: 3.2, chn: 1, cd: 9, bc: 14, bt: 8, bh: 2, ex: 16, sd: 12, pi: 2.6, pd: 6, sn: 1, it: 1, rn: 2, rk: 0, rh: 1, rc: 3, fl: '명부가 펼쳐진다. 네 이름이 적혀 있다.' },
-    { n: 'Normal', c: '#ffb340', hp: 280, rage: 150, sk: ['brand', 'seal', 'reaper', 'hell', 'soul', 'wheel', 'chain'], int: 4.5, whn: 5, whw: 1.05, whd: 11, wht: 3.4, chn: 2, cd: 12, bc: 13, bt: 7, bh: 2, ex: 22, sd: 16, pi: 2.3, pd: 8, sn: 1, it: 2, rn: 3, rk: 1, rh: 2, rc: 4, hn: 3, hd: 2, sa: 3, sfd: 5, fl: '지옥문이 열렸다. 형벌의 불길이 끓어오른다.' },
-    { n: 'Hard', c: '#ff5a3a', hp: 400, rage: 120, sk: ['brand', 'seal', 'reaper', 'hell', 'soul', 'mirror', 'wheel', 'chain'], int: 4, whn: 6, whw: 1.2, whd: 15, wht: 3.6, chn: 2, cd: 16, bc: 12, bt: 7, bh: 3, ex: 30, sd: 22, pi: 2.0, pd: 11, sn: 2, it: 2, rn: 3, rk: 2, rh: 3, rc: 5, hn: 4, hd: 3, sa: 4, sfd: 6, md: 15, fl: '업경이 네 지난 걸음을 비춘다.' },
-    { n: 'Extreme', c: '#e0143c', hp: 520, rage: 90, sk: ['brand', 'seal', 'reaper', 'hell', 'soul', 'mirror', 'ten', 'wheel', 'chain'], int: 3.5, whn: 6, whw: 1.35, whd: 19, wht: 4.0, whf: 1, chn: 3, cd: 21, bc: 11, bt: 6, bh: 3, ex: 38, sd: 28, pi: 1.8, pd: 14, sn: 2, it: 3, rn: 4, rk: 2, rh: 5, rc: 6, hn: 5, hd: 3, sa: 4, sfd: 8, md: 20, td: 22, fl: '열 번의 판결이 내려진다. 살아서 나가라.' }
+    { n: 'Easy', c: '#7fd96a', hp: 180, rage: 180, sk: ['brand', 'seal', 'reaper', 'wheel', 'chain', 'cross'], xt: 5, int: 5, whn: 4, whw: 0.9, whd: 8, wht: 3.2, chn: 1, cd: 9, bc: 14, bt: 8, bh: 2, ex: 16, sd: 12, pi: 2.6, pd: 6, sn: 1, it: 1, rn: 2, rk: 0, rh: 1, rc: 3, fl: '명부가 펼쳐진다. 네 이름이 적혀 있다.' },
+    { n: 'Normal', c: '#ffb340', hp: 280, rage: 150, sk: ['brand', 'seal', 'reaper', 'hell', 'soul', 'wheel', 'chain', 'cross'], xt: 4, int: 4.5, whn: 5, whw: 1.05, whd: 11, wht: 3.4, chn: 2, cd: 12, bc: 13, bt: 7, bh: 2, ex: 22, sd: 16, pi: 2.3, pd: 8, sn: 1, it: 2, rn: 3, rk: 1, rh: 2, rc: 4, hn: 3, hd: 2, sa: 3, sfd: 5, fl: '지옥문이 열렸다. 형벌의 불길이 끓어오른다.' },
+    { n: 'Hard', c: '#ff5a3a', hp: 400, rage: 120, sk: ['brand', 'seal', 'reaper', 'hell', 'soul', 'mirror', 'wheel', 'chain', 'cross'], xt: 3, int: 4, whn: 6, whw: 1.2, whd: 15, wht: 3.6, chn: 2, cd: 16, bc: 12, bt: 7, bh: 3, ex: 30, sd: 22, pi: 2.0, pd: 11, sn: 2, it: 2, rn: 3, rk: 2, rh: 3, rc: 5, hn: 4, hd: 3, sa: 4, sfd: 6, md: 15, fl: '업경이 네 지난 걸음을 비춘다.' },
+    { n: 'Extreme', c: '#e0143c', hp: 520, rage: 90, sk: ['brand', 'seal', 'reaper', 'hell', 'soul', 'mirror', 'ten', 'wheel', 'chain', 'cross'], xt: 2, int: 3.5, whn: 6, whw: 1.35, whd: 19, wht: 4.0, whf: 1, chn: 3, cd: 21, bc: 11, bt: 6, bh: 3, ex: 38, sd: 28, pi: 1.8, pd: 14, sn: 2, it: 3, rn: 4, rk: 2, rh: 5, rc: 6, hn: 5, hd: 3, sa: 4, sfd: 8, md: 20, td: 22, fl: '열 번의 판결이 내려진다. 살아서 나가라.' }
   ];
   var YM_RW = [['tal', 3], ['spl', 4], ['chr', 4], ['chr', 5]];   /* 첫 격파 보상: 영웅 재능 · 신화 스펠 · 신화 캐릭터 · 전설 캐릭터 선택권 */
-  var YM_SEAL_R = 240, YM_EX_R = 170, YM_EX_W = 0.7, YM_HELL_R = 150, YM_MR_R = 92, YM_TEN_W = 170, YM_RP_MAX = 6, YM_DAZE = 1.0;
-  var ymBr = [], ymSl = [], ymImp = [], ymHz = [], ymSf = [], ymMr = [], ymTn = [], ymFx = [], ymIconURL = '', ymSfxT = 0, ymBdT = 0, ymKnT = 0, ymDark = 0, ymRed = 0, ymHisT = 0, ymWh = null, ymCh = [], ymWhT = 0;
+  var YM_SEAL_R = 240, YM_EX_R = 170, YM_EX_W = 0.7, YM_HELL_R = 150, YM_MR_R = 92, YM_TEN_W = 170, YM_RP_MAX = 6, YM_DAZE = 1.0, YM_XR_CD = 30;   /* YM_XR_CD: 죽음의 기로를 쓴 뒤 다시 쓰기까지 (즉사 기술이라 자주 나오면 안 된다) */
+  var ymBr = [], ymSl = [], ymImp = [], ymHz = [], ymSf = [], ymMr = [], ymTn = [], ymFx = [], ymIconURL = '', ymSfxT = 0, ymBdT = 0, ymKnT = 0, ymDark = 0, ymRed = 0, ymHisT = 0, ymWh = null, ymCh = [], ymWhT = 0, ymXr = null;
   function isYm(f) { return !!f && f.type === 'rgiant' && !!f.rg && !!f.rg.ym; }
   function ymReset() {
-    ymBr.length = 0; ymSl.length = 0; ymImp.length = 0; ymHz.length = 0; ymSf.length = 0; ymMr.length = 0; ymTn.length = 0; ymFx.length = 0; ymDark = 0; ymRed = 0; ymHisT = 0; ymWh = null; ymCh.length = 0;
+    ymBr.length = 0; ymSl.length = 0; ymImp.length = 0; ymHz.length = 0; ymSf.length = 0; ymMr.length = 0; ymTn.length = 0; ymFx.length = 0; ymDark = 0; ymRed = 0; ymHisT = 0; ymWh = null; ymCh.length = 0; ymXr = null;
     for (var i = clones.length - 1; i >= 0; i--) if (clones[i].ymc) clones.splice(i, 1);
   }
   function ymNear(x, y) { var arr = jbFoes(fighters[0]), best = null, bd = 1e9, i, c, dd; for (i = 0; i < arr.length; i++) { c = arr[i]; if (c.hp <= 0) continue; dd = Math.hypot(c.x - x, c.y - y); if (dd < bd) { bd = dd; best = c; } } return best; }
@@ -27282,6 +27321,9 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
   function sfxYmChain() { snd(function (c, t) { var i; for (i = 0; i < 9; i++) { var f = 1200 + Math.random() * 2200; tone(c, t + i * 0.04, 'square', f, f * 0.95, 0.05, 0.035); } noise(c, t, 0.4, 0.12, 2600); tone(c, t, 'sawtooth', 70, 50, 0.6, 0.08); }); }
   function sfxYmChainShot() { var n = performance.now(); if (n - ymSfxT < 90) return; ymSfxT = n; snd(function (c, t) { var i; noise(c, t, 0.25, 0.2, 2000); tone(c, t, 'sawtooth', 500, 1600, 0.2, 0.06); for (i = 0; i < 6; i++) tone(c, t + i * 0.025, 'square', 2200 + i * 150, 2000, 0.04, 0.03); }); }
   function sfxYmChainHit() { snd(function (c, t) { var i; tone(c, t, 'triangle', 900, 420, 0.12, 0.2); noise(c, t, 0.1, 0.3, 3000); for (i = 0; i < 5; i++) tone(c, t + 0.02 + i * 0.04, 'square', 2600 - i * 200, 2400 - i * 200, 0.05, 0.04); tone(c, t, 'sine', 160, 60, 0.4, 0.3); }); }
+  function sfxYmCross() { snd(function (c, t) { ymGong(c, t, 92, 0.5, 3.2); noise(c, t + 0.05, 0.5, 0.2, 700); tone(c, t, 'sawtooth', 220, 55, 0.9, 0.08); tone(c, t + 0.1, 'sine', 55, 40, 2.0, 0.3); tone(c, t + 0.3, 'triangle', 1320, 1240, 1.2, 0.03); }); }
+  function sfxYmDoom() { snd(function (c, t) { var i; ymDrum(c, t, 0.9); ymGong(c, t + 0.02, 70, 0.6, 3.6); tone(c, t, 'sawtooth', 160, 30, 1.4, 0.16); noise(c, t, 1.2, 0.35, 300); for (i = 0; i < 3; i++) ymDrum(c, t + 0.25 + i * 0.2, 0.5 - i * 0.12); tone(c, t + 0.05, 'square', 880, 110, 0.5, 0.05); }); }
+  function sfxYmSpare() { snd(function (c, t) { [659.25, 880, 1318.5].forEach(function (f, k) { tone(c, t + 0.35 + k * 0.08, 'sine', f, f, 1.0 - k * 0.2, 0.05); }); }); }
   function sfxYmRage() { snd(function (c, t) { var i; for (i = 0; i < 8; i++) ymDrum(c, t + i * 0.09, 0.3 + i * 0.06); ymGong(c, t + 0.75, 92, 0.6, 3.4); tone(c, t + 0.75, 'sawtooth', 120, 46, 1.8, 0.2); noise(c, t + 0.75, 1.4, 0.26, 140); }); }
   function sfxYmDeathStart() { snd(function (c, t) { ymGong(c, t, 88, 0.55, 3.6); ymDrum(c, t, 0.8); tone(c, t, 'sawtooth', 140, 40, 2.4, 0.12); noise(c, t, 1.4, 0.08, 400); }); }
   function sfxYmBurn() { snd(function (c, t) { var i; noise(c, t, 1.6, 0.12, 900); for (i = 0; i < 16; i++) noise(c, t + i * 0.09 + Math.random() * 0.05, 0.03, 0.18, 3000 + Math.random() * 3000); }); }
@@ -27304,7 +27346,7 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
   }
   function ymInit(f) {
     ymReset();
-    f.rg.ymd = { tap: 2.0, bcd: 0, la: Math.PI / 2, book: 0, bw: 0, glare: 0, daze: 0, sx: f.x + 200, sy: f.y, bx: f.x - 200, by: f.y, sa: 0, sOut: 0, beads: 1, mv: 0, px: f.x, py: f.y, sway: 0, ls: -1 };
+    f.rg.ymd = { tap: 2.0, bcd: 0, la: Math.PI / 2, book: 0, bw: 0, glare: 0, daze: 0, sx: f.x + 200, sy: f.y, bx: f.x - 200, by: f.y, sa: 0, sOut: 0, beads: 1, mv: 0, px: f.x, py: f.y, sway: 0, ls: -1, xcd: 12 };
     f.rg.skT = 3.0;   /* 첫 기술은 언제나 낙인: 싸움이 어떻게 굴러가는지 바로 보여 준다 */
   }
   /* ── 낙인 · 면죄 · 집행 ── */
@@ -27447,14 +27489,14 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
     /* 분위기: 낙인이 걸려 있으면 어두워지고 붉게 맥박친다 */
     var mb = ymMain(), tg = 0.1 + (a.rage ? 0.12 : 0) + (mb ? 0.1 : 0) + (ymTn.length ? 0.12 : 0);
     ymDark += (tg - ymDark) * Math.min(1, dt * 2.4); if (ymRed > 0) ymRed = Math.max(0, ymRed - dt * 1.6);
-    if (mb && mb.left < 2.2) ymRed = Math.max(ymRed, 0.18 + 0.12 * Math.sin(performance.now() / 70));
+    if (mb && mb.left < 2.2) ymRed = Math.max(ymRed, 0.18 + 0.12 * Math.sin(simMs / 70));
     d.glare += ((mb || (a.sk && a.sk.id === 'mirror') ? 1 : 0) - d.glare) * Math.min(1, dt * 5); if (d.daze > 0) d.daze -= dt;
-    var bookOn = !!(a.sk && (a.sk.id === 'brand' || a.sk.id === 'ten')) || !!mb; d.book += ((bookOn ? 1 : 0) - d.book) * Math.min(1, dt * 6);
+    var bookOn = !!(a.sk && (a.sk.id === 'brand' || a.sk.id === 'ten' || a.sk.id === 'cross')) || !!mb; d.book += ((bookOn ? 1 : 0) - d.book) * Math.min(1, dt * 6);
     if (bookOn) d.bw += dt;
     var lt = mb ? mb.t : o; d.la = jbAng(Math.atan2(lt.y - f.y, lt.x - f.x), 0);
     d.mv = Math.hypot(f.x - d.px, f.y - d.py) / Math.max(1e-3, dt); d.px = f.x; d.py = f.y; d.sway += dt * (1 + d.mv / 120 + (a.rage ? 1.5 : 0));
     /* 옥새·붓: 몸 곁을 맴돌고, 기술 땐 제자리로 간다 */
-    var t0 = performance.now() / 1000, fa = -Math.PI / 2, sxW = f.x + Math.cos(t0 * 0.9) * (rr + 74), syW = f.y + Math.sin(t0 * 0.9) * (rr + 50) + 10, bxW = f.x - Math.cos(t0 * 0.9) * (rr + 74), byW = f.y - Math.sin(t0 * 0.9) * (rr + 50) + 10;
+    var t0 = simMs / 1000, fa = -Math.PI / 2, sxW = f.x + Math.cos(t0 * 0.9) * (rr + 74), syW = f.y + Math.sin(t0 * 0.9) * (rr + 50) + 10, bxW = f.x - Math.cos(t0 * 0.9) * (rr + 74), byW = f.y - Math.sin(t0 * 0.9) * (rr + 50) + 10;
     if (d.book > 0.3) { bxW = f.x + 70 + Math.sin(d.bw * 9) * 26; byW = ymBookY(f, rr) + 4 + Math.cos(d.bw * 13) * 10; }
     var sOut = ymSl.some(function (m) { return !m.ok; }); d.sOut += ((sOut ? 1 : 0) - d.sOut) * Math.min(1, dt * 8);
     var kk = Math.min(1, dt * 7); d.sx += (sxW - d.sx) * kk; d.sy += (syW - d.sy) * kk; d.bx += (bxW - d.bx) * kk; d.by += (byW - d.by) * kk; d.sa = Math.sin(t0 * 1.3) * 0.2;
@@ -27526,6 +27568,8 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
       if (s.t >= s.warn) ymTenStrike(f, L, s, foes);
     }
     if (ymWh) ymWheelStep(f, L, dt, foes, rr);
+    if (d.xcd > 0) d.xcd -= dt;
+    if (ymXr) ymCrossStep(f, L, dt);
     for (i = ymCh.length - 1; i >= 0; i--) if (ymChainStep(f, L, ymCh[i], dt, foes, rr)) ymCh.splice(i, 1);
     for (q = 0; q < foes.length; q++) { t = foes[q]; if (t.ymI > 0) t.ymI -= dt; if (t.ymW > 0) t.ymW -= dt; }
   }
@@ -27587,7 +27631,7 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
     var a = f.rg, d = a.ymd, p = fighters[0].hp > 0 ? fighters[0] : (ymNear(f.x, f.y) || o), foes = jbFoes(fighters[0]).filter(function (q0) { return q0.hp > 0; }), id, pool, q, an, x, y, n, k;
     if (!foes.length) foes = [p];
     if (d.bcd <= 0 && p.hp > 0 && L.sk.indexOf('brand') >= 0) id = 'brand';
-    else { pool = L.sk.filter(function (s) { return s !== 'brand' && s !== a.last && !(s === 'reaper' && ymReapers() >= YM_RP_MAX - 1); }); id = pool[Math.floor(Math.random() * pool.length)] || 'seal'; }
+    else { pool = L.sk.filter(function (s) { return s !== 'brand' && s !== a.last && !(s === 'reaper' && ymReapers() >= YM_RP_MAX - 1) && !(s === 'cross' && d.xcd > 0); }); id = pool[Math.floor(Math.random() * pool.length)] || 'seal'; }
     a.last = id;
     if (id === 'brand') { a.sk = { id: id, t: 0, st: 'write' }; d.bcd = L.bc; d.bw = 0; banners.push({ i: f.i, text: '명부 기록!', color: '#ff5a4a', life: 1.1, max: 1.1 }); sfxYmWarn(); sfxYmBrush(); floater(f.x, Math.max(60, f.y - rOf(f) - 150), '네 죄를 적는다…', '#ffb4a8', 46); }
     else if (id === 'seal') {
@@ -27640,6 +27684,11 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
         ymCh.push({ tg: ct, off: off, st: 'aim', t: -k * 0.18, trk: 0.6, warn: 0.85, ux: Math.cos(ca), uy: Math.sin(ca), d: 0, q: null });
       }
       banners.push({ i: f.i, text: '저승 사슬!', color: '#c8c8d8', life: 1.2, max: 1.2 }); sfxYmWarn(); sfxYmChain();
+    } else if (id === 'cross') {   /* 죽음의 기로: 한가운데를 지나는 아무 기울기의 선 · 한쪽은 死, 한쪽은 生 */
+      var xa = Math.random() * Math.PI, xw = L.xt || 5;
+      a.sk = { id: id, t: 0 }; d.xcd = YM_XR_CD + xw;
+      ymXr = { t: 0, warn: xw, ang: xa, nx: -Math.sin(xa), ny: Math.cos(xa), ds: Math.random() < 0.5 ? 1 : -1, fired: false, age: 0, cs: Math.ceil(xw), n: 0 };
+      banners.push({ i: f.i, text: '죽음의 기로!', color: '#ff3a3a', life: 1.5, max: 1.5 }); sfxYmWarn(); sfxYmCross(); a.roar = 1.0; a.roarTx = '죽음의 기로!'; floater(F / 2, 300, '生 쪽으로 가라!', '#ffe08a', 60); ymRed = Math.max(ymRed, 0.3);
     } else {
       a.sk = { id: 'ten', t: 0 }; var lastH = null;
       for (k = 0; k < 10; k++) {
@@ -27690,6 +27739,8 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
       if (!ymWh) ymEnd(f, L);
     } else if (sk.id === 'chain') {
       if (!ymCh.length && sk.t > 0.5) ymEnd(f, L);
+    } else if (sk.id === 'cross') {
+      if (!ymXr) ymEnd(f, L);
     } else ymEnd(f, L);
   }
   function ymMul(a, s) {   /* 천천히 미끄러져 다가온다 · 낙인을 건 동안엔 멈춰서 맞아 준다 · 기술 중엔 거의 멈춘다 */
@@ -27697,6 +27748,32 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
     if (!s) return a.rage ? 0.38 : 0.28;
     if (s.id === 'seal' || s.id === 'hell') return 0.1;
     return 0;
+  }
+  /* ── 죽음의 기로: N초 뒤 死 쪽에 있는 것은 무엇이든 죽는다 (보호막·버티기·체력·부활 무시). 분신·소환수·옛 전우도 똑같이 ── */
+  function ymXrSide(x, px, py) { return ((px - F / 2) * x.nx + (py - F / 2) * x.ny) * x.ds; }   /* > 0 이면 死 쪽 */
+  function ymDoom(f, t) {
+    if (fighters.indexOf(t) >= 0) { t.phoenix = false; if (t.cr) t.cr.rev = 1; if (t.type === 'paewang') t.curse = { on: false }; }   /* 불사조·영원회귀·패왕의 저주로도 못 버틴다 (시간 초과와 같은 처리) */
+    t.hp = 0; t.flash = 0.5;
+    var tr = rOf(t);
+    ymPush({ k: 'char', x: t.x, y: Math.max(90, t.y - tr - 70), ch: '死', t: 0, life: 1.2, c: '#ff3a3a' });
+    ring(t.x, t.y, tr * 2.6, '#ff2a2a', 0.45); ring(t.x, t.y, tr * 1.6, '#1a0206', 0.35); sparks(t.x, t.y, '#ff3a3a', 22, 620); sparks(t.x, t.y, '#1a0608', 14, 420); ymInk(t.x, t.y, 12, 560);
+    floater(t.x, Math.max(60, t.y - tr - 20), '즉사', '#ff5a4a', 64);
+  }
+  function ymCrossStep(f, L, dt) {
+    var x = ymXr, left, cs, k;
+    x.t += dt;
+    if (x.fired) { x.age += dt; if (x.age > 1.2) ymXr = null; return; }
+    left = x.warn - x.t; cs = Math.ceil(left);
+    if (cs < x.cs && cs > 0) { x.cs = cs; sfxYmTick(cs <= 1); }
+    if (Math.random() < dt * 14) { var u = (Math.random() - 0.5) * F * 1.4, ux = -x.ny, uy = x.nx, px = F / 2 + ux * u, py = F / 2 + uy * u; if (px > 0 && px < F && py > 0 && py < F) ymPush({ k: 'ember', x: px + x.nx * x.ds * (6 + Math.random() * 30), y: py + x.ny * x.ds * (6 + Math.random() * 30), vx: x.nx * x.ds * 20, vy: x.ny * x.ds * 20 - 30, s: 2 + Math.random() * 3, t: 0, life: 0.8 }); }
+    if (x.t < x.warn) return;
+    x.fired = true; x.age = 0;
+    var dead = jbFoes(fighters[0]).filter(function (t) { return (t.hp > 0 || pwDead(t)) && ymXrSide(x, t.x, t.y) > 0; });
+    dead.forEach(function (t) { ymDoom(f, t); }); x.n = dead.length;
+    sfxYmDoom(); if (!dead.length) sfxYmSpare();
+    shake = Math.max(shake, 1.3); vib(dead.length ? 120 : 50); rgFl = Math.max(rgFl, 0.35); ymRed = Math.max(ymRed, 0.65); if (fxOn && !demo) hitStopT = Math.max(hitStopT, 0.12);
+    for (k = 0; k < 18; k++) { var u2 = (Math.random() - 0.5) * F * 1.3, qx = F / 2 - x.ny * u2, qy = F / 2 + x.nx * u2; if (qx > -20 && qx < F + 20 && qy > -20 && qy < F + 20) ymInk(qx, qy, 1, 300); }
+    floater(F / 2, 330, dead.length ? '판결: 死' : '판결: 生 — 살았다', dead.length ? '#ff5a4a' : '#ffe08a', 70);
   }
   /* ── 윤회의 수레바퀴: 몸을 축으로 바퀴살이 돈다. 살 사이 틈으로 빠져나가라 ── */
   function ymWheelStep(f, L, dt, foes, rr) {
@@ -27768,7 +27845,7 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
   /* ── 죽음: 마지막 낙인이 자신에게 찍히고 → 명부가 타며 이름이 지워지고 구슬이 떨어진다 → 몸이 붉은 먹물로 녹아내리고 → 옥새 하나만 남아 쿵, 갈라진다 ── */
   function ymDeath(f) {
     var a = f.rg;
-    a.sk = null; a.nosw = true; ymSl.length = 0; ymMr.length = 0; ymTn.length = 0; ymSf.length = 0; ymBr.length = 0; ymReaperClear(true); ymWh = null;
+    a.sk = null; a.nosw = true; ymSl.length = 0; ymMr.length = 0; ymTn.length = 0; ymSf.length = 0; ymBr.length = 0; ymReaperClear(true); ymWh = null; ymXr = null;
     ymCh.forEach(function (c) { if (c.st === 'drag' && c.q && c.q.hp > 0) mmFree(c.q); }); ymCh.length = 0;
     for (var i = 0; i < ymHz.length; i++) ymHz[i].life = Math.min(ymHz[i].life, Math.max(0, ymHz[i].t - ymHz[i].warn) + 0.6);
     rgDie = { f: f, t: 0, nx: 0.05, D: 6.2, fin: false, ym: true, bead: 1 };
@@ -27834,7 +27911,15 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
         return best < Math.PI / 2 ? jbHit(dd * Math.sin(best), w.hw + R * 0.5 + 6, 30, HIT * 0.5) : 0;
       };
     });
+    if (ymXr && !ymXr.fired) hz.push(function () {   /* 죽음의 기로: 터지는 순간 死 쪽이면 무엇보다 크게 · 그 전에도 死 쪽에 있으면 조금씩 */
+      var x = ymXr, t0x = x.t;
+      return function (tau, dt, px, py) { var t1 = t0x + tau, t0 = t1 - dt, sd = ymXrSide(x, px, py); if (t0 < x.warn && t1 >= x.warn) return jbHit(-sd, 14, 60, HIT * 3); return t1 < x.warn && sd > -14 ? 1.5 : 0; };
+    });
     ymCh.forEach(function (c) {
+      if (c.st === 'fly') {   /* 이미 날아가는 사슬: 끝이 초당 2600px로 나아간다 */
+        hz.push(function () { var bx = f.x, by = f.y, ux = c.ux, uy = c.uy, d0 = c.d; return function (tau, dt, px, py) { var d1 = d0 + 2600 * tau; if (d1 - 2600 * dt > 1150) return 0; return jbHit(ptSeg(px, py, bx + ux * Math.max(0, d1 - 2600 * dt), by + uy * Math.max(0, d1 - 2600 * dt), bx + ux * Math.min(1150, d1), by + uy * Math.min(1150, d1)).d, R * 0.6 + 30, 40, HIT * 0.6); }; });
+        return;
+      }
       if (c.st !== 'aim') return;
       hz.push(function () { var th = c.warn - c.t, bx = f.x, by = f.y, ux = c.ux, uy = c.uy; return function (tau, dt, px, py) { if (tau < th - 0.05 || tau > th + 0.5) return 0; return jbHit(ptSeg(px, py, bx, by, bx + ux * 1150, by + uy * 1150).d, R * 0.6 + 30, 40, HIT * 0.6); }; });
     });
@@ -28181,6 +28266,40 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
       }
     }
   }
+  /* 죽음의 기로: 死 쪽은 핏빛으로 가라앉고 生 쪽은 옅은 금빛. 한가운데를 먹 붓질이 가른다 */
+  function ymCrossDraw(now) {
+    var x = ymXr; if (!x) return;
+    var cx = F / 2, cy = F / 2, ux = -x.ny, uy = x.nx, dnx = x.nx * x.ds, dny = x.ny * x.ds, LL = F * 0.75;
+    var left = Math.max(0, x.warn - x.t), urg = x.fired ? 1 : 1 - left / x.warn, pl = 0.5 + 0.5 * Math.sin(now / (left < 1 ? 55 : 120));
+    var fa = x.fired ? Math.max(0, 1 - Math.max(0, x.age - 0.35) / 0.85) : Math.min(1, x.t / 0.3), dw = Math.min(1, x.t / 0.35);
+    ctx.save(); ctx.beginPath(); ctx.rect(0, 0, F, F); ctx.clip();
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(Math.atan2(dny, dnx) - Math.PI / 2);   /* 이 좌표에선 +y 쪽이 死 */
+    ctx.globalAlpha = fa;
+    if (x.fired) { var fl = Math.max(0, 1 - x.age / 0.25); ctx.fillStyle = 'rgba(' + Math.round(110 + 145 * fl) + ',' + Math.round(200 * fl) + ',' + Math.round(200 * fl) + ',' + (0.6 + 0.3 * fl) + ')'; }
+    else ctx.fillStyle = 'rgba(70,0,10,' + (0.3 + 0.2 * urg + (left < 1.2 ? 0.12 * pl : 0)) + ')';
+    ctx.fillRect(-F * 1.5, 0, F * 3, F * 1.5);
+    if (!x.fired) {   /* 死 쪽 사선 빗금이 선 반대쪽으로 천천히 흐른다 */
+      ctx.strokeStyle = 'rgba(255,40,40,' + (0.1 + 0.12 * urg) + ')'; ctx.lineWidth = 10; ctx.beginPath();
+      var off = (x.t * 40) % 60;
+      for (var k = -24; k <= 24; k++) { var hx = k * 60 + off; ctx.moveTo(hx, 0); ctx.lineTo(hx + 300, F * 1.5); }
+      ctx.stroke();
+    }
+    ctx.fillStyle = 'rgba(255,214,120,' + (x.fired && !x.n ? 0.22 * fa : 0.05 + 0.06 * urg) + ')'; ctx.fillRect(-F * 1.5, -F * 1.5, F * 3, F * 1.5);
+    ctx.restore();
+    /* 가르는 선: 먹 붓질 + 붉은 테 */
+    var sx0 = cx - ux * LL, sy0 = cy - uy * LL, ex = sx0 + ux * 2 * LL * dw, ey = sy0 + uy * 2 * LL * dw;
+    ctx.globalAlpha = x.fired ? fa : 1; ctx.lineCap = 'round';
+    ctx.strokeStyle = '#0c0206'; ctx.lineWidth = 26; ctx.beginPath(); ctx.moveTo(sx0, sy0); ctx.lineTo(ex, ey); ctx.stroke();
+    ctx.strokeStyle = left < 1.2 && !x.fired ? (pl > 0.5 ? '#ffffff' : '#ff3a3a') : '#ff3a3a'; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(sx0, sy0); ctx.lineTo(ex, ey); ctx.stroke();
+    /* 큰 글자: 死 · 生 */
+    var gd = F * 0.27, dx0 = ymClamp(cx + dnx * gd, 110, F - 110), dy0 = ymClamp(cy + dny * gd, 110, F - 110), lx = ymClamp(cx - dnx * gd, 110, F - 110), ly = ymClamp(cy - dny * gd, 110, F - 110);
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.globalAlpha = fa * (0.55 + 0.45 * (x.fired ? 1 : Math.min(1, urg + 0.3)));
+    ctx.font = '900 ' + Math.round(150 + (x.fired ? 40 * Math.max(0, 1 - x.age / 0.3) : 14 * pl * urg)) + 'px ' + YM_HF; ctx.lineWidth = 16; ctx.strokeStyle = C.edge; ctx.strokeText('死', dx0, dy0); ctx.fillStyle = '#ff3a3a'; ctx.fillText('死', dx0, dy0);
+    ctx.font = '900 130px ' + YM_HF; ctx.strokeText('生', lx, ly); ctx.fillStyle = '#ffe08a'; ctx.fillText('生', lx, ly);
+    if (!x.fired) { ctx.globalAlpha = fa; ctx.font = '60px ' + C.display; ctx.lineWidth = 12; ctx.strokeStyle = C.edge; var tx = left.toFixed(1); ctx.strokeText(tx, dx0, dy0 + 110 > F - 30 ? dy0 - 110 : dy0 + 110); ctx.fillStyle = left < 1.2 ? (pl > 0.5 ? '#ffffff' : '#ff6a5a') : '#ffb4a8'; ctx.fillText(tx, dx0, dy0 + 110 > F - 30 ? dy0 - 110 : dy0 + 110); }
+    ctx.globalAlpha = 1; ctx.restore();
+  }
   function drawYmUnder(b) {
     var now = performance.now(), i, e, z, d = rgDie && rgDie.ym && rgDie.f === b ? rgDie : null;
     if (ymDark > 0.01) { ctx.fillStyle = 'rgba(26,0,6,' + ymDark + ')'; ctx.fillRect(0, 0, F, F); }
@@ -28188,6 +28307,7 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
     for (i = 0; i < ymImp.length; i++) { z = ymImp[i]; ymStampMark(z.x, z.y, z.r * 1.3, z.a, '罪', 0.5 * Math.min(1, (z.life - z.t) / 0.8)); }
     for (i = 0; i < ymHz.length; i++) ymHellDraw(ymHz[i], now);
     ymWheelDraw(b, rOf(b), now);
+    ymCrossDraw(now);
     for (i = 0; i < ymFx.length; i++) {
       e = ymFx[i]; if (e.t < 0) continue;
       if (e.k === 'pool') { var pp = Math.min(1, e.t / 0.4), pf = Math.min(1, (e.life - e.t) / 0.5); ctx.globalAlpha = 0.85 * pf; ctx.fillStyle = '#0a0408'; ctx.beginPath(); ctx.ellipse(e.x, e.y + 10, e.r * pp, e.r * 0.42 * pp, 0, 0, TAU); ctx.fill(); ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(160,20,30,0.6)'; ctx.stroke(); }
@@ -28302,6 +28422,9 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
     if (mb && !dying) {
       ctx.font = '54px ' + C.display; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = 12; ctx.strokeStyle = C.edge; ctx.fillStyle = mb.left < 2 ? (pl > 0.5 ? '#ffffff' : '#ff6a5a') : '#ffb4a8';
       var mt = '낙인! 염라대왕을 ' + (mb.need - mb.got) + '번 더 때려라 · ' + Math.max(0, mb.left).toFixed(1) + '초'; ctx.strokeText(mt, CX, F * 0.3); ctx.fillText(mt, CX, F * 0.3);
+    } else if (ymXr && !ymXr.fired && !dying) {
+      ctx.font = '54px ' + C.display; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = 12; ctx.strokeStyle = C.edge; ctx.fillStyle = ymXr.warn - ymXr.t < 1.2 ? (pl > 0.5 ? '#ffffff' : '#ff6a5a') : '#ffb4a8';
+      var xt2 = '죽음의 기로 · 生 쪽으로! ' + Math.max(0, ymXr.warn - ymXr.t).toFixed(1) + '초'; ctx.strokeText(xt2, CX, F * 0.3); ctx.fillText(xt2, CX, F * 0.3);
     } else if (ymTn.some(function (m) { return !m.ok; }) && !dying) {
       ctx.font = '54px ' + C.display; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineWidth = 12; ctx.strokeStyle = C.edge; ctx.fillStyle = '#ff8a7a';
       var nleft = ymTn.filter(function (m) { return !m.ok; }).length, tt = '판결 ' + (10 - nleft + 1 > 10 ? 10 : 10 - nleft + 1) + ' / 10'; ctx.strokeText(tt, CX, F * 0.3); ctx.fillText(tt, CX, F * 0.3);
@@ -28361,7 +28484,7 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
     { id: 'ares', nm: '아레스', hn: '아레스', sub: '방패와 창의 보병전. 방패가 깨지면 쌍검의 광란전. 전쟁의 신.', wn: ['-가드가 먼저 깎임 · 깨지면 광란전 · 시간이 지나면 강제로 깨져요', '-기절,수면,넉백 면역 (진보스 공통 면역)', '-고유 면역: 푸른 불꽃, 업화, 파상풍'], lv: AR_LV, rw: AR_RW, icon: function () { return arIcon(); }, hint: '방패를 부수면 신의 창이 날아온다', conf: ['#ffb340', '#ff4a2a', '#ffffff', '#c98a3a'], sx: function (L) { return '방패 ' + L.gd + ' · 기술 ' + (L.sk.length + L.sk2.length) + '개'; } },
     { id: 'mammoth', nm: '빙하 맘모스', hn: '맘모스', sub: '강타와 숨결이 닿는 곳마다 서리가 번지는 거대한 얼음 매머드. 상아가 빙하를 가른다.', wn: ['-코 잡기·서리 지대·돌진·숨결 주의 · 소환체에 대응 가능', '-기절,수면,넉백 면역 (진보스 공통 면역)', '-고유 면역: 빙결, 절대 영도, 업화, 파상풍'], lv: MM_LV, rw: MM_RW, icon: function () { return mmIcon(); }, hint: '맘모스는 빙하가 녹을 때까지 멈추지 않는다', conf: ['#bfeaff', '#5ac8ff', '#ffffff', '#3d98d8'], sx: function (L) { return '서리 지대 · 기술 ' + L.sk.length + '개'; } },
     { id: 'thunderbird', own: true, nm: '뇌조', hn: '뇌조', sub: '하늘을 날며 번개를 뿌리는 폭풍의 새. 급강하를 피하면 땅에 내려앉는다.', wn: ['-공중에선 근접 공격 회피(원거리는 맞음) · 내려앉은 틈엔 다 맞음 · 낙뢰·급강하 주의 · 소환체에 대응 가능', '-기절,수면,넉백 면역 (진보스 공통 면역)', '-고유 면역: 속박, 파상풍'], lv: TB_LV, rw: TB_RW, icon: function () { return tbIcon(); }, hint: '뇌조는 공중에서 근접 공격을 피한다. 원거리는 맞는다', conf: ['#ffe45a', '#5a7aff', '#ffffff', '#1a2a6a'], sx: function (L) { return '급강하 ' + L.dv + ' · 기술 ' + (L.sk.length + 1) + '개'; } },
-    { id: 'yeomra', nm: '염라대왕', hn: '염라대왕', sub: '저승의 재판관. 명부에 죄를 적고 낙인을 찍는다. 낙인은 때려서 지운다.', wn: ['-낙인이 찍히면 시간 안에 보스를 때려 면죄 · 못 하면 집행 · 소환체에도 낙인', '-기절,수면,넉백 면역 (진보스 공통 면역)', '-고유 면역: 중독, 출혈'], lv: YM_LV, rw: YM_RW, icon: function () { return ymIcon(); }, hint: '염라대왕의 낙인은 때려서 지운다', conf: ['#c81e28', '#e8b84a', '#f4f1ea', '#1a0608'], sx: function (L) { return '낙인 ' + L.bt + '초·' + L.bh + '타 · 기술 ' + L.sk.length + '개'; } }
+    { id: 'yeomra', nm: '염라대왕', hn: '염라대왕', sub: '저승의 재판관. 명부에 죄를 적고 낙인을 찍는다. 낙인은 때려서 지운다.', wn: ['-낙인이 찍히면 시간 안에 보스를 때려 면죄 · 못 하면 집행 · 소환체에도 낙인', '-죽음의 기로: 死 쪽에 남아 있으면 무조건 즉사 (Easy 5초 ~ Extreme 2초)', '-기절,수면,넉백 면역 (진보스 공통 면역)', '-고유 면역: 중독, 출혈'], lv: YM_LV, rw: YM_RW, icon: function () { return ymIcon(); }, hint: '염라대왕의 낙인은 때려서 지운다', conf: ['#c81e28', '#e8b84a', '#f4f1ea', '#1a0608'], sx: function (L) { return '낙인 ' + L.bt + '초·' + L.bh + '타 · 기술 ' + L.sk.length + '개'; } }
   ];
 
   /* ── 패널 · 흐름 ── */
@@ -28381,7 +28504,7 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
     '<h5>아레스</h5><ul class="ul"><li>청동 갑옷의 전쟁의 신이에요. 크기는 무사시와 비슷해요. <b>방패(가드)</b>가 먼저 피해를 받고, 복구되지 않아요. 출혈·화상 같은 지속 피해도 방패를 깎아요. 가드 수치는 머리 위 방패 아이콘의 숫자예요.</li><li><b>가드 규칙</b>: 방패가 막은 공격은 <b>명중으로 치지 않아요</b>. 창 길이·피해, 단검·철퇴·활 같은 명중 스택과 화상·빙결·번개 같은 타격 부가 효과는 붙지 않고, 피해만 방패를 깎아요(창 삼연 강타의 ×3도 방패가 대신 맞아요). 도약 중에는 공격이 아예 안 먹혀요. 방패가 부서진 뒤 몸을 맞혀야 스택이 쌓여요.</li><li>방패가 부서지면 <b>포효 → 락온 투창</b>(예고선이 먼저 떠요)이 날아오고, 창이 벽에 박히면 <b>쌍검을 뽑아 광란전</b>이 시작돼요. 광란전부터 몸 체력이 깎여요. 벽에 박힌 창은 <b>모든 난이도에서 3초 뒤 터져요</b>(경고 원이 차올라요). 광란전의 아레스는 빨라서 <b>벽에 튕겨 다니며</b> 덮쳐 와요.</li><li>제한 시간(Easy 180초 · Normal 150초 · Hard 120초 · Extreme 90초)이 지나면 <b>격노</b>: 방패가 남아 있어도 강제로 부서지고 기술 간격이 짧아져요.</li><li>보병전 기술: <b>방패 밀치기</b>(넓은 돌진) · <b>창 삼연찌르기</b>(긴 사거리) · <b>밀집 대형</b>(아레스와 똑같이 생긴 병사들이 줄지어 밀려와요. 초록 빈틈으로 피하세요. 병사는 때릴 수 없어요) · <b>표적 창격</b>(찍힌 자리로 순식간에 돌진한 뒤 그 자리에서 2연 회전베기) · <b>도약 강타</b>(하늘로 뛰어올라 경고 자리에 X자로 내려찍어요) · <b>창 내려찍기</b>(Normal~) · <b>전쟁북</b>(Hard~: 빈틈이 있는 충격파) · <b>방패벽 돌격</b>(Extreme: 병사 둘과 셋이 나란히 돌진해요).</li><li>광란전 기술: <b>쌍날 돌진</b> · <b>쌍검 투척</b>(검을 하나씩 던진 뒤 순서대로 회수해요. 몸에 박힌 검을 먼저 뽑으러 와서 <b>그 검만 휘둘러 베고</b>, 벽에 박힌 검은 뽑아 들기만 해요) · <b>불꽃 참격</b>(Normal~: 광선에 맞으면 <b>확정 화상</b>, 바닥에 불꽃이 남아요) · <b>피의 맹세</b>(Hard~: 붉게 물든 필드에서 안전한 원 안으로 들어가요) · <b>대도약 베기</b>(Hard~: 하늘에서 X·+·Z 순서로 필드를 베고 마지막에 내려찍어요) · <b>신의 일격</b>(Extreme). 경고 표시가 먼저 떠요.</li><li>체력 (방패 / 몸): Easy 40/60 · Normal 60/100 · Hard 80/180 · Extreme 100/230.</li><li>넉백·기절·수면, <b>푸른 불꽃·업화</b>, <b>파상풍</b>은 안 먹혀요. 독(중독)과 기본 화상은 먹혀요.</li></ul>',
     '<h5>빙하 맘모스</h5><ul class="ul"><li>체력 Easy 150 · Normal 250 · Hard 300 · Extreme 400. 느리고 거대한 얼음 매머드예요. <b>빙하 강타</b>·<b>냉기 숨결</b>·<b>혹한</b>이 닿은 자리에 <b>서리 지대</b>가 남아요(최대 10칸 · 14초 뒤 녹아요 · 혹한 땐 12칸).</li><li><b>서리 지대</b> 위에 서면 <b>이동이 느려지고 빙결 게이지가 차올라요</b>(초당 Easy 7% · Normal 9% · Hard 11% · Extreme 14%). 가득 차면 얼어붙어요(5초 · 받는 피해 2배 · 3번 맞으면 깨져요). 맘모스의 얼음 기술을 맞아도 게이지가 차요.</li><li><b>코 잡기</b>(기본 공격): 코 끝에 서 있으면 붙잡아 <b>옆으로 휘둘러 벽에 던져요</b>. 벽에 부딪히면 피해(Easy 7 · Normal 10 · Hard 14 · Extreme 20)와 기절 0.5초, 그리고 부딪힌 자리 근처에 고드름이 떨어져요(Easy 2개 · Normal 3개 · Hard 4개 · Extreme 5개, 혹한엔 +1). <b>몸이 닿아도 피해는 없어요.</b> 대신 몸 가까이 붙은 분신·소환수·옛 전우는 0.8초마다 서리 충격으로 쳐내요.</li><li>기술 (Easy 3개 · Normal 4개 · Hard 5개 · Extreme 6개): <b>빙하 돌진</b>(예고선이 뜨고 달려와요. 벽에 부딪히면 위에서 고드름이 떨어지고, 돌진이 끝나면 상아가 박혀 잠깐 멈춰요) · <b>빙하 강타</b>(발밑 원 안이 아파요. Extreme은 두 번 연달아) · <b>고드름 낙하</b>(표시된 곳에 떨어져요) · <b>냉기 숨결</b>(Normal~: 부채꼴로 쓸어요. 맞는 동안 서리 게이지가 차고 바닥에 서리가 번져요) · <b>상아 투창</b>(Hard~: 상아가 날아와요. <b>무기로 쳐내면</b> 사라져요) · <b>빙하 균열</b>(Extreme: 필드가 4×4 칸으로 나뉘고 <b>빨간 칸</b>이 2.4초 뒤 터져요. 칸 밖으로 피하세요).</li><li>제한 시간(Easy 180초 · Normal 150초 · Hard 120초 · Extreme 90초)이 지나면 <b>혹한</b>: 눈보라가 몰아치고, 걸음이 빨라지고, 서리가 더 빨리 번지고, 기술 간격이 절반이 돼요.</li><li>기절·수면·넉백, 그리고 <b>빙결 계열</b>(빙결·절대 영도·서리 감속), <b>업화</b>는 안 먹혀요. <b>화상</b>과 <b>푸른 불꽃</b>은 먹혀요.</li></ul>',
     '<h5>뇌조</h5><ul class="ul"><li>체력 Easy 175 · Normal 263 · Hard 375 · Extreme 513. 하늘을 날아다니는 폭풍의 새예요. <b>날고 있는 동안 근접 공격은 피해요</b>(칼날이 닿지 않아요). 하지만 <b>화살·마법·총알 같은 원거리 공격은 그대로 맞아요</b>. 접촉 피해는 없어요.</li><li><b>싸움의 흐름</b>: 비행(Easy 12초 · Normal 11초 · Hard 10초 · Extreme 9초, 그동안 기술을 써요) → <b>급강하</b>(바닥에 표적 원이 1.4초 동안 떠요. 마지막 0.4초는 원이 고정돼요) → 내리꽂기(원 안은 Easy 12 · Normal 16 · Hard 22 · Extreme 30 피해) → <b>딜 타임</b>(내려앉아 숨을 고르는 시간: Easy 5.0초 · Normal 4.5초 · Hard 4.0초 · Extreme 3.5초. 이때가 유일한 공격 기회예요) → 돌풍과 함께 이륙(0.8초 전에 알려요).</li><li><b>급강하에 맞으면 딜 타임이 절반</b>이에요. 원 밖으로 피하세요.</li><li>기술 (Easy 4개 · Normal 5개 · Hard 6개 · Extreme 7개): <b>낙뢰 격자</b>(표시된 원 위로 번개가 떨어져요. 맞으면 잠깐 경직) · <b>깃털 사격</b>(궤도선이 뜬 뒤 깃털이 날아와요. <b>무기로 쳐내면</b> 사라져요) · <b>뇌우 소나기</b>(Normal~: 작은 낙뢰가 아주 많이 연달아 떨어져요) · <b>회오리</b>(Hard~: 느리게 쫓아와요. 닿으면 피해와 밀침) · <b>폭풍 뇌격</b>(Extreme: 필드 전체에 번개가 쳐요. <b>초록 피뢰 원 안</b>으로 피하세요) · <b>깃털 털기</b>(몸을 떨며 사방으로 깃털을 날려요. <b>무기로 쳐내면</b> 사라져요) · <b>버드 스트라이크</b>(필드 밖으로 나갔다가 상대 쪽으로 가로질러 날아들어요. 예고 띠가 뜨면 옆으로 피하세요. Easy 1회 → Extreme 4회 연속).</li><li>낙뢰·소나기는 절반 가까이를 <b>분신·소환수·옛 전우</b>에게도 겨눠요. 급강하는 가장 가까운 대상을 쫓고, 충격파는 모든 상대를 맞혀요.</li><li>제한 시간(Easy 180초 · Normal 150초 · Hard 120초 · Extreme 90초)이 지나면 <b>뇌운 폭주</b>: 비행이 짧아지고, 낙뢰가 늘고, 기술 간격이 절반이 돼요.</li><li>기절·수면·넉백, 그리고 <b>속박</b>과 <b>파상풍</b>은 안 먹혀요. 화상·중독·빙결은 먹혀요.</li></ul>',
-    '<h5>염라대왕</h5><ul class="ul"><li>체력 Easy 180 · Normal 280 · Hard 400 · Extreme 520. 저승의 재판관이에요. 천천히 미끄러지듯 다가오고, <b>접촉 피해는 없어요</b>.</li><li><b>도장 찍기</b>(평타): 기술도 낙인도 없을 때 가장 가까운 상대에게 작은 도장을 찍어요(원이 잠깐 따라오다 멈춘 뒤 쾅). Easy 2.6초 · Normal 2.3초 · Hard 2.0초 · Extreme 1.8초마다, 피해 6 · 8 · 11 · 14.</li><li><b>낙인</b>(전 난이도, Easy 14초 · Normal 13초 · Hard 12초 · Extreme 11초마다): 명부에 죄를 적은 뒤 내 캐릭터와 <b>분신·소환수·옛 전우</b>(최대 3)의 머리 위에 「罪」 낙인을 찍어요. 첫 기술은 언제나 낙인이에요. Normal은 저승사자 1기, Hard~는 2기가 함께 나와 길을 막아요.</li><li><b>면죄</b>: 제한 시간(Easy 8초 · Normal 7초 · Hard 7초 · Extreme 6초) 안에 염라대왕을 <b>Easy 2번 · Normal 2번 · Hard 3번 · Extreme 3번</b> 때리면 풀려요. 칼·투사체 모두 세고(한 번에 두 발이 맞으면 두 번), 지속 피해는 안 세요. 낙인 없는 분신·소환수의 타격은 내 낙인을 지워요. 내 낙인이 풀리면 <b>다른 낙인도 풀리고 사자가 사라지며 염라대왕이 1초 동안 넋을 놓아요</b>(딜 타임).</li><li><b>집행</b>: 못 지우면 옥새가 날아와 대상을 바짝 쫓다가 0.7초 뒤 반지름 170으로 내려찍어요. 피해 Easy 16 · Normal 22 · Hard 30 · Extreme 38 + <b>화상 또는 빙결 게이지를 꽉 채워요</b>(바로 화상 또는 빙결), 그 자리엔 지옥 장판이 4초 남아요. 떨어지기 직전에 전술 회피로 빠져나가면 피할 수 있어요. 낙인이 걸려 있는 동안 염라대왕은 <b>멈춰서 맞아 주고 공격도 안 해요</b>. 추적으로 붙으세요.</li><li>기술 (Easy 5개 · Normal 7개 · Hard 8개 · Extreme 9개, 낙인 포함, 쉬는 시간 Easy 5초 · Normal 4.5초 · Hard 4초 · Extreme 3.5초): <b>옥새 내려찍기</b>(반지름 240짜리 큰 원 위로 옥새가 떨어져요. Easy 12 · Normal 16 · Hard 22 · Extreme 28. Hard~는 두 번. 남은 「罪」 자국 위는 약하게 아파요) · <b>사자 소환</b>(저승사자 Easy 2 · Normal 3 · Hard 3 · Extreme 4기, 한 번에 최대 6기. 체력 1 · 2 · 3 · 5, 닿으면 0.5초마다 3 · 4 · 5 · 6 피해. 화살·투사체를 몸으로 막아요) · <b>지옥 형벌</b>(Normal~: 화탕(화상)·한빙(감속·빙결)·Hard~ 도산(출혈) 장판이 1초 뒤 4초 동안) · <b>혼불 난무</b>(Normal~: 푸른 혼불이 몸 둘레를 돌다 나선으로 퍼져요. 한 발 Normal 5 · Hard 6 · Extreme 8, <b>무기로 쳐내면</b> 꺼져요) · <b>업경 비추기</b>(Hard~: 지난 3초 동안 지나간 자리 6곳이 번호 순서대로 터져요. Hard 15 · Extreme 20) · <b>윤회의 수레바퀴</b>(전 난이도: 몸을 축으로 금빛 바퀴살 Easy 4 · Normal 5 · Hard 6 · Extreme 6개가 1.1초 예고 뒤 3.2~4초 동안 돌아요. 바퀴살 사이 틈으로 피하세요. 맞으면 Easy 8 · Normal 11 · Hard 15 · Extreme 19, 도는 쪽으로 튕겨 나가요. Extreme은 중간에 거꾸로 돌아요) · <b>저승 사슬</b>(전 난이도: 사슬 Easy 1 · Normal 2 · Hard 2 · Extreme 3줄이 0.85초 예고 뒤 날아와요. 첫 줄은 내 캐릭터, 나머지는 분신·소환수, 없으면 내 옆을 겨눠요. 걸리면 염라대왕 앞까지 끌려가 옥새에 찍혀요. Easy 9 · Normal 12 · Hard 16 · Extreme 21) · <b>열 번의 판결</b>(Extreme: 一~十 번호가 붙은 굵은 띠(폭 170) 10줄이 차례로 먹 붓질로 쓸려요. 한 줄 22).</li><li>제한 시간(Easy 180초 · Normal 150초 · Hard 120초 · Extreme 90초)이 지나면 <b>대심판</b>: 기술 간격이 절반, 도장 찍기가 빨라지고, 낙인 시간 1초 감소, 지옥 장판이 커지고 기술 피해가 ×1.3이에요.</li><li>기절·수면·넉백, 그리고 <b>중독 계열(중독·맹독·극독)</b>과 <b>출혈 계열(출혈·과출혈)</b>은 안 먹혀요. 화상(기본)·빙결·속박은 먹혀요.</li></ul>'
+    '<h5>염라대왕</h5><ul class="ul"><li>체력 Easy 180 · Normal 280 · Hard 400 · Extreme 520. 저승의 재판관이에요. 천천히 미끄러지듯 다가오고, <b>접촉 피해는 없어요</b>.</li><li><b>도장 찍기</b>(평타): 기술도 낙인도 없을 때 가장 가까운 상대에게 작은 도장을 찍어요(원이 잠깐 따라오다 멈춘 뒤 쾅). Easy 2.6초 · Normal 2.3초 · Hard 2.0초 · Extreme 1.8초마다, 피해 6 · 8 · 11 · 14.</li><li><b>낙인</b>(전 난이도, Easy 14초 · Normal 13초 · Hard 12초 · Extreme 11초마다): 명부에 죄를 적은 뒤 내 캐릭터와 <b>분신·소환수·옛 전우</b>(최대 3)의 머리 위에 「罪」 낙인을 찍어요. 첫 기술은 언제나 낙인이에요. Normal은 저승사자 1기, Hard~는 2기가 함께 나와 길을 막아요.</li><li><b>면죄</b>: 제한 시간(Easy 8초 · Normal 7초 · Hard 7초 · Extreme 6초) 안에 염라대왕을 <b>Easy 2번 · Normal 2번 · Hard 3번 · Extreme 3번</b> 때리면 풀려요. 칼·투사체 모두 세고(한 번에 두 발이 맞으면 두 번), 지속 피해는 안 세요. 낙인 없는 분신·소환수의 타격은 내 낙인을 지워요. 내 낙인이 풀리면 <b>다른 낙인도 풀리고 사자가 사라지며 염라대왕이 1초 동안 넋을 놓아요</b>(딜 타임).</li><li><b>집행</b>: 못 지우면 옥새가 날아와 대상을 바짝 쫓다가 0.7초 뒤 반지름 170으로 내려찍어요. 피해 Easy 16 · Normal 22 · Hard 30 · Extreme 38 + <b>화상 또는 빙결 게이지를 꽉 채워요</b>(바로 화상 또는 빙결), 그 자리엔 지옥 장판이 4초 남아요. 떨어지기 직전에 전술 회피로 빠져나가면 피할 수 있어요. 낙인이 걸려 있는 동안 염라대왕은 <b>멈춰서 맞아 주고 공격도 안 해요</b>. 추적으로 붙으세요.</li><li>기술 (Easy 6개 · Normal 8개 · Hard 9개 · Extreme 10개, 낙인 포함, 쉬는 시간 Easy 5초 · Normal 4.5초 · Hard 4초 · Extreme 3.5초): <b>옥새 내려찍기</b>(반지름 240짜리 큰 원 위로 옥새가 떨어져요. Easy 12 · Normal 16 · Hard 22 · Extreme 28. Hard~는 두 번. 남은 「罪」 자국 위는 약하게 아파요) · <b>사자 소환</b>(저승사자 Easy 2 · Normal 3 · Hard 3 · Extreme 4기, 한 번에 최대 6기. 체력 1 · 2 · 3 · 5, 닿으면 0.5초마다 3 · 4 · 5 · 6 피해. 화살·투사체를 몸으로 막아요) · <b>지옥 형벌</b>(Normal~: 화탕(화상)·한빙(감속·빙결)·Hard~ 도산(출혈) 장판이 1초 뒤 4초 동안) · <b>혼불 난무</b>(Normal~: 푸른 혼불이 몸 둘레를 돌다 나선으로 퍼져요. 한 발 Normal 5 · Hard 6 · Extreme 8, <b>무기로 쳐내면</b> 꺼져요) · <b>업경 비추기</b>(Hard~: 지난 3초 동안 지나간 자리 6곳이 번호 순서대로 터져요. Hard 15 · Extreme 20) · <b>윤회의 수레바퀴</b>(전 난이도: 몸을 축으로 금빛 바퀴살 Easy 4 · Normal 5 · Hard 6 · Extreme 6개가 1.1초 예고 뒤 3.2~4초 동안 돌아요. 바퀴살 사이 틈으로 피하세요. 맞으면 Easy 8 · Normal 11 · Hard 15 · Extreme 19, 도는 쪽으로 튕겨 나가요. Extreme은 중간에 거꾸로 돌아요) · <b>저승 사슬</b>(전 난이도: 사슬 Easy 1 · Normal 2 · Hard 2 · Extreme 3줄이 0.85초 예고 뒤 날아와요. 첫 줄은 내 캐릭터, 나머지는 분신·소환수, 없으면 내 옆을 겨눠요. 걸리면 염라대왕 앞까지 끌려가 옥새에 찍혀요. Easy 9 · Normal 12 · Hard 16 · Extreme 21) · <b>죽음의 기로</b>(전 난이도: 필드 한가운데를 지나는 아무 기울기의 선이 그어져 한쪽은 <b>死</b>, 한쪽은 <b>生</b>이 돼요. Easy 5초 · Normal 4초 · Hard 3초 · Extreme 2초 뒤 死 쪽에 있으면 <b>보호막·버티기·체력·부활과 상관없이 즉사</b>해요. 분신·소환수·옛 전우도 똑같아요. 판정은 몸 한가운데 기준이고, 전술 회피는 生 쪽으로 피해요. 한 번 쓰면 30초 넘게 다시 안 써요) · <b>열 번의 판결</b>(Extreme: 一~十 번호가 붙은 굵은 띠(폭 170) 10줄이 차례로 먹 붓질로 쓸려요. 한 줄 22).</li><li>제한 시간(Easy 180초 · Normal 150초 · Hard 120초 · Extreme 90초)이 지나면 <b>대심판</b>: 기술 간격이 절반, 도장 찍기가 빨라지고, 낙인 시간 1초 감소, 지옥 장판이 커지고 기술 피해가 ×1.3이에요.</li><li>기절·수면·넉백, 그리고 <b>중독 계열(중독·맹독·극독)</b>과 <b>출혈 계열(출혈·과출혈)</b>은 안 먹혀요. 화상(기본)·빙결·속박은 먹혀요.</li></ul>'
   ];
   function jbBossInfoHtml(bi) { return (JB_BINFO[bi] || '').replace(/^<h5>.*?<\/h5>/, ''); }
   function jbInfoHtml() {
