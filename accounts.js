@@ -293,7 +293,7 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
   async function sysLoad() { const v = await metaGet('sys', { on: false, msg: '' }); A.sys = { on: !!v.on, msg: cleanTxt(v.msg, 80) }; return A.sys; }
 
   /* 진보스전 열고 닫기: 닫아 둔 보스 번호만 저장한다 (새 보스는 기본으로 열려 있다). 제작자는 닫힌 보스도 들어갈 수 있다 */
-  const JB_OFF_MAX = 16;
+  const JB_OFF_MAX = 64;   /* 진보스 번호 한도 (v750: 16 → 64, 진보스를 계속 추가할 거라 넉넉하게) */
   function jbOffClean(a) { const out = []; if (Array.isArray(a)) for (const v of a) { const n = Math.floor(+v); if (n >= 0 && n < JB_OFF_MAX && out.indexOf(n) < 0) out.push(n); } return out.sort((x, y) => x - y); }
   A.jbOff = [];
   async function jbLoad() { const v = await metaGet('jbopen', { off: [] }); A.jbOff = jbOffClean(v && v.off); return A.jbOff; }
@@ -332,7 +332,7 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
     const S = await statsLoad(), win = !!b.win;
     if (b.k === 'jb') {
       const bi = Math.floor(+b.bi), lv = Math.floor(+b.lv), cn = Math.floor(+b.cn), id = String(b.id || '').replace(/[^A-Za-z0-9_-]/g, '').slice(0, 24);
-      if (!(bi >= 0 && bi <= 9) || !(lv >= 0 && lv <= 3)) return send(res, 200, { ok: true });
+      if (!(bi >= 0 && bi < JB_OFF_MAX) || !(lv >= 0 && lv <= 3)) return send(res, 200, { ok: true });   /* 보스 번호는 진보스전 오픈 목록과 같은 한도(64): 새 보스마다 고칠 필요 없음 */
       const k = bi + '-' + lv, o = S.jb[k] || (S.jb[k] = { a: 0, w: 0, cn: [0, 0, 0], u: new Set() });
       o.a++; if (win) { o.w++; if (cn >= 1 && cn <= 3) o.cn[cn - 1]++; if (id.length >= 6 && o.u.size < 3000) o.u.add(id); }
       statsDirty = true;
