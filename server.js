@@ -288,11 +288,11 @@ wss.on('connection', (ws) => {
         const str = JSON.stringify(o); ws._watch.forEach((w) => { if (w.readyState === 1) w.send(str); else ws._watch.delete(w); });
         return;
       }
-      case 'olist': {   // 제작자만: 지금 진행 중인 매칭 대전 목록 (몰래 관전용)
+      case 'olist': {   // 제작자만: 지금 진행 중인 대전 목록 (매칭 + 커스텀 방, 몰래 관전용)
         if (!accounts.enabled || typeof m.tk !== 'string' || !m.tk) return;
         accounts.userFromToken(m.tk).then((u) => {
           if (!u || !u.owner || ws.readyState !== 1) return; ws._own = true;
-          const l = []; rooms.forEach((r) => { if (!r.hidden || l.length >= 40) return; const a = r.players[0], b = r.players[1]; if (!a || !b) return; l.push({ c: r.code, a: a.nick, b: b.nick, st: r.state, rd: r.cl ? r.cl.rd : 0, w: r.cl ? r.cl.wins : [0, 0] }); });
+          const l = []; rooms.forEach((r) => { if (l.length >= 60) return; const a = r.players[0], b = r.players[1]; if (!a || !b) return; l.push({ c: r.code, a: a.nick, b: b.nick, st: r.state, rd: r.cl ? r.cl.rd : 0, w: r.cl ? r.cl.wins : [0, 0], cu: r.hidden ? 0 : 1, nm: r.hidden ? '' : String(r.name || '').slice(0, 20), md: r.mode }); });
           rawSend(ws, { t: 'olist', l });
         }, () => {});
         return;
