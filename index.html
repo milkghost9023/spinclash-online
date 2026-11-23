@@ -1373,7 +1373,7 @@ body.boss #nm1::before { content: 'BOSS '; color: #e5322d; font-weight: 900; let
       </div>
       <p class="hint" id="bgmHint" hidden>화면을 탭하면 음악이 시작돼요</p>
       <p class="ver" id="verTxt">한 기기 2인 대전 · 온라인 대전은 준비 중</p>
-      <span class="verTag">v803</span>
+      <span class="verTag">v805</span>
       <span class="onl" id="onlTag" hidden></span>
     </div>
   </div>
@@ -17128,7 +17128,7 @@ var DM = (function () {
   var jbOff = [];   /* 제작자가 닫아 둔 진보스전(보스 번호). 서버에선 /api/live 로 받고, 아티팩트에선 이 기기에만 저장 */
   try { if (ART) jbOff = (JSON.parse(localStorage.getItem('spinclash.jboff') || '[]') || []).filter(function (v) { return v === (v | 0) && v >= 0; }); } catch (e) { jbOff = []; }
   function jbClosed(bi) { return jbOff.indexOf(bi) >= 0; }
-  function jbCanEnter(bi) { return !(JB_BOSS[bi] && JB_BOSS[bi].own) && (!jbClosed(bi) || shOwner()); }   /* 서버 점검 상태 (/api/live) */
+  function jbCanEnter(bi) { return !(JB_BOSS[bi] && JB_BOSS[bi].own) && !jbClosed(bi); }   /* v805: 허브에서 끈 진보스는 제작자에게도 안 보임 */   /* 서버 점검 상태 (/api/live) */
   var news = { t: '', at: 0, tm: 0, sig: '', own: false, list: [], i: 0, rt: 0, dur: 0 };
   try { var nj0 = JSON.parse(localStorage.getItem('spinclash.news') || 'null'); if (nj0 && typeof nj0.t === 'string') { news.t = nj0.t; news.at = +nj0.at || 0; if (nj0.t) news.list = Array.isArray(nj0.list) && nj0.list.length ? nj0.list.filter(function (x) { return x && typeof x.t === 'string' && x.t; }) : [{ t: nj0.t, at: +nj0.at || 0 }]; if (news.list.length) { news.t = news.list[0].t; news.at = +news.list[0].at || 0; } } } catch (e) {}
   function newsOwn() { return !ART && (news.own || !!(acct.me && acct.me.o)); }
@@ -42354,8 +42354,14 @@ function tbBL(o,a,b){return [tbCol(a||'#1a1a96',o),tbCol(b||'#5470ff',o)];};
   }
   function jbClose() { $('#jbInfo').hidden = true; $('#jbOv').hidden = true; $('#hmInv').hidden = true; boxPause = homeTabCur !== 'play'; dotSync(); }
   function jbRender() {
+    var own = shOwner(), q0;
+    if (!jbCanEnter(jbBi)) { for (q0 = 0; q0 < JB_BOSS.length; q0++) if (jbCanEnter(q0)) { jbBi = q0; break; } }
+    if (!jbCanEnter(jbBi)) {   /* 열린 진보스전이 하나도 없음 */
+      $('#jbBody').innerHTML = '<div style="margin:40px 8px;text-align:center;font:700 15px/1.6 \'Noto Sans KR\',sans-serif">지금 열린 진보스전이 없어요<br><small style="font-weight:500;opacity:.75">열리면 여기에 나타나요</small></div>';
+      $('#jbAt').innerHTML = '지금 열린 진보스전이 없어요'; $('#jbGo').disabled = true; return;
+    }
     var j = jbSync(), P = jbP(jbBi), BD = JB_BOSS[jbBi], h = '';
-    h += '<div class="jbfs jbbs">' + JB_BOSS.map(function (B, i) { if (B.own) return ''; return '<button type="button" data-bi="' + i + '" aria-pressed="' + (i === jbBi) + '"' + (jbClosed(i) ? ' class="cl"' : '') + '><b>' + (jbClosed(i) ? '🔒 ' : '') + B.nm + '</b></button>'; }).join('') + '</div>';
+    h += '<div class="jbfs jbbs">' + JB_BOSS.map(function (B, i) { if (B.own || jbClosed(i)) return ''; return '<button type="button" data-bi="' + i + '" aria-pressed="' + (i === jbBi) + '"' + (jbClosed(i) ? ' class="cl"' : '') + '><b>' + (jbClosed(i) ? '🔒 ' : '') + B.nm + '</b></button>'; }).join('') + '</div>';
     h += '<div class="jbhero"><div class="jbim"><img alt="" src="' + BD.icon() + '"></div><div class="jbtx"><div class="jbnm"><b>' + BD.nm + '</b><button type="button" class="iBtn" data-binfo="1" aria-label="' + BD.nm + ' 설명">i</button></div><small>' + BD.sub + '</small></div>' +
       '<ul class="jbwn">' + BD.wn.map(function (w) { return '<li>' + w + '</li>'; }).join('') + '</ul></div>';
     if (jbClosed(jbBi)) h += '<div style="margin:6px 0;padding:8px 10px;border-radius:9px;border:3px solid var(--hbd);background:var(--hrow);font:700 12.5px/1.45 \'Noto Sans KR\',sans-serif">🔒 ' + (shOwner() ? '플레이어에겐 닫혀 있어요 (제작자라 들어갈 수 있어요)' : '지금은 닫혀 있는 진보스전이에요. 열리면 도전할 수 있어요') + '</div>';
