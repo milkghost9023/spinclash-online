@@ -41,7 +41,10 @@ function verOk(ws, m) {
 function readGame() {
   let h = fs.readFileSync(GAME_FILE, 'utf8');
   const inj = '<script>window.SPIN_ONLINE=1;' + (accounts.enabled ? 'window.SPIN_ACC=1;' : '') + '</script>';
-  return h.indexOf('<head>') >= 0 ? h.replace('<head>', '<head>' + inj) : inj + h;
+  if (h.indexOf('<head>') >= 0) return h.replace('<head>', '<head>' + inj);
+  /* 게임 파일은 아티팩트용이라 문서 뼈대(doctype · viewport)가 없다. 아티팩트처럼 씌워 줘야 폰에서 화면 폭이 맞고 표준 모드로 그려진다
+     (없으면 폰 브라우저가 980px 폭으로 그려서 시작 화면 · 전투 화면이 작게 보임) */
+  return '<!doctype html>\n<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">' + inj + h + '\n</html>';
 }
 
 const server = http.createServer((req, res) => {
