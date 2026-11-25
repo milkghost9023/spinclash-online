@@ -10,6 +10,16 @@ const path = require('path');
 const crypto = require('crypto');
 const { WebSocketServer } = require('ws');
 const accounts = require('./accounts')();
+/* v811 길드: 실시간 알림은 접속 인원용 연결(hi/who 를 보낸 연결)로 보낸다. 연결마다 _uid(로그인 계정) · _gid(길드) 를 붙여 둔다 */
+const guild = require('./guild')(accounts, {
+  pushUid: (uid, o) => { const s = JSON.stringify(o); wss.clients.forEach((c) => { if (c._pres && c._uid === uid && c.readyState === 1) c.send(s); }); },
+  pushGid: (gid, o) => { const s = JSON.stringify(o); wss.clients.forEach((c) => { if (c._pres && c._gid === gid && c.readyState === 1) c.send(s); }); },
+  setGid: (uid, gid) => { wss.clients.forEach((c) => { if (c._uid === uid) c._gid = gid; }); },
+  presOf: (uid) => { let p = null; wss.clients.forEach((c) => { if (c._pres && c._uid === uid && (!p || c._ps !== 'home')) p = { ps: c._ps || 'home', pid: c._pid || 0 }; }); return p; },
+  roomOf: (uid) => { let code = null; rooms.forEach((r) => { if (r.players.some((p) => p && p.uid === uid && p.ws) && (!code || r.state === 'play')) code = r.code; }); return code; },
+  roomInfo: (code) => { const r = rooms.get(code); return r ? { np: r.players.filter(Boolean).length, st: r.state } : null; }
+});
+accounts.guildReq = (u, b, res) => guild.req(u, b, res);
 
 const PORT = +process.env.PORT || 8080;
 const GAME_FILE = process.env.GAME_FILE || path.join(__dirname, 'index.html');
@@ -215,6 +225,7 @@ function dropPlayer(room, idx) {
   room.players[idx] = null;
   if (hasOther) { if (o) rawSend(o, { t: 'left' }); room.state = 'lobby'; room.cl = null; room.lastStart = null; killPick(room); }
   if (!room.players[0] && !room.players[1]) { killPick(room); room.specs.forEach((w) => { rawSend(w, { t: 'sclosed' }); w._room = null; }); room.specs = []; rooms.delete(room.code); }
+  if (room.gdd) guild.duelPing(room.code);
   else if (hasOther) {   // 남은 사람은 방장이 된다
     if (idx === 0) { room.players[0] = room.players[1]; room.players[1] = null; if (room.players[0].ws) { room.players[0].ws._idx = 0; rawSend(room.players[0].ws, { t: 'host' }); } }
     room.players.forEach((q) => { if (q) q.ready = false; }); sendNames(room); specStatus(room);
@@ -255,7 +266,7 @@ wss.on('connection', (ws) => {
       case 'hi': { if (!ws._pid) ws._pid = ++pidSeq; if (!ws._pres) { ws._pres = true; rawSend(ws, { t: 'online', n: onlineCount() }); schedCount(); } const sv = serverVer(); if (sv && m.ver !== sv) rawSend(ws, { t: 'ver', v: sv }); return; }
       case 'who': {   // 접속자 목록용 닉네임: 로그인했으면 계정 닉네임, 아니면 손님 닉네임(가입자 닉네임은 못 따라 씀)
         const nw = Date.now(); if (nw - (ws._whoAt || 0) < 400) return; ws._whoAt = nw;
-        const fin = (u) => { ws._pn = u ? u.nick : nickOf(m.nick); ws._own = !!(u && u.owner); schedCount(); };
+        const fin = (u) => { ws._pn = u ? u.nick : nickOf(m.nick); ws._own = !!(u && u.owner); ws._uid = u ? u.id : 0; ws._gid = guild.gidOf(ws._uid); if (u) guild.seen(u.id); schedCount(); };
         if (typeof m.tk === 'string' && m.tk && accounts.enabled) { accounts.userFromToken(m.tk).then((u) => fin(u), () => fin(null)); } else fin(null);
         return;
       }
@@ -270,8 +281,11 @@ wss.on('connection', (ws) => {
         if (!accounts.enabled || typeof m.tk !== 'string' || !m.tk) return;
         const pid = m.id | 0;
         accounts.userFromToken(m.tk).then((u) => {
-          if (!u || !u.owner || ws.readyState !== 1) return; ws._own = true;
+          if (!u || ws.readyState !== 1) return;
           let tg = null; wss.clients.forEach((c) => { if (c._pid === pid && c._pres && c !== ws) tg = c; });
+          const mate = !u.owner && tg && tg._uid && guild.gidOf(u.id) && guild.gidOf(u.id) === guild.gidOf(tg._uid);   /* v811: 같은 길드원도 진보스전을 볼 수 있다 */
+          if (!u.owner && !mate && !m.off) return rawSend(ws, { t: 'sw', ok: 0 });
+          if (u.owner) ws._own = true;
           if (m.off) { if (tg && tg._watch) { tg._watch.delete(ws); if (!tg._watch.size) rawSend(tg, { t: 'srec', on: 0 }); } return; }
           if (!tg) return rawSend(ws, { t: 'sw', ok: 0 });
           if (!tg._watch) tg._watch = new Set();
@@ -305,9 +319,10 @@ wss.on('connection', (ws) => {
         const mode = m.mode === 'classic' ? 'classic' : (m.mode === 'nospell' ? 'nospell' : 'single');
         if (rooms.size >= MAX_ROOMS) return rawSend(ws, { t: 'err', m: '지금은 방을 더 만들 수 없어요' });
         const nick = m._u ? m._u.nick : nickOf(m.nick), name = cleanText(m.name, 16) || (nick + '의 방'), pw = cleanText(m.pw, 8);
-        const r = { code, mode, name, pw, spec: m.spec !== false, specs: [], lastStart: null, log: [], lastIn: [-1, -1], cl: null, players: [{ ws, nick, uid: m._u ? m._u.id : 0, tok: crypto.randomBytes(12).toString('hex'), sel: null, ready: false, rtt: 60 }, null], arena: 0, pickT: null, lastCres: null, state: 'lobby', round: 0, over: [false, false], rematch: [false, false], hs: [{}, {}] };
+        const r = { code, mode, name, pw, hidden: !!m.hid, spec: m.spec !== false, specs: [], lastStart: null, log: [], lastIn: [-1, -1], cl: null, players: [{ ws, nick, uid: m._u ? m._u.id : 0, tok: crypto.randomBytes(12).toString('hex'), sel: null, ready: false, rtt: 60 }, null], arena: 0, pickT: null, lastCres: null, state: 'lobby', round: 0, over: [false, false], rematch: [false, false], hs: [{}, {}] };
         rooms.set(code, r); ws._room = r; ws._idx = 0;
         rawSend(ws, { t: 'created', code, idx: 0, mode, name, tok: r.players[0].tok }); sendNames(r);
+        if (m.gd && m._u && guild.enabled) { r.gdd = true; guild.duelPost(m._u, code, mode); }   /* v811 길드 친선전: 숨김 방 + 길드 채팅에 카드 */
         return;
       }
       case 'join': {
@@ -320,7 +335,7 @@ wss.on('connection', (ws) => {
         if (!pwOk(ws, r, m)) return;
         r.players[1] = { ws, nick: m._u ? m._u.nick : nickOf(m.nick), uid: m._u ? m._u.id : 0, tok: crypto.randomBytes(12).toString('hex'), sel: null, ready: false, rtt: 60 }; ws._room = r; ws._idx = 1;
         rawSend(ws, { t: 'joined', code, idx: 1, mode: r.mode, name: r.name, tok: r.players[1].tok }); rawSend(r.players[0].ws, { t: 'peer', n: 2 });
-        sendNames(r); specStatus(r);
+        sendNames(r); specStatus(r); if (r.gdd) guild.duelPing(code);
         if (r.players[0] && r.players[0].ready) rawSend(ws, { t: 'peerReady', v: true });   // 방장이 미리 준비해 뒀다면 바로 알려 준다
         return;
       }
@@ -344,10 +359,11 @@ wss.on('connection', (ws) => {
         const code = String(m.code || '').toUpperCase().trim(); const r = rooms.get(code);
         if (!r) return rawSend(ws, { t: 'err', m: '그런 방이 없어요' });
         if (!verOk(ws, m)) return;
-        const osp = !!ws._own && !!m.osp;   // 제작자가 매칭 대전을 몰래 보는 경우: 관전 허용·인원 제한·비밀번호와 상관없이 들어가고, 관전자 수에도 안 센다
-        if (!r.spec && !osp) return rawSend(ws, { t: 'err', m: '관전을 허용하지 않는 방이에요' });
+        const osp = !!ws._own && !!m.osp;
+        const gsp = !osp && !!m.gsp && !!m._u && guild.enabled && !!guild.gidOf(m._u.id) && r.players.some((p) => p && p.uid && guild.gidOf(p.uid) === guild.gidOf(m._u.id));   /* v811: 길드원 대전 관전 */   // 제작자가 매칭 대전을 몰래 보는 경우: 관전 허용·인원 제한·비밀번호와 상관없이 들어가고, 관전자 수에도 안 센다
+        if (!r.spec && !osp && !gsp) return rawSend(ws, { t: 'err', m: '관전을 허용하지 않는 방이에요' });
         if (r.specs.length >= MAX_SPEC && !osp) return rawSend(ws, { t: 'err', m: '관전 자리가 가득 찼어요' });
-        if (!osp && !pwOk(ws, r, m)) return;
+        if (!osp && !gsp && !pwOk(ws, r, m)) return;
         ws._osp = osp;
         ws._room = r; ws._idx = -2; ws._nick = m._u ? m._u.nick : nickOf(m.nick); r.specs.push(ws);
         rawSend(ws, { t: 'sjoined', code, mode: r.mode, name: r.name, n: namesOf(r) }); sendNames(r);
@@ -483,5 +499,5 @@ wss.on('connection', (ws) => {
   ws.on('error', () => {});
 });
 
-accounts.init().catch((e) => console.log('[accounts] 시작 오류:', e && e.message));
+accounts.init().then(() => guild.init()).catch((e) => console.log('[accounts] 시작 오류:', e && e.message));
 server.listen(PORT, () => console.log('spinclash server on :' + PORT + (LAT_MS || JIT_MS ? ' (인위지연 ' + LAT_MS + '+' + JIT_MS + 'ms)' : '')));

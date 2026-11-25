@@ -429,6 +429,7 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
         case '/api/pw': await setPw(u, b, req, res); return true;
         case '/api/email': await setEmail(u, b, req, res); return true;
         case '/api/delete': await delAccount(u, b, res); return true;
+        case '/api/guild': if (A.guildReq) await A.guildReq(u, b, res); else fail(res, 503, 'off', '길드 기능이 아직 꺼져 있어요'); return true;   /* v811 길드 (guild.js) */
       }
       fail(res, 404, 'nf', '없는 요청이에요'); return true;
     } catch (e) {
@@ -617,6 +618,7 @@ CREATE TABLE IF NOT EXISTS app_meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);`;
     send(res, 200, { ok: true });
   }
 
+  A.x = { q, send, fail, rate };   /* v811: 길드 모듈(guild.js)이 같은 DB 연결 · 응답 함수 · 속도 제한을 쓴다 */
   return A;
 };
 module.exports.helpers = { normKey, cleanNick, isGhost };
